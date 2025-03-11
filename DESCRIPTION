@@ -18,3 +18,5 @@ License: CC0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+URL: https://github.com/rileymummah/SpFut.flexiSDM
+BugReports: https://github.com/rileymummah/SpFut.flexiSDM/issues
