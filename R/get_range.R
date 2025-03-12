@@ -1,5 +1,7 @@
 #' Get GAP and IUCN species ranges for reference
 #'
+#' @description
+#'
 #' @param sp.code
 #'
 #' @returns A list containing the GAP and IUCN species ranges (if pre-downloaded and available)

@@ -1,0 +1,295 @@
+# load_species_data <- function(sp.code,
+#                               region,
+#                               filter.region,
+#                               year.start,
+#                               year.end,
+#                               coordunc = 1000,
+#                               coordunc_na.rm = T,
+#                               spat.bal = F,
+#                               data.prop = 1,
+#                               keep.conus.grid.id = "all") {
+#
+#
+#   # get all files that have data for that species
+#   allfiles <- read.csv("DATA SWAMP/dataset-summary-full.csv") %>%
+#     mutate(species1 = substr(species, 1, 4)) %>%
+#     filter(species1 == sp.code)
+#
+#   # get file names that are ready to use (use == 1)
+#   usefiles <- read.csv("DATA SWAMP/00-data-summary.csv") %>%
+#     filter(Use == 1,
+#            is.na(Data.Swamp.file.name) == F) %>%
+#     pull(Data.Swamp.file.name)
+#
+#
+#   # Get locations
+#   locs.cont <- c() # use to pull covariates in continuous space
+#   locs.disc <- c() # use to pull covariates in discrete space
+#
+#   # Get observations
+#   obs <- list()
+#
+#   # Loop through all files
+#   for(f in 1:nrow(allfiles)) {
+#
+#
+#     cat("\n")
+#
+#     cat(paste0("File ", f, ": ", allfiles$name[f]))
+#
+#     if (allfiles$file[f] %in% usefiles == F) {
+#       # If file is not ready to use yet
+#
+#       cat("....This file is not ready for use yet\n")
+#       next
+#
+#
+#     } else {
+#       # If file is ready to use
+#
+#       cat("....Loading file\n")
+#
+#       # read csv file
+#       file <- read.csv(paste0("DATA SWAMP/data-ready/", allfiles$file[f], ".csv"))
+#
+#       # Sometimes a single species has multiple codes--this function assigns the correct
+#       # code for those species
+#       #file <- fix_codes(file)
+#
+#
+#       # get detection covs from swamp file
+#       covs <- read.csv("DATA SWAMP/00-data-summary.csv") %>%
+#         filter(Data.Swamp.file.name == allfiles$file[f]) %>%
+#         select(Covar.mean, Covar.sum)
+#       covs <- c(covs[1, 1], covs[1, 2])
+#       covs <- covs[!is.na(covs)]
+#       covs <- unlist(strsplit(covs, split = ", "))
+#
+#
+#       file$site.id <- as.character(file$site.id)
+#
+#
+#       # make unique ID for each row
+#       file$unique.id <- paste0(sp.code, "-", f, "-", 1:nrow(file))
+#
+#       # create source column that contains dataset name
+#       file <- file %>%
+#         mutate(source = allfiles$name[f])
+#
+#       # filter to get the correct species
+#       file <- file %>%
+#         mutate(species1 = substr(species, 1, 4)) %>%
+#         filter(species1 == sp.code)
+#
+#       # filter to get only survey.conducted == 1
+#       file <- filter(file, survey.conducted == 1)
+#
+#       # filter to get only locations in the region
+#       if (filter.region == T) {
+#
+#         # filter by region
+#         file1 <- st_as_sf(file,
+#                           coords = c("lon", "lat"),
+#                           crs = 4326) %>%
+#           st_transform(st_crs(region$region)) %>%
+#           st_join(region$sp.grid, join = st_within) %>%
+#           filter(is.na(conus.grid.id) == F)
+#
+#         tmp <- nrow(file) - nrow(file1)
+#         if (tmp > 0) cat("Removing", tmp, "observations that are outside of the study region\n")
+#
+#
+#
+#         file <- filter(file, site.id %in% file1$site.id)
+#       }
+#
+#
+#       if(nrow(file) == 0) {
+#         cat("No data for this analysis\n")
+#         next
+#       }
+#
+#       # filter out records by year
+#       rm <- dplyr::filter(file, year < year.start | year > year.end)
+#       if (nrow(rm) > 0) cat(paste0("Removing ", nrow(rm), " observations before ", year.start, " and after ", year.end, "\n"))
+#       file <- filter(file, year >= year.start & year <= year.end)
+#
+#       if(nrow(file) == 0) {
+#         cat("No data for this analysis\n")
+#         next
+#       }
+#
+#       # filter location uncertainty
+#       if ("coord.unc" %in% colnames(file) & coordunc != Inf) {
+#
+#         file <- file %>%
+#           mutate(rm = case_when(coord.unc <= coordunc ~ "keep",
+#                                 is.na(coord.unc) ~ "keep",
+#                                 T ~ "remove"))
+#
+#         tmp <- nrow(filter(file, rm == "keep"))
+#         cat("Removing", tmp, "observations whose coordinate uncertainty is above the threshold of", coordunc, "\n")
+#
+#         file <- file %>%
+#           filter(rm == "keep") %>%
+#           select(!rm)
+#
+#       }
+#
+#       if(nrow(file) == 0) {
+#         cat("No data for this analysis\n")
+#         next
+#       }
+#
+#       if ("coord.unc" %in% colnames(file) & coordunc_na.rm == T) {
+#
+#         tmp <- length(which(is.na(file$coord.unc) == T))
+#         cat("Removing", tmp, "observations where coordinate uncertainty is NA\n")
+#
+#         file <- file %>%
+#           filter(is.na(coord.unc) == F)
+#       }
+#
+#       if(nrow(file) == 0) {
+#         cat("No data for this analysis\n")
+#         next
+#       }
+#
+#       # spatial balancing for PO
+#       if (spat.bal == T &
+#           file$source[1] %in% c("iNaturalist", "iNaturalist (obscured)")) {
+#
+#
+#
+#         # make grid
+#         grid <- st_make_grid(region$region, cellsize = c(2000, 2000)) %>%
+#           st_as_sf()
+#         grid <- mutate(grid, grid.id = 1:nrow(grid))
+#
+#
+#         file1 <- file %>%
+#           st_as_sf(coords = c("lon", "lat"),
+#                    crs = 4326) %>%
+#           st_transform(crs = st_crs(grid)) %>%
+#           st_join(grid, join = st_within) %>%
+#           group_by(grid.id) %>%
+#           slice_sample(n = 1) %>% # select one from each grid cell
+#           ungroup() %>%
+#
+#           # now put it back in the original format
+#           st_transform(crs = 4326)
+#         tmp <- as.data.frame(st_coordinates(file1))
+#         file1 <- file1 %>%
+#           mutate(lon = tmp$X,
+#                  lat = tmp$Y) %>%
+#           st_drop_geometry()
+#
+#         tmp <- nrow(file) - nrow(file1)
+#
+#         cat("Removing", tmp, "observations for spatial balancing\n")
+#
+#         file <- file1
+#       }
+#
+#
+#       if(nrow(file) == 0) {
+#         cat("No data for this analysis\n")
+#         next
+#       }
+#
+#
+#       # take subset of data based on data.prop
+#       sites <- unique(file$site.id)
+#
+#       keepn <- floor(length(sites)*data.prop)
+#       keepi <- sample(1:length(sites), keepn)
+#       keepsites <- sites[keepi]
+#       file <- file[which(file$site.id %in% keepsites),]
+#
+#
+#       # put into correct crs
+#       locs <- file %>%
+#         st_as_sf(coords = c("lon", "lat"),
+#                  crs = 4326,
+#                  remove = F) %>%
+#
+#         st_transform(st_crs(region$region))
+#
+#
+#       # locs for continuous space
+#       locs.c <- locs %>%
+#         select(unique.id, site.id, survey.id, pass.id, survey.conducted, lat, lon, year, geometry, data.type, source)
+#
+#
+#       # locs for discrete space
+#       locs.d <- locs.c %>%
+#         st_join(region$sp.grid, join = st_within) %>%
+#         st_drop_geometry() %>%
+#         as.data.frame() %>%
+#         select(unique.id, site.id, survey.id, pass.id, sp.grid.id, conus.grid.id, year, source, data.type)
+#
+#       # remove rows that are not in keep.conus.grid.id
+#       if (keep.conus.grid.id[1] != "all") {
+#         rm <- filter(locs.d, conus.grid.id %in% keep.conus.grid.id == F)
+#         if (nrow(rm) > 0) {
+#           cat("Removing ", nrow(rm), " observations that are not in the correct block(s)\n")
+#
+#           locs.d <- filter(locs.d, conus.grid.id %in% keep.conus.grid.id)
+#           locs.c <- filter(locs.c, unique.id %in% locs.d$unique.id)
+#         }
+#
+#         if(nrow(locs.d) == 0) {
+#           cat("No data for this analysis\n")
+#           next
+#         }
+#       }
+#
+#       # remove dataset if there is only one unique survey.id
+#       survs <- length(unique(locs.d$survey.id))
+#       if (survs < 2) {
+#         cat("Removing ", allfiles$name[f], " dataset because there is only one remaining survey.id\n")
+#         next
+#       }
+#
+#
+#       locs.cont <- bind_rows(locs.cont, locs.c)
+#       locs.disc <- bind_rows(locs.disc, locs.d)
+#
+#
+#
+#
+#
+#       # observations
+#       # add grid.id from locs.d and save
+#       file1 <- inner_join(file, select(locs.d, unique.id, sp.grid.id, conus.grid.id), by = "unique.id") %>%
+#         select(source, data.type, site.id, lat, lon, conus.grid.id, sp.grid.id, unique.id, survey.id, pass.id,
+#                day, month, year, survey.conducted, species, age, time.to.detect, individual.id, count, any_of(covs))
+#
+#
+#       # if name already exists, just append dfs
+#       if (allfiles$name[f] %in% names(obs)) {
+#         obs[[allfiles$name[f]]] <- bind_rows(obs[[allfiles$name[f]]], file1)
+#       } else {
+#         obs[[allfiles$name[f]]] <- file1
+#       }
+#
+#
+#
+#
+#     }
+#
+#   } # end read in files
+#
+#   # save locs
+#   locs <- list(disc = locs.disc, cont = locs.cont)
+#
+#
+#   cat("\n")
+#
+#
+#   dat <- list(locs = locs, obs = obs)
+#
+#   return(dat)
+#
+#
+# }
