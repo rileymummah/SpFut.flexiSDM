@@ -15,12 +15,15 @@ SpFut.flexiSDM contains the following functions:
 ### Helpers
 
 - get_range
-- make_region
+- make_region - Is this actually a helper? I’d move it to a different
+  section (ROM)
 - fix_codes
-- scale_this
+- scale_this - (ROM) documented
 - id_dup_records
 - get_covs.PO
-- make_spatkey
+- make_spatkey - Is this actually a helper? I’d move it to a different
+  section (ROM)
+- get_cpus_per_task - (ROM) documented
 
 ### Prep covariate data
 
@@ -53,8 +56,8 @@ SpFut.flexiSDM contains the following functions:
 
 ### Run NIMBLE
 
-- run_nimbleMCMC
-- nimbleParallel
+- run_nimbleMCMC - (ROM) outline added
+- nimbleParallel - (ROM) outline added
 - check_progress_MCMC
 
 ### Process NIMBLE output
@@ -62,7 +65,6 @@ SpFut.flexiSDM contains the following functions:
 - get_projections
 - get_derived
 - chain_summary
-- get_cpus_per_task
 - summarize_samples
 
 ### Plot NIMBLE output
