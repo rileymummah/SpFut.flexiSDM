@@ -1,24 +1,22 @@
-#' Title
+#' run_nimbleMCMC
 #'
-#' @param info
+#' @description A self-contained NIMBLE workflow to configure, build, compile, and run a NIMBLE model for a single chain.
+#'
+#' @param info (list) A list which contains 2 elements: info$inits which contains the initial values for a single MCMC chain, and info$seed which is a single numeric to set the seed for the chain.
 #' @param code (nimbleCode)
 #' @param constants (nimbleData)
 #' @param data (nimbleData)
-#' @param param
-#' @param iter (List or function?)
-#' @param burnin
-#' @param thin
+#' @param param (list?)
+#' @param iter (numeric) The number of iterations to run the chain for
+#' @param burnin (numeric) The number of iterations to discard as burnin
+#' @param thin (numeric) The number of iterations to thin by
 #'
 #' @importFrom nimble nimbleModel configureMCMC buildMCMC compileNimble runMCMC
-#' @returns
+#' @returns An coda::mcmc object of the posterior samples
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#'
-#'
-#'
-#' }
+
 
 
 run_nimbleMCMC <- function(info, code, constants, data, param,

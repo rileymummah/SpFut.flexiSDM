@@ -2,10 +2,10 @@
 % Please edit documentation in R/nimbleParallel.R
 \name{nimbleParallel}
 \alias{nimbleParallel}
-\title{Title}
+\title{nimbleParallel}
 \usage{
 nimbleParallel(
-  HPC,
+  cores = 3,
   code,
   constants,
   data,
@@ -13,14 +13,31 @@ nimbleParallel(
   param,
   iter,
   burnin,
-  thin,
-  number,
-  sp.code
+  thin
 )
 }
 \arguments{
-\item{sp.code}{}
+\item{cores}{(numeric) The number of cores (and, in turn, chains) to run in parallel. Default = 3.}
+
+\item{code}{(nimbleCode)}
+
+\item{constants}{(nimbleConstants)}
+
+\item{data}{(nimbleData)}
+
+\item{inits}{(function)}
+
+\item{param}{(list?)}
+
+\item{iter}{(numeric) The number of iterations to run in each chain}
+
+\item{burnin}{(numeric) The number of iterations to discard as burnin}
+
+\item{thin}{(numeric) The number of iterations to thin by}
+}
+\value{
+A list of mcmc objects. Each element of the list is one chain of samples saved as a code::mcmc object.
 }
 \description{
-Title
+Run NIMBLE chains in parallel using a local cluster
 }

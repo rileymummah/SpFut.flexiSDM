@@ -1,30 +1,28 @@
-#' Title
+#' nimbleParallel
 #'
-#' @param HPC
-#' @param code
-#' @param constants
-#' @param data
-#' @param inits
-#' @param param
-#' @param iter
-#' @param burnin
-#' @param thin
-#' @param number
-#' @param sp.code
+#' @description Run NIMBLE chains in parallel using a local cluster
 #'
-#' @returns
+#' @param cores (numeric) The number of cores (and, in turn, chains) to run in parallel. Default = 3.
+#' @param code (nimbleCode)
+#' @param constants (nimbleConstants)
+#' @param data (nimbleData)
+#' @param inits (function)
+#' @param param (list?)
+#' @param iter (numeric) The number of iterations to run in each chain
+#' @param burnin (numeric) The number of iterations to discard as burnin
+#' @param thin (numeric) The number of iterations to thin by
+#'
+#' @returns A list of mcmc objects. Each element of the list is one chain of samples saved as a code::mcmc object.
 #' @importFrom parallel makeCluster stopCluster parLapply
 #' @export
 #'
 #' @examples
 
 
-nimbleParallel <- function(HPC, code, constants, data, inits, param,
-                           iter, burnin, thin, number, sp.code) {
+nimbleParallel <- function(cores = 3, code, constants, data,
+                           inits, param, iter, burnin, thin) {
 
-  cores = 3
-
-  this_cluster <- makeCluster(cores, outfile = paste0(getwd(),"/nimble_report_", number, "-", sp.code, ".txt"))
+  this_cluster <- makeCluster(cores)
 
   tmp <- lapply(1:cores, function(x) list(seed = x,
                                           inits = inits(x)))
@@ -45,6 +43,7 @@ nimbleParallel <- function(HPC, code, constants, data, inits, param,
                             thin = thin)
 
   cat("Jack jumped over the candlestick! \n")
+  cat("Ha ha aren't we funny?! No, really, your model is done fitting.")
 
   stopCluster(this_cluster)
 

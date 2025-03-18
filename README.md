@@ -82,8 +82,7 @@ You can install the development version of SpFut.flexiSDM from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
-pak::pak("rileymummah/SpFut.flexiSDM")
+remotes::install_github("rileymummah/SpFut.flexiSDM")
 ```
 
 ## Example
