@@ -1,12 +1,22 @@
-#' Get species ranges for reference
+#' Make species region
 #'
 #' @description
 #'
-#' @param range.path A vector of paths leading to species ranges
-#' @param range.name A vector of names for each range
-#' @param crs EPSG code for desired crs of output 
+#' @param rangelist List of ranges
+#' @param buffer Buffer size, unit depends on crs
+#' @param boundary sf object that says where to cut off the region
+#' @param grid sf object with grid
+#' @param crs default is 3857 so that buffer size can be meters
+#' @param sub whether to buffer around centroid (sub = T) or around full range (sub = F)
+#' @param lat.lo lower boundary of latitude (degrees)
+#' @param lat.hi upper boundary of latitude (degrees)
+#' @param lon.lo lower boundary of longitude (degrees)
+#' @param lon.lo upper boundary of longitude (degrees)
+#' @param continuous whether to keep only a continuous section of the range (T) or keep the whole range (F)
+#' @param rm.clumps whether to remove clumps of cells of size clump.size
+#' @param clump.size number of cells in clumps to keep
 #'
-#' @returns A list containing ranges as sf objects
+#' @returns A list containing ranges, the full region, sp.grid, and the boundary
 #' @export
 #'
 #' @examples
@@ -27,7 +37,7 @@ make_region <- function(rangelist,
                         lon.hi = NA,
                         continuous = F,
                         rm.clumps = F,
-                        island.size = 20) {
+                        clump.size = 20) {
   
   sf::sf_use_s2(FALSE)
   
@@ -132,7 +142,7 @@ make_region <- function(rangelist,
       
       # remove cells in group of < 20 (area < 500000000)
       mutate(area = as.numeric(st_area(geometry))) %>%
-      filter(area >= cellsize * island.size)
+      filter(area >= cellsize * clump.size)
     gridd <- st_intersection(gridc, grid1) %>%
       ungroup()
   } else {
