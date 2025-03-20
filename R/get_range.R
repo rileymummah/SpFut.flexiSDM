@@ -1,4 +1,4 @@
-#' Get GAP and IUCN species ranges for reference
+#' Get species ranges for reference
 #'
 #' @description
 #'
