@@ -27,8 +27,8 @@ SpFut.flexiSDM contains the following functions:
 
 ### Prep covariate data
 
-- load_covar
-- plot_covar
+- load_covar - I'm not sure we need this anymore (CLS)
+- plot_covar - (CLS) commmented
 - cor_covar
 - select_covar
 - add_int_cols
