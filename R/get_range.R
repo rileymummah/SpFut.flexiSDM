@@ -19,6 +19,8 @@ get_range <- function(range.path,
                       range.name = paste0("range", 1:length(range.path)),
                       crs) {
   
+  if (length(range.name) != length(range.path)) stop(cat("range.path and range.name must have same length"))
+  
   ranges <- list()
   for (p in 1:length(range.path)) {
     
@@ -28,7 +30,9 @@ get_range <- function(range.path,
     }
     
     range <- sf::st_read(range.path[p]) %>%
-      st_transform(crs = crs)
+      st_transform(crs = crs) %>%
+      mutate(range.name = range.name[p]) %>%
+      select(range.name, everything())
     
     ranges[[range.name[[p]]]] <- range
   }
