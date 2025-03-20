@@ -17,7 +17,7 @@ SpFut.flexiSDM contains the following functions:
 - get_range - (CLS) cleaned and commented
 - make_region - Is this actually a helper? I’d move it to a different
   section (ROM); Yes I could agree (CLS) - (CLS) cleaned and commented
-- fix_codes
+- fix_codes - (CLS) this function is unnecessary and can be removed
 - scale_this - (ROM) documented
 - id_dup_records
 - get_covs.PO
