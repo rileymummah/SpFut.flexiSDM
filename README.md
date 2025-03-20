@@ -14,9 +14,9 @@ SpFut.flexiSDM contains the following functions:
 
 ### Helpers
 
-- get_range - CLS is working on this
+- get_range - (CLS) cleaned and commented
 - make_region - Is this actually a helper? I’d move it to a different
-  section (ROM); Yes I could agree (CLS) - CLS is working on this
+  section (ROM); Yes I could agree (CLS) - (CLS) cleaned and commented
 - fix_codes
 - scale_this - (ROM) documented
 - id_dup_records
