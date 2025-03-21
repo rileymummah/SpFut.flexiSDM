@@ -16,8 +16,9 @@ A vector of scaled values with mean 0 and standard deviation 1
 A function to re-scale values to a distribution with mean 0 and standard deviation 1
 }
 \examples{
+\dontrun{
 x <- rnorm(1000, mean = 10, sd = 5)
 
 scale_this(x)
-
+}
 }

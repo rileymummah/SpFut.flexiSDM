@@ -1,3 +1,20 @@
+#' Title
+#'
+#' @description
+#'
+#' @param data
+#' @param cov.names
+#' @param rename
+#' @param type
+#'
+#' @returns
+#' @export
+#'
+#' @importFrom tidyselect any_of
+#' @importFrom stats median
+#'
+#' @examples
+
 survey_for_nimble <- function(data,
                               cov.names,
                               rename = "",
@@ -9,8 +26,8 @@ survey_for_nimble <- function(data,
   if (length(grep("grid.id", colnames(data))) != 1) {stop("There must be exactly one column named 'grid.id' in survey")}
   if (length(grep("site.id", colnames(data))) != 1) {stop("There must be exactly one column named 'site.id' in survey")}
 
-  surveydata <- select(data, !any_of(cov.names))
-  covariates <- select(data, conus.grid.id, site.id, survey.id, any_of(cov.names))
+  surveydata <- dplyr::select(data, !any_of(cov.names))
+  covariates <- dplyr::select(data, conus.grid.id, site.id, survey.id, tidyselect::any_of(cov.names))
 
   Y <- data$count
   surveyCell <- data$conus.grid.id
@@ -18,11 +35,11 @@ survey_for_nimble <- function(data,
   site.id <- data$site.id
   nSites <- length(unique(site.id))
 
-  Xy <- select(data, any_of(cov.names))
+  Xy <- dplyr::select(data, tidyselect::any_of(cov.names))
   nCovY <- ncol(Xy)
 
   # get nVisit
-  nVisit <- median(table(data$site.id))
+  nVisit <- stats::median(table(data$site.id))
   minVisit <- min(table(data$site.id))
 
   data <- list(Xy = Xy,

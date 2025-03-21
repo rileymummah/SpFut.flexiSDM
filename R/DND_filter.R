@@ -4,19 +4,14 @@
 #'
 #' @param range.path A vector of paths leading to species ranges
 #' @param range.name A vector of names for each range
-#' @param crs EPSG code for desired crs of output 
+#' @param crs EPSG code for desired crs of output
 #'
 #' @returns A list containing ranges as sf objects
 #' @export
 #'
+#' @importFrom tidyselect any_of
+#'
 #' @examples
-#' \dontrun{
-#' range <- get_range('ANMI')
-#' }
-
-
-
-
 
 
 DND_filter <- function(data,
@@ -33,8 +28,7 @@ DND_filter <- function(data,
 
   cat("\nLoading DND")
 
-  dndstart <- data %>%
-    filter(age %in% age.use)
+  dndstart <- dplyr::filter(data, age %in% age.use)
 
   if (nrow(dndstart) > 0) {
 
@@ -42,53 +36,53 @@ DND_filter <- function(data,
     all.covs <- c(covs.mean, covs.sum)
 
     dndcount <- dndstart %>%
-      select(survey.id, pass.id, age, count) %>%
-      mutate(count = case_when(count == 0 ~ 0,
-                               count == 1 ~ 1,
-                               count == 2 ~ DND.maybe)) %>%
+      dplyr::select(survey.id, pass.id, age, count) %>%
+      dplyr::mutate(count = dplyr::case_when(count == 0 ~ 0,
+                                             count == 1 ~ 1,
+                                             count == 2 ~ DND.maybe)) %>%
 
       # aggregate across passes
-      group_by(survey.id) %>%
-      summarize(count = max(count), .groups = "drop")
+      dplyr::group_by(survey.id) %>%
+      dplyr::summarize(count = max(count), .groups = "drop")
 
     # get mean covariates (temperature, moon visibility, etc.)
     if (length(covs.mean) > 0) {
       dndcovs.mean <- dndstart %>%
-        select(survey.id, pass.id, any_of(covs.mean)) %>%
-        distinct() %>%
-        select(!pass.id) %>%
+        dplyr::select(survey.id, pass.id, tidyselect::any_of(covs.mean)) %>%
+        dplyr::distinct() %>%
+        dplyr::select(!pass.id) %>%
 
         # aggregate across passes
-        group_by(survey.id) %>%
-        summarize_all(mean, na.rm = T)
+        dplyr::group_by(survey.id) %>%
+        dplyr::summarize_all(mean, na.rm = T)
     }
 
     # get sum covariates (duration, water volume)
     if (length(covs.sum) > 0) {
       dndcovs.sum <- dndstart %>%
-        select(survey.id, pass.id, any_of(covs.sum)) %>%
-        distinct() %>%
+        dplyr::select(survey.id, pass.id, tidyselect::any_of(covs.sum)) %>%
+        dplyr::distinct() %>%
 
         # aggregate across passes
-        group_by(survey.id) %>%
-        summarize_all(sum, na.rm = T) %>%
-        rename(npass = pass.id)
+        dplyr::group_by(survey.id) %>%
+        dplyr::summarize_all(sum, na.rm = T) %>%
+        dplyr::rename(npass = pass.id)
     }
 
 
     # get other important columns
     dndcols <- dndstart %>%
-      select(conus.grid.id, site.id, survey.id, lat, lon, day, month, year, survey.conducted) %>%
-      distinct()
+      dplyr::select(conus.grid.id, site.id, survey.id, lat, lon, day, month, year, survey.conducted) %>%
+      dplyr::distinct()
 
     # put them together
-    dndstart <- inner_join(dndcols, dndcount, by = "survey.id")
+    dndstart <- dplyr::inner_join(dndcols, dndcount, by = "survey.id")
 
     if (length(covs.mean) > 0) {
-      dndstart <- full_join(dndstart, dndcovs.mean, by = "survey.id")
+      dndstart <- dplyr::full_join(dndstart, dndcovs.mean, by = "survey.id")
     }
     if (length(covs.sum) > 0) {
-      dndstart <- full_join(dndstart, dndcovs.sum, by = "survey.id")
+      dndstart <- dplyr::full_join(dndstart, dndcovs.sum, by = "survey.id")
     }
 
 

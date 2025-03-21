@@ -25,4 +25,7 @@ Imports:
     magrittr,
     nimble,
     sf,
+    spdep,
+    stats,
+    tibble,
     tidyselect

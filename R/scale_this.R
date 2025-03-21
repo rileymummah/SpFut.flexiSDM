@@ -9,10 +9,11 @@
 #' @importFrom stats sd
 #'
 #' @examples
+#' \dontrun{
 #' x <- rnorm(1000, mean = 10, sd = 5)
 #'
 #' scale_this(x)
-#'
+#'}
 
 
 scale_this <- function(x) {

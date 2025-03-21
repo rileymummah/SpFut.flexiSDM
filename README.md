@@ -13,12 +13,12 @@ SpFut.flexiSDM contains the following functions:
 ### Helpers
 
 - get_range - (CLS) cleaned and commented - COMPLETE (ROM)
-- make_region - (CLS) cleaned and commented
+- make_region - (CLS) cleaned and commented - COMPLETE (ROM)
 - scale_this - (ROM) documented
 - id_dup_records
-- get_covs.PO - (CLS) this function is unnecessary and can be removed
+- get_covs.PO - (CLS) this function is unnecessary and can be removed - DONE
 - make_spatkey - Is this actually a helper? I’d move it to a different
-  section (ROM)
+  section (ROM) - NEEDS DOCUMENTATION (ROM)
 - get_cpus_per_task - (ROM) documented
 
 ### Prep covariate data
@@ -31,17 +31,17 @@ SpFut.flexiSDM contains the following functions:
 
 ### Prep species data
 
-- load_species_data - (CLS) cleaned and commented
-- PO_filter - (CLS) this function is unnecessary and can be removed
+- load_species_data - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)
+- PO_filter - (CLS) this function is unnecessary and can be removed - DONE
 - count_filter
-- DND_filter - (CLS) cleaned and commented
-- PO_for_nimble - (CLS) cleaned and commented
-- survey_for_nimble - (CLS) cleaned and commented
+- DND_filter - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)
+- PO_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)
+- survey_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)
 - sppdata_for_nimble - (CLS) halfway cleaned and commented
 
 ### Combine all data
 
-- z_for_nimble - (CLS) cleaned and commented
+- z_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)
 - data_for_nimble
 
 ### Set up NIMBLE

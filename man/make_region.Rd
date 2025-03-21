@@ -30,9 +30,9 @@ make_region(
 
 \item{grid}{(sf object) grid overlay}
 
-\item{crs}{default is 3857 so that buffer size can be meters}
+\item{crs}{(numeric) default is 3857 so that buffer size can be meters}
 
-\item{sub}{whether to buffer around centroid (sub = T) or around full range (sub = F)}
+\item{sub}{(logical) whether to buffer around centroid (sub = T) or around full range (sub = F)}
 
 \item{lat.lo}{(numeric) lower boundary of latitude (degrees)}
 

@@ -5,16 +5,17 @@
 #' @param rangelist (list) List of ranges generated from get_range()
 #' @param buffer (numeric) Buffer size, unit depends on CRS
 #' @param boundary (sf object) A that says where to cut off the region
-#' @param grid (sf object) with grid
-#' @param crs default is 3857 so that buffer size can be meters
-#' @param sub whether to buffer around centroid (sub = T) or around full range (sub = F)
+#' @param grid (sf object) grid overlay
+#' @param crs (numeric) default is 3857 so that buffer size can be meters
+#' @param sub (logical) whether to buffer around centroid (sub = T) or around full range (sub = F)
 #' @param lat.lo (numeric) lower boundary of latitude (degrees)
 #' @param lat.hi (numeric) upper boundary of latitude (degrees)
 #' @param lon.lo (numeric) lower boundary of longitude (degrees)
-#' @param lon.lo (numeric) upper boundary of longitude (degrees)
-#' @param continuous whether to keep only a continuous section of the range (T) or keep the whole range (F)
-#' @param rm.clumps whether to remove clumps of cells of size clump.size
-#' @param clump.size number of cells in clumps to keep
+#' @param lon.hi (numeric) upper boundary of longitude (degrees)
+#' @param continuous (logical) whether to keep only a continuous section of the range (T) or keep the whole range (F)
+#' @param rm.clumps (logical) whether to remove clumps of cells of size clump.size
+#' @param clump.size (numeric) number of cells in clumps to keep
+#' @param cell.size (numeric) cell area of grid
 #'
 #' @returns A list containing ranges, the full region, sp.grid, and the boundary
 #' @export
@@ -70,7 +71,7 @@ make_region <- function(rangelist,
 
   # Combine ranges
   fullrangeout <- dplyr::bind_rows(rangelist)
-  fullrange <- fullrangeout %>% dplyr:summarize(geometry = sf::st_union(geometry))
+  fullrange <- fullrangeout %>% dplyr::summarize(geometry = sf::st_union(geometry))
 
   # If sub == T, find centroid to add buffer to
   if (sub == T) {
@@ -158,8 +159,7 @@ make_region <- function(rangelist,
       # remove cells in group of < 20 (area < 500000000)
       dplyr::mutate(area = as.numeric(sf::st_area(geometry))) %>%
       dplyr::filter(area >= cellsize * clump.size)
-    gridd <- sf::st_intersection(gridc, grid1) %>%
-      ungroup()
+    gridd <- sf::st_intersection(gridc, grid1) %>% dplyr::ungroup()
   } else {
     gridd <- gridc
   }

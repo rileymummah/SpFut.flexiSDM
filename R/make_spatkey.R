@@ -1,16 +1,39 @@
+#' Make coarse spatial grid
+#'
+#' @description Group a fine hexbin grid into groups of 7 hexbins to form a coarse spatial grid
+#'
+#'
+#' @param grid (sf object) A grid in which one of the attributes is the conus.grid.id
+#'
+#' @returns A list which contains:
+#' 1) spatkey - a dataframe which contains a column for the conus.grid.id (fine grid) and a column for the matching spat.grid.id (coarse grid)
+#' 2) spat.grid - an sf dataframe which contains the spat.grid.id and the coarse grid geometry
+#' @export
+#'
+#' @importFrom spdep poly2nb nb2WB
+#'
+#' @examples
+#'
+
+
 make_spatkey <- function(grid) {
 
-  cent <- st_centroid(grid$geometry)
-  centXY <- round(st_coordinates(cent),-1) %>%
-    as.data.frame() %>%
-    mutate(conus.grid.id = grid$conus.grid.id)
+  # Find the centroid of each grid cell
+  cent <- sf::st_centroid(grid$geometry)
 
+  # Round the coordinates
+  centXY <- round(sf::st_coordinates(cent),-1) %>%
+              as.data.frame() %>%
+              dplyr::mutate(conus.grid.id = grid$conus.grid.id)
+
+  # Sort the coorindates
   X <- sort(unique(centXY[,1]))
   Y <- sort(unique(centXY[,2]))
 
   NX <- length(X)
   NY <- length(Y)
 
+  # These keys define where the central grouping cell will be
   key1 <- c(1,10,5,14,9,4,13,8,3,12,7,2,11,6)
   key2 <- c(10,5,14,9,4,13,8,3,12,7,2,11,6,1)
 
@@ -50,10 +73,10 @@ make_spatkey <- function(grid) {
   }
 
   a <- centXY1 %>%
-    # Have to filter out missing (orphan) cells, otherwise NA will have more than 7 "neighbors"
-    filter(!is.na(cell)) %>%
-    group_by(cell) %>%
-    summarize(count=n())
+          # Have to filter out missing (orphan) cells, otherwise NA will have more than 7 "neighbors"
+          dplyr::filter(!is.na(cell)) %>%
+          dplyr::group_by(cell) %>%
+          dplyr::summarize(count = dplyr::n())
 
   if(max(a$count)<=7){
     centXY <- centXY1
@@ -76,10 +99,10 @@ make_spatkey <- function(grid) {
   # Isolate cells with NA and give them correct cell affiliations
   centXY %>%
     # Isolate centroids with missing cell assignments
-    filter(is.na(cell)) %>%
-    left_join(., grid, by = 'conus.grid.id') %>%
-    select(cell, conus.grid.id, geometry) %>%
-    st_as_sf() -> cellNA
+    dplyr::filter(is.na(cell)) %>%
+    dplyr::left_join(., grid, by = 'conus.grid.id') %>%
+    dplyr::select(cell, conus.grid.id, geometry) %>%
+    sf::st_as_sf() -> cellNA
 
   NAind <- which(is.na(centXY$cell))
 
@@ -110,34 +133,30 @@ make_spatkey <- function(grid) {
     }
   }
 
-  cellNA <- select(cellNA, -neighbors)
+  cellNA <- dplyr::select(cellNA, -neighbors)
 
   centXY %>%
-    # Filter out missing cells - dealt with above
-    #filter(!is.na(cell)) %>%
-    left_join(grid, centXY, by = 'conus.grid.id') %>%
-    select(conus.grid.id, cell, geometry) -> spatkey1 #%>%
-  # Change cellIDs in cellNA to extend cell list from centXY
-  #bind_rows(., mutate(cellNA, cell = cell + max(centXY$cell, na.rm=T))) -> spatkey
+    dplyr::left_join(grid, centXY, by = 'conus.grid.id') %>%
+    dplyr::select(conus.grid.id, cell, geometry) -> spatkey1
 
   spatkey1$cell[NAind] <- cellNA$cell
 
   spatkey1 %>%
-    group_by(cell) %>%
-    mutate(geometry = st_union(geometry)) %>%
-    ungroup() %>%
-    select(cell, geometry) %>%
-    distinct() %>%
-    mutate(spat.grid.id = 1:n()) %>%
-    st_as_sf() -> tmp1
+    dplyr::group_by(cell) %>%
+    dplyr::mutate(geometry = sf::st_union(geometry)) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(cell, geometry) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(spat.grid.id = 1:dplyr::n()) %>%
+    sf::st_as_sf() -> tmp1
 
   tmp1 %>%
-    st_drop_geometry() %>%
-    select(cell, spat.grid.id) %>%
-    full_join(spatkey1, ., by = 'cell') %>%
-    select(-geometry) -> spatkey
+    sf::st_drop_geometry() %>%
+    dplyr::select(cell, spat.grid.id) %>%
+    dplyr::full_join(spatkey1, ., by = 'cell') %>%
+    dplyr::select(-geometry, -cell) -> spatkey
 
-  tmp1 %>% select(-cell) -> spat.grid
+  dplyr::select(tmp, -cell) -> spat.grid
 
   return(spatModel = list(spatkey = spatkey,
                           spat.grid = spat.grid))
