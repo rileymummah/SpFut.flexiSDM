@@ -1,3 +1,292 @@
+#' Load species data
+#'
+#' @description
+#'
+#' @param sp.code 4-letter species code
+#' @param file.name vector of data file names to read in
+#' @param file.label vector of labels for data files
+#' @param file.path path where data files are located
+#' @param keep.subsp whether to keep records of subsp (T) or not (F)
+#' @param keep.cols list of column names to keep for each data file
+#' @param region region (output from make_region())
+#' @param filter.region Only keep data within region (T) or not (F)
+#' @param year.start keep data during or after this year
+#' @param year.end keep data during or before this year
+#' @param coordunc If data has coord.unc column (e.g., GBIF data), remove records with coord.unc > coordunc
+#' @param coordunc_na.rm If data has coord.unc column (e.g., GBIF data), remove records with coord.unc == NA (T) or not (F)
+#' @param spat.thin If data is PO, do spatial thinning at 2km x 2km grid cell
+#' @param keep.conus.grid.id Which grid cells to keep (e.g., for cross validation); defaults to all grid cells in the region
+#'
+#' @returns 
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' range <- get_range('ANMI')
+#' }
+
+
+
+
+
+
+load_species_data <- function(sp.code,
+                              file.name,
+                              file.label,
+                              file.path,
+                              keep.subsp,
+                              keep.cols,
+                              region,
+                              filter.region,
+                              year.start,
+                              year.end,
+                              coordunc = 1000,
+                              coordunc_na.rm = T,
+                              spat.thin = F,
+                              keep.conus.grid.id = region$sp.grid$conus.grid.id) {
+  
+  
+  # Get locations
+  locs.cont <- c() 
+  locs.disc <- c() 
+  
+  # Get observations
+  obs <- list()
+  
+  # Loop through all files
+  for(f in 1:length(file.name)) {
+    
+    cat(paste0("\nFile ", f, ": ", file.label[f], "....Loading file\n"))
+
+    # read csv file
+    file <- read.csv(paste0(file.path, file.name[f], ".csv"))
+    
+    
+    file$site.id <- as.character(file$site.id)
+    
+    
+    # make unique ID for each row
+    file$unique.id <- paste0(sp.code, "-", f, "-", 1:nrow(file))
+    
+    # create source column that contains dataset name
+    file <- file %>%
+      mutate(source = file.label[f])
+    
+    # filter to get the correct species
+    if (keep.subsp == T) {
+      file <- file %>%
+        mutate(species1 = substr(species, 1, 4)) %>%
+        filter(species1 == sp.code)
+    } else {
+      file <- file %>%
+        filter(species == sp.code)
+    }
+    
+    
+    # filter to get only survey.conducted == 1
+    file <- filter(file, survey.conducted == 1)
+    
+    # filter to get only locations in the region
+    if (filter.region == T) {
+      
+      # filter by region
+      file1 <- st_as_sf(file,
+                        coords = c("lon", "lat"),
+                        crs = 4326) %>%
+        st_transform(st_crs(region$region)) %>%
+        st_join(region$sp.grid, join = st_within) %>%
+        filter(is.na(conus.grid.id) == F)
+      
+      tmp <- nrow(file) - nrow(file1)
+      if (tmp > 0) cat("Removing", tmp, "observations that are outside of the study region\n")
+      
+      file <- filter(file, site.id %in% file1$site.id)
+    }
+    
+    
+    if(nrow(file) == 0) {
+      cat("No data for this analysis\n")
+      next
+    }
+    
+    # filter out records by year
+    rm <- dplyr::filter(file, year < year.start | year > year.end)
+    if (nrow(rm) > 0) cat(paste0("Removing ", nrow(rm), " observations before ", year.start, " or after ", year.end, "\n"))
+    file <- filter(file, year >= year.start & year <= year.end)
+    
+    if(nrow(file) == 0) {
+      cat("No data for this analysis\n")
+      next
+    }
+    
+    # filter location uncertainty
+    if ("coord.unc" %in% colnames(file) & coordunc != Inf) {
+      
+      file <- file %>%
+        mutate(rm = case_when(coord.unc <= coordunc ~ "keep",
+                              is.na(coord.unc) ~ "keep",
+                              T ~ "remove"))
+      
+      tmp <- nrow(filter(file, rm == "keep"))
+      cat("Removing", tmp, "observations whose coordinate uncertainty is above the threshold of", coordunc, "\n")
+      
+      file <- file %>%
+        filter(rm == "keep") %>%
+        select(!rm)
+    }
+    
+    if(nrow(file) == 0) {
+      cat("No data for this analysis\n")
+      next
+    }
+    
+    if ("coord.unc" %in% colnames(file) & coordunc_na.rm == T) {
+      
+      tmp <- length(which(is.na(file$coord.unc) == T))
+      cat("Removing", tmp, "observations where coordinate uncertainty is NA\n")
+      
+      file <- file %>%
+        filter(is.na(coord.unc) == F)
+    }
+    
+    if(nrow(file) == 0) {
+      cat("No data for this analysis\n")
+      next
+    }
+    
+    # spatial thinning for PO
+    if (spat.thin == T &
+        file$data.type[1] == "PO") {
+      #file.label[f] %in% c("iNaturalist", "iNaturalist (obscured)")) {
+      
+      # make grid
+      grid <- st_make_grid(region$region, cellsize = c(2000, 2000)) %>%
+        st_as_sf()
+      grid <- mutate(grid, grid.id = 1:nrow(grid))
+      
+      
+      file1 <- file %>%
+        st_as_sf(coords = c("lon", "lat"),
+                 crs = 4326) %>%
+        st_transform(crs = st_crs(grid)) %>%
+        st_join(grid, join = st_within) %>%
+        group_by(grid.id) %>%
+        slice_sample(n = 1) %>% # select one from each grid cell
+        ungroup() %>%
+        
+        # now put it back in the original format
+        st_transform(crs = 4326)
+      tmp <- as.data.frame(st_coordinates(file1))
+      file1 <- file1 %>%
+        mutate(lon = tmp$X,
+               lat = tmp$Y) %>%
+        st_drop_geometry()
+      
+      tmp <- nrow(file) - nrow(file1)
+      
+      cat("Removing", tmp, "observations for spatial thinning\n")
+      
+      file <- file1
+    }
+    
+    
+    if(nrow(file) == 0) {
+      cat("No data for this analysis\n")
+      next
+    }
+    
+    
+    # put into correct crs
+    locs <- file %>%
+      st_as_sf(coords = c("lon", "lat"),
+               crs = 4326,
+               remove = F) %>%
+      
+      st_transform(st_crs(region$region))
+    
+    
+    # locs for continuous space
+    locs.c <- locs %>%
+      select(unique.id, site.id, survey.id, pass.id, survey.conducted, lat, lon, year, geometry, data.type, source)
+    
+    
+    # locs for discrete space
+    locs.d <- locs.c %>%
+      st_join(region$sp.grid, join = st_within) %>%
+      st_drop_geometry() %>%
+      as.data.frame() %>%
+      select(unique.id, site.id, survey.id, pass.id, conus.grid.id, year, source, data.type)
+    
+    # remove rows that are not in keep.conus.grid.id
+    #if (keep.conus.grid.id[1] != "all") {
+    rm <- filter(locs.d, conus.grid.id %in% keep.conus.grid.id == F)
+    if (nrow(rm) > 0) {
+      cat("Removing ", nrow(rm), " observations that are not in the correct block(s)\n")
+      
+      locs.d <- filter(locs.d, conus.grid.id %in% keep.conus.grid.id)
+      locs.c <- filter(locs.c, unique.id %in% locs.d$unique.id)
+    }
+    
+    if(nrow(locs.d) == 0) {
+      cat("No data for this analysis\n")
+      next
+    }
+    #}
+    
+    # remove dataset if there is only one unique survey.id
+    survs <- length(unique(locs.d$survey.id))
+    if (survs < 2) {
+      cat("Removing ", file.label[f], " dataset because there is only one remaining survey.id\n")
+      next
+    }
+    
+    
+    locs.cont <- bind_rows(locs.cont, locs.c)
+    locs.disc <- bind_rows(locs.disc, locs.d)
+    
+    
+    # observations
+    # add grid.id from locs.d and save
+    file1 <- inner_join(file, select(locs.d, unique.id, conus.grid.id), by = "unique.id") %>%
+      select(source, data.type, site.id, lat, lon, conus.grid.id, unique.id, survey.id, pass.id,
+             day, month, year, survey.conducted, species, age, time.to.detect, individual.id, count, any_of(keep.cols[[f]]))
+    
+    
+    # If label already exists, just append dfs
+    # This is useful for:
+    #     - multiple iNat files for subspecies
+    #     - multiple files for the same dataset during different years
+    if (file.label[f] %in% names(obs)) {
+      obs[[file.label[f]]] <- bind_rows(obs[[file.label[f]]], file1)
+    } else {
+      obs[[file.label[f]]] <- file1
+    }
+    
+  } # end read in files
+  
+  # save locs
+  locs <- list(disc = locs.disc, cont = locs.cont)
+  
+  
+  cat("\n")
+  
+  
+  dat <- list(locs = locs, obs = obs)
+  
+  return(dat)
+  
+  
+}
+
+
+
+
+
+
+
+
+
+
 # load_species_data <- function(sp.code,
 #                               region,
 #                               filter.region,

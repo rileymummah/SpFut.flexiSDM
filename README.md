@@ -35,7 +35,7 @@ SpFut.flexiSDM contains the following functions:
 
 ### Prep species data
 
-- load_species_data
+- load_species_data - (CLS) cleaned and commented
 - PO_filter
 - count_filter
 - DND_filter
