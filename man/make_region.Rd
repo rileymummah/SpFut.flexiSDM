@@ -22,23 +22,23 @@ make_region(
 )
 }
 \arguments{
-\item{rangelist}{List of ranges}
+\item{rangelist}{(list) List of ranges generated from get_range()}
 
-\item{buffer}{Buffer size, unit depends on crs}
+\item{buffer}{(numeric) Buffer size, unit depends on CRS}
 
-\item{boundary}{sf object that says where to cut off the region}
+\item{boundary}{(sf object) A that says where to cut off the region}
 
-\item{grid}{sf object with grid}
+\item{grid}{(sf object) with grid}
 
 \item{crs}{default is 3857 so that buffer size can be meters}
 
 \item{sub}{whether to buffer around centroid (sub = T) or around full range (sub = F)}
 
-\item{lat.lo}{lower boundary of latitude (degrees)}
+\item{lat.lo}{(numeric) lower boundary of latitude (degrees)}
 
-\item{lat.hi}{upper boundary of latitude (degrees)}
+\item{lat.hi}{(numeric) upper boundary of latitude (degrees)}
 
-\item{lon.lo}{upper boundary of longitude (degrees)}
+\item{lon.lo}{(numeric) upper boundary of longitude (degrees)}
 
 \item{continuous}{whether to keep only a continuous section of the range (T) or keep the whole range (F)}
 
@@ -50,10 +50,29 @@ make_region(
 A list containing ranges, the full region, sp.grid, and the boundary
 }
 \description{
-Make species region
+Define the region for inference using a buffer around external range boundaries.
 }
 \examples{
 \dontrun{
-range <- get_range('ANMI')
+# Predownload range boundaries of interest
+
+# Provide the path to each boundary
+range.path <- c("GAP/aAZTOx_CONUS_Range_2001v1/",
+                "IUCN/")
+
+# Give each boundary a name
+range.name <- c("GAP", "IUCN")
+
+rangelist <- get_range(range.path,
+                       range.name,
+                       crs = 4326)
+
+region <- make_region(rangelist,
+                      buffer = 50000,
+                      crs = 3857,
+                      sub = F,
+                      boundary = usa,
+                      grid = conus.grid)
+
 }
 }

@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # SpFut.flexiSDM
 
 <!-- badges: start -->
@@ -14,10 +12,8 @@ SpFut.flexiSDM contains the following functions:
 
 ### Helpers
 
-- get_range - (CLS) cleaned and commented
-- make_region - Is this actually a helper? I’d move it to a different
-  section (ROM); Yes I could agree (CLS) - (CLS) cleaned and commented
-- fix_codes - (CLS) this function is unnecessary and can be removed
+- get_range - (CLS) cleaned and commented - COMPLETE (ROM)
+- make_region - (CLS) cleaned and commented
 - scale_this - (ROM) documented
 - id_dup_records
 - get_covs.PO

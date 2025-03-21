@@ -7,7 +7,7 @@
 scale_this(x)
 }
 \arguments{
-\item{x}{A vector of values to re-scale}
+\item{x}{(numeric vector) A vector of values to re-scale}
 }
 \value{
 A vector of scaled values with mean 0 and standard deviation 1

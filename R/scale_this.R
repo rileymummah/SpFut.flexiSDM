@@ -2,7 +2,7 @@
 #'
 #' @description A function to re-scale values to a distribution with mean 0 and standard deviation 1
 #'
-#' @param x A vector of values to re-scale
+#' @param x (numeric vector) A vector of values to re-scale
 #'
 #' @returns A vector of scaled values with mean 0 and standard deviation 1
 #'

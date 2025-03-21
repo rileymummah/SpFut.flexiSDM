@@ -7,20 +7,31 @@
 get_range(range.path, range.name = paste0("range", 1:length(range.path)), crs)
 }
 \arguments{
-\item{range.path}{A vector of paths leading to species ranges}
+\item{range.path}{(character vector) A vector of paths leading to species ranges}
 
-\item{range.name}{A vector of names for each range}
+\item{range.name}{(character vector) A vector of names for each range}
 
-\item{crs}{EPSG code for desired crs of output}
+\item{crs}{(numeric) EPSG code for desired coordinate reference system (CRS) of output}
 }
 \value{
 A list containing ranges as sf objects
 }
 \description{
-Get species ranges for reference
+Assembles pre-downloaded species range shapefiles (e.g., from IUCN or GAP)
 }
 \examples{
 \dontrun{
-range <- get_range('ANMI')
+# Predownload range boundaries of interest
+
+# Provide the path to each boundary
+range.path <- c("GAP/aAZTOx_CONUS_Range_2001v1/",
+                "IUCN/")
+
+# Give each boundary a name
+range.name <- c("GAP", "IUCN")
+
+rangelist <- get_range(range.path,
+                       range.name,
+                       crs = 4326)
 }
 }
