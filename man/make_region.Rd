@@ -28,7 +28,7 @@ make_region(
 
 \item{boundary}{(sf object) A that says where to cut off the region}
 
-\item{grid}{(sf object) with grid}
+\item{grid}{(sf object) grid overlay}
 
 \item{crs}{default is 3857 so that buffer size can be meters}
 
@@ -38,13 +38,17 @@ make_region(
 
 \item{lat.hi}{(numeric) upper boundary of latitude (degrees)}
 
-\item{lon.lo}{(numeric) upper boundary of longitude (degrees)}
+\item{lon.lo}{(numeric) lower boundary of longitude (degrees)}
 
-\item{continuous}{whether to keep only a continuous section of the range (T) or keep the whole range (F)}
+\item{lon.hi}{(numeric) upper boundary of longitude (degrees)}
 
-\item{rm.clumps}{whether to remove clumps of cells of size clump.size}
+\item{continuous}{(logical) whether to keep only a continuous section of the range (T) or keep the whole range (F)}
 
-\item{clump.size}{number of cells in clumps to keep}
+\item{rm.clumps}{(logical) whether to remove clumps of cells of size clump.size}
+
+\item{clump.size}{(numeric) number of cells in clumps to keep}
+
+\item{cell.size}{(numeric) cell area of grid}
 }
 \value{
 A list containing ranges, the full region, sp.grid, and the boundary

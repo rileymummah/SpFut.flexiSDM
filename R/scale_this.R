@@ -6,6 +6,8 @@
 #'
 #' @returns A vector of scaled values with mean 0 and standard deviation 1
 #'
+#' @importFrom stats sd
+#'
 #' @examples
 #' x <- rnorm(1000, mean = 10, sd = 5)
 #'
