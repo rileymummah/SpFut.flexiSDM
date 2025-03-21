@@ -2,18 +2,22 @@
 % Please edit documentation in R/get_range.R
 \name{get_range}
 \alias{get_range}
-\title{Get GAP and IUCN species ranges for reference}
+\title{Get species ranges for reference}
 \usage{
-get_range(sp.code)
+get_range(range.path, range.name = paste0("range", 1:length(range.path)), crs)
 }
 \arguments{
-\item{sp.code}{}
+\item{range.path}{A vector of paths leading to species ranges}
+
+\item{range.name}{A vector of names for each range}
+
+\item{crs}{EPSG code for desired crs of output}
 }
 \value{
-A list containing the GAP and IUCN species ranges (if pre-downloaded and available)
+A list containing ranges as sf objects
 }
 \description{
-Get GAP and IUCN species ranges for reference
+Get species ranges for reference
 }
 \examples{
 \dontrun{
