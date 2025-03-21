@@ -16,7 +16,7 @@ SpFut.flexiSDM contains the following functions:
 - make_region - (CLS) cleaned and commented
 - scale_this - (ROM) documented
 - id_dup_records
-- get_covs.PO
+- get_covs.PO - (CLS) this function is unnecessary and can be removed
 - make_spatkey - Is this actually a helper? I’d move it to a different
   section (ROM)
 - get_cpus_per_task - (ROM) documented
@@ -32,16 +32,16 @@ SpFut.flexiSDM contains the following functions:
 ### Prep species data
 
 - load_species_data - (CLS) cleaned and commented
-- PO_filter
+- PO_filter - (CLS) this function is unnecessary and can be removed
 - count_filter
-- DND_filter
-- PO_for_nimble
-- survey_for_nimble
-- sppdata_for_nimble
+- DND_filter - (CLS) cleaned and commented
+- PO_for_nimble - (CLS) cleaned and commented
+- survey_for_nimble - (CLS) cleaned and commented
+- sppdata_for_nimble - (CLS) halfway cleaned and commented
 
 ### Combine all data
 
-- z_for_nimble
+- z_for_nimble - (CLS) cleaned and commented
 - data_for_nimble
 
 ### Set up NIMBLE
