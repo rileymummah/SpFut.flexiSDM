@@ -32,8 +32,3 @@ cor_covar(
 \description{
 Plot correlations between covariates
 }
-\examples{
-\dontrun{
-range <- get_range('ANMI')
-}
-}

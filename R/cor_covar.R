@@ -17,9 +17,7 @@
 #' @importFrom stats cor
 #'
 #' @examples
-#' \dontrun{
-#' range <- get_range('ANMI')
-#' }
+
 
 
 cor_covar <- function(covar,
