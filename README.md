@@ -44,7 +44,7 @@ SpFut.flexiSDM contains the following functions:
 ### Combine all data
 
 - z_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)
-- data_for_nimble
+- data_for_nimble - (CLS) started this but it needs some work (see comments in code)
 
 ### Set up NIMBLE
 
