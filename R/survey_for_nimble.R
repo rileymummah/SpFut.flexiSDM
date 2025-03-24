@@ -1,14 +1,14 @@
-#' Title
+#' Format survey data for nimble
 #'
 #' @description
 #'
-#' @param data
-#' @param cov.names
-#' @param rename
-#' @param type
+#' @param data (data.frame) dataframe containing DND or count data and detection covariates
+#' @param cov.names (character vector) names of columns to be used as detection covariates
+#' @param rename (character) suffix to add to data and constants object names; defaults to empty string
+#' @param type (character) indicates type of survey: 'count' or 'DND'
 #'
-#' @returns
-#' @export
+#' @returns A list containing data and constants for nimble code
+#' 
 #'
 #' @importFrom tidyselect any_of
 #' @importFrom stats median

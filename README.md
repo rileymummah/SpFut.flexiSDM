@@ -38,7 +38,7 @@ SpFut.flexiSDM contains the following functions:
 - count_filter
 - DND_filter - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation 
 - PO_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
-- survey_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)
+- survey_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
 - sppdata_for_nimble - (CLS) halfway cleaned and commented
 
 ### Combine all data
