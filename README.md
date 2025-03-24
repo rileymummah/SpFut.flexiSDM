@@ -11,15 +11,17 @@ The goal of SpFut.flexiSDM is to …
 SpFut.flexiSDM contains the following functions:
 
 ### Helpers
+- scale_this - DONE (ROM)
+- get_cpus_per_task - DONE (ROM)
+
+- id_dup_records
+
+
+### Setup range and spatial grid
 
 - get_range - (CLS) cleaned and commented - COMPLETE (ROM)
 - make_region - (CLS) cleaned and commented - COMPLETE (ROM)
-- scale_this - (ROM) documented
-- id_dup_records
-- get_covs.PO - (CLS) this function is unnecessary and can be removed - DONE
-- make_spatkey - Is this actually a helper? I’d move it to a different
-  section (ROM) - NEEDS DOCUMENTATION (ROM)
-- get_cpus_per_task - (ROM) documented
+- make_spatkey - NEEDS DOCUMENTATION (ROM)
 
 ### Prep covariate data
 
