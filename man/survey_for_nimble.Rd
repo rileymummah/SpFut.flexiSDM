@@ -19,5 +19,5 @@ survey_for_nimble(data, cov.names, rename = "", type = "count")
 A list containing data and constants for nimble code
 }
 \description{
-Format survey data for nimble
+Format survey data to fit into our general NIMBLE framework
 }

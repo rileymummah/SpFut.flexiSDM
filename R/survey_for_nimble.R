@@ -1,6 +1,6 @@
 #' Format survey data for nimble
 #'
-#' @description
+#' @description Format survey data to fit into our general NIMBLE framework
 #'
 #' @param data (data.frame) dataframe containing DND or count data and detection covariates
 #' @param cov.names (character vector) names of columns to be used as detection covariates
@@ -8,12 +8,10 @@
 #' @param type (character) indicates type of survey: 'count' or 'DND'
 #'
 #' @returns A list containing data and constants for nimble code
-#' 
 #'
 #' @importFrom tidyselect any_of
 #' @importFrom stats median
-#'
-#' @examples
+
 
 survey_for_nimble <- function(data,
                               cov.names,

@@ -5,9 +5,7 @@
 #' @param covariates (data.frame) dataframe containing process covariates
 #'
 #' @returns A list containing data and constants for nimble code
-#' 
-#'
-#' @examples
+
 
 
 z_for_nimble <- function(covariates) {

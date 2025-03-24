@@ -19,3 +19,10 @@ A list which contains:
 \description{
 Group a fine hexbin grid into groups of 7 hexbins to form a coarse spatial grid
 }
+\examples{
+\dontrun{
+
+spatial.grid <- make_spatkey(grid)
+
+}
+}

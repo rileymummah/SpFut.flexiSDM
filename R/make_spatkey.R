@@ -13,7 +13,11 @@
 #' @importFrom spdep poly2nb nb2WB
 #'
 #' @examples
+#' \dontrun{
 #'
+#' spatial.grid <- make_spatkey(grid)
+#'
+#' }
 
 
 make_spatkey <- function(grid) {
