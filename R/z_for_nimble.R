@@ -1,11 +1,11 @@
-#' Set up z data for nimble
+#' Set up process data for nimble
 #'
-#' @description
+#' @description Creates data and constants necessary to fit process covariates in nimble code
 #'
-#' @param covariates
+#' @param covariates (data.frame) dataframe containing process covariates
 #'
-#' @returns A list containing ranges as sf objects
-#' @export
+#' @returns A list containing data and constants for nimble code
+#' 
 #'
 #' @examples
 
