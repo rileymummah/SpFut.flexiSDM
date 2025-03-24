@@ -1,17 +1,19 @@
 #' Format PO data for nimble
 #'
-#' @description
+#' @description Creates data and constants necessary to fit PO data in nimble code
 #'
-#' @param
+#' @param POdata (data.frame) dataframe containing PO data
+#' @param covariates (data.frame) dataframe containing covariates for PO effort
+#' @param rename (character) character suffix to add to data and constants object names; defaults to empty string
 #'
-#' @returns A list containing ranges as sf objects
-#' @export
+#' @returns A list containing data and constants for nimble code
+#' 
 #'
 #' @examples
 #'
 
-PO_for_nimble <- function(POdata,      ## dataframe containing PO data. Must include column names "grid.id" and "count"
-                          covariates,  ## dataframe containing covariates for PO effort. First column must be "grid.id", then column for intercept, followed by one column for each covariate
+PO_for_nimble <- function(POdata,      
+                          covariates,  
                           rename = "") {
 
 
@@ -30,7 +32,6 @@ PO_for_nimble <- function(POdata,      ## dataframe containing PO data. Must inc
 
   # set W covariates
   Xw <- dplyr::select(covariates, !conus.grid.id)
-    #select(all_of(cov.names))
 
   W <- dplyr::pull(POdata, count)
 
