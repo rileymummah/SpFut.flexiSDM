@@ -10,7 +10,7 @@
 #' @param req.cols (character vector) which columns are required in the output dataframe; defaults to c("unique.id", "site.id", "lat", "lon", "day", "month", "year", "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")
 #'
 #' @returns A dataframe containing clean and summarized observation data from one dataset.
-#' @export
+#' 
 #'
 #' @importFrom tidyselect any_of
 #'
