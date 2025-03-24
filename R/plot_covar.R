@@ -2,15 +2,15 @@
 #'
 #' @description
 #'
-#' @param covar data.frame holding covariate values and conus.grid.id
-#' @param region region output from make_region()
-#' @param cov.names column names from covar to plot
-#' @param cov.labels labels for covariate names, defaults to use column names as labels
-#' @param covs.int.factor name of columns in covar that has an interaction
-#' @param out.path path to save figure
-#' @param out.name file name to save figure
+#' @param covar (data.frame) dataframe holding covariate values and conus.grid.id
+#' @param region (list) region output from make_region()
+#' @param cov.names (character vector) column names from covar to plot
+#' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
+#' @param covs.int.factor (character) name of columns in covar that has an interaction
+#' @param out.path (character) path to save figure
+#' @param out.name (character) file name to save figure
 #'
-#' @returns
+#' @returns Saves a map of scaled covariate values to the desired path.
 #' @export
 #'
 #' @importFrom rnaturalearth ne_states
@@ -19,6 +19,17 @@
 #' @importFrom grid unit
 #'
 #' @examples
+#' \dontrun{
+#' 
+#'
+#' plot_covar(covar,
+#'            region,
+#'            cov.names = c("cwd", "permwater"),
+#'            cov.labels = c("CWD", "Permanent water"),
+#'            out.path = "outputs/",
+#'            out.name = "covs-map")
+#'
+#'}
 
 
 plot_covar <- function(covar,

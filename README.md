@@ -26,7 +26,7 @@ SpFut.flexiSDM contains the following functions:
 ### Prep covariate data
 
 - load_covar - I'm not sure we need this anymore (CLS)
-- plot_covar - (CLS) commmented
+- plot_covar - (CLS) commmented - added documentation (CLS)
 - cor_covar - (CLS) commented
 - select_covar
 - add_int_cols
@@ -39,7 +39,7 @@ SpFut.flexiSDM contains the following functions:
 - DND_filter - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation 
 - PO_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
 - survey_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
-- sppdata_for_nimble - (CLS) halfway cleaned and commented
+- sppdata_for_nimble - (CLS) halfway cleaned and commented (see comments in code)
 
 ### Combine all data
 
