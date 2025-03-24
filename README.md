@@ -27,8 +27,8 @@ SpFut.flexiSDM contains the following functions:
 
 - load_covar - I'm not sure we need this anymore (CLS)
 - plot_covar - (CLS) commmented - added documentation (CLS)
-- cor_covar - (CLS) commented
-- select_covar
+- cor_covar - (CLS) commented - added documentation (CLS)
+- select_covar 
 - add_int_cols
 
 ### Prep species data
