@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' 
+#'
 #'
 #' plot_covar(covar,
 #'            region,
@@ -93,9 +93,8 @@ plot_covar <- function(covar,
                          legend.title = ggplot2::element_text(size = 20),
                          legend.text = ggplot2::element_text(size = 17),
                          text = ggplot2::element_text(size = 18)) +
-          ggplot2::guides(fill = ggplot2::guide_colorbar(ggplot2::theme = theme(
-                                                                          legend.key.height = grid::unit(20, "lines"),
-                                                                          legend.key.width = grid::unit(1.5, "lines")),
+          ggplot2::guides(fill = ggplot2::guide_colorbar(theme = ggplot2::theme(legend.key.height = grid::unit(20, "lines"),
+                                                                                legend.key.width = grid::unit(1.5, "lines")),
                                                          title.hjust = 0, title.vjust = 1)) +
           ggplot2::labs(fill = "Value", color = "Value",
                         title = "Scaled covariate values") +

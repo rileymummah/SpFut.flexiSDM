@@ -27,8 +27,21 @@ cor_covar(
 
 \item{out.name}{(character) file name to save figure}
 
-\item{color.threshold}{(numeric) threshold above which to add color to plot}
+\item{color.threshold}{(numeric) threshold above which to add color to plot; default is 0.25}
+}
+\value{
+Saves a plot showing correlations between covariates
 }
 \description{
-Plot correlations between covariates
+Calculates and plots correlations between covariates.
+}
+\examples{
+\dontrun{
+cor_covar(covar,
+          cov.names = c("cwd", "permwater"),
+          cov.labels = c("CWD", "Permanent water"),
+          out.path = "outputs/",
+          out.name = "covs-cor")
+
+}
 }

@@ -2,16 +2,16 @@
 % Please edit documentation in R/z_for_nimble.R
 \name{z_for_nimble}
 \alias{z_for_nimble}
-\title{Set up z data for nimble}
+\title{Set up process data for nimble}
 \usage{
 z_for_nimble(covariates)
 }
 \arguments{
-\item{covariates}{}
+\item{covariates}{(data.frame) dataframe containing process covariates}
 }
 \value{
-A list containing ranges as sf objects
+A list containing data and constants for nimble code
 }
 \description{
-Set up z data for nimble
+Creates data and constants necessary to fit process covariates in nimble code
 }

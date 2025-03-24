@@ -6,9 +6,16 @@
 \usage{
 PO_for_nimble(POdata, covariates, rename = "")
 }
+\arguments{
+\item{POdata}{(data.frame) dataframe containing PO data}
+
+\item{covariates}{(data.frame) dataframe containing covariates for PO effort}
+
+\item{rename}{(character) character suffix to add to data and constants object names; defaults to empty string}
+}
 \value{
-A list containing ranges as sf objects
+A list containing data and constants for nimble code
 }
 \description{
-Format PO data for nimble
+Creates data and constants necessary to fit PO data in nimble code
 }

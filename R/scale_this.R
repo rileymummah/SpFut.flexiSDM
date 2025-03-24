@@ -5,6 +5,7 @@
 #' @param x (numeric vector) A vector of values to re-scale
 #'
 #' @returns A vector of scaled values with mean 0 and standard deviation 1
+#' @export
 #'
 #' @importFrom stats sd
 #'

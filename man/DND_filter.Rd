@@ -2,13 +2,12 @@
 % Please edit documentation in R/DND_filter.R
 \name{DND_filter}
 \alias{DND_filter}
-\title{Get species ranges for reference}
+\title{Set up DND data}
 \usage{
 DND_filter(
   data,
   covs.mean,
   covs.sum,
-  sp.code,
   DND.maybe,
   age.use = c("adult", "metamorph", "juvenile", "egg mass", "NR", NA),
   req.cols = c("unique.id", "site.id", "lat", "lon", "day", "month", "year",
@@ -16,15 +15,21 @@ DND_filter(
 )
 }
 \arguments{
-\item{range.path}{A vector of paths leading to species ranges}
+\item{data}{(data.frame) dataframe from species.data$obs containing observations from one dataset}
 
-\item{range.name}{A vector of names for each range}
+\item{covs.mean}{(character vector) vector of column names to use as detection covariates that should be averaged across passes (e.g., water temperature)}
 
-\item{crs}{EPSG code for desired crs of output}
+\item{covs.sum}{(character vector) vector of column names to use as detection covariates that should be summed across passes (e.g., survey duration)}
+
+\item{DND.maybe}{(numeric) what to categorize "maybe" detections as (1 = detection; 0 = nondetection)}
+
+\item{age.use}{(character vector) vector of age categories to use; defaults to c("adult", "metamorph", "juvenile", "egg mass", "NR", NA)}
+
+\item{req.cols}{(character vector) which columns are required in the output dataframe; defaults to c("unique.id", "site.id", "lat", "lon", "day", "month", "year", "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")}
 }
 \value{
-A list containing ranges as sf objects
+A dataframe containing clean and summarized observation data from one dataset.
 }
 \description{
-Get species ranges for reference
+Sets up DND data for iSDM -- deals with "maybe" detections, summarizes covariates. This function is wrapped within sppdata_for_nimble().
 }

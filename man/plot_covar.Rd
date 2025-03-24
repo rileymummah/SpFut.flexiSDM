@@ -15,20 +15,36 @@ plot_covar(
 )
 }
 \arguments{
-\item{covar}{data.frame holding covariate values and conus.grid.id}
+\item{covar}{(data.frame) dataframe holding covariate values and conus.grid.id}
 
-\item{region}{region output from make_region()}
+\item{region}{(list) region output from make_region()}
 
-\item{cov.names}{column names from covar to plot}
+\item{cov.names}{(character vector) column names from covar to plot}
 
-\item{cov.labels}{labels for covariate names, defaults to use column names as labels}
+\item{cov.labels}{(character vector) labels for covariate names, defaults to use column names as labels}
 
-\item{covs.int.factor}{name of columns in covar that has an interaction}
+\item{covs.int.factor}{(character) name of columns in covar that has an interaction}
 
-\item{out.path}{path to save figure}
+\item{out.path}{(character) path to save figure}
 
-\item{out.name}{file name to save figure}
+\item{out.name}{(character) file name to save figure}
+}
+\value{
+Saves a map of scaled covariate values to the desired path.
 }
 \description{
-Plot covariates
+Makes maps of scaled covariate values.
+}
+\examples{
+\dontrun{
+
+
+plot_covar(covar,
+           region,
+           cov.names = c("cwd", "permwater"),
+           cov.labels = c("CWD", "Permanent water"),
+           out.path = "outputs/",
+           out.name = "covs-map")
+
+}
 }

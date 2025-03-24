@@ -2,13 +2,22 @@
 % Please edit documentation in R/survey_for_nimble.R
 \name{survey_for_nimble}
 \alias{survey_for_nimble}
-\title{Title}
+\title{Format survey data for nimble}
 \usage{
 survey_for_nimble(data, cov.names, rename = "", type = "count")
 }
 \arguments{
-\item{type}{}
+\item{data}{(data.frame) dataframe containing DND or count data and detection covariates}
+
+\item{cov.names}{(character vector) names of columns to be used as detection covariates}
+
+\item{rename}{(character) suffix to add to data and constants object names; defaults to empty string}
+
+\item{type}{(character) indicates type of survey: 'count' or 'DND'}
+}
+\value{
+A list containing data and constants for nimble code
 }
 \description{
-Title
+Format survey data for nimble
 }

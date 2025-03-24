@@ -4,7 +4,8 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of SpFut.flexiSDM is to …
+The goal of SpFut.flexiSDM is to ...
+
 
 ## Functions
 
@@ -74,13 +75,15 @@ SpFut.flexiSDM contains the following functions:
 - plot_auc
 - map_species_data
 
+
+
 ## Installation
 
-You can install the development version of SpFut.flexiSDM from
-[GitHub](https://github.com/) with:
+You can install the development version of SpFut.flexiSDM from [GitHub](https://github.com/) with:
 
 ``` r
-remotes::install_github("rileymummah/SpFut.flexiSDM")
+# install.packages("pak")
+pak::pak("rileymummah/SpFut.flexiSDM")
 ```
 
 ## Example
@@ -92,17 +95,3 @@ library(SpFut.flexiSDM)
 ## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.

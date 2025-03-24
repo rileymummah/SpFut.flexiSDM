@@ -2,7 +2,7 @@
 % Please edit documentation in R/load_species_data.R
 \name{load_species_data}
 \alias{load_species_data}
-\title{Load species data}
+\title{Loads species data}
 \usage{
 load_species_data(
   sp.code,
@@ -14,7 +14,7 @@ load_species_data(
   region,
   filter.region,
   year.start,
-  year.end,
+  year.end = as.numeric(format(Sys.Date(), "\%Y")),
   coordunc = 1000,
   coordunc_na.rm = T,
   spat.thin = F,
@@ -24,32 +24,55 @@ load_species_data(
 \arguments{
 \item{sp.code}{(character) 4-letter species code}
 
-\item{file.name}{vector of data file names to read in}
+\item{file.name}{(character vector) data file names to read in}
 
-\item{file.label}{vector of labels for data files}
+\item{file.label}{(character vector) labels for data files}
 
-\item{file.path}{path where data files are located}
+\item{file.path}{(character) path where data files are located}
 
 \item{keep.subsp}{(logical) whether to keep records of subsp (T) or not (F)}
 
-\item{keep.cols}{list of column names to keep for each data file}
+\item{keep.cols}{(character list) column names to keep for each data file}
 
-\item{region}{region (output from make_region())}
+\item{region}{(sf list) region (output from make_region())}
 
-\item{filter.region}{Only keep data within region (T) or not (F)}
+\item{filter.region}{(logical) Only keep data within region (T) or not (F)}
 
-\item{year.start}{keep data during or after this year}
+\item{year.start}{(numeric) keep data during or after this year}
 
-\item{year.end}{keep data during or before this year}
+\item{year.end}{(numeric) keep data during or before this year; defaults to current year}
 
-\item{coordunc}{If data has coord.unc column (e.g., GBIF data), remove records with coord.unc > coordunc}
+\item{coordunc}{(numeric) if data has coord.unc column (e.g., GBIF data), remove records with coord.unc > coordunc}
 
-\item{coordunc_na.rm}{If data has coord.unc column (e.g., GBIF data), remove records with coord.unc == NA (T) or not (F)}
+\item{coordunc_na.rm}{(logical) if data has coord.unc column (e.g., GBIF data), remove records with coord.unc == NA (T) or not (F)}
 
-\item{spat.thin}{If data is PO, do spatial thinning at 2km x 2km grid cell}
+\item{spat.thin}{(logical) if data is PO, do spatial thinning at 2km x 2km grid cell (T) or not (F)}
 
-\item{keep.conus.grid.id}{Which grid cells to keep (e.g., for cross validation); defaults to all grid cells in the region}
+\item{keep.conus.grid.id}{(character vector) Which grid cells to keep (e.g., for cross validation); defaults to all grid cells in the region}
+}
+\value{
+A list with two objects. The first object (locs) is a dataframe containing the coordinate locations of all observations. The second object (obs) is a list containing a dataframe for each dataset and the conus.grid.id location of each observation.
 }
 \description{
-Load species data
+Loads species data and does initial cleaning necessary for iSDM
+}
+\examples{
+\dontrun{
+
+species.data <- load_species_data(sp.code = "ANMI",
+                file.name = c("name-of-file.csv"),
+                file.label = c("File Label"),
+                file.path = "DATA SWAMP/data-ready/",
+                keep.subsp = F,
+                keep.cols = list(c("duration")),
+                region = region, 
+                filter.region = T,
+                year.start = 1994,
+                year.end = 2004,
+                coordunc = 1000,
+                coordunc_na.rm = T,
+                spat.thin = F,
+                keep.conus.grid.id = region$sp.grid$conus.grid.id
+
+}
 }
