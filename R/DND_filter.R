@@ -1,12 +1,15 @@
-#' Get species ranges for reference
+#' Set up DND data
 #'
-#' @description
+#' @description Sets up DND data for iSDM -- deals with "maybe" detections, summarizes covariates. This function is wrapped within sppdata_for_nimble().
 #'
-#' @param range.path A vector of paths leading to species ranges
-#' @param range.name A vector of names for each range
-#' @param crs EPSG code for desired crs of output
+#' @param data (data.frame) dataframe from species.data$obs containing observations from one dataset
+#' @param covs.mean (character vector) vector of column names to use as detection covariates that should be averaged across passes (e.g., water temperature)
+#' @param covs.sum (character vector) vector of column names to use as detection covariates that should be summed across passes (e.g., survey duration)
+#' @param DND.maybe (numeric) what to categorize "maybe" detections as (1 = detection; 0 = nondetection)
+#' @param age.use (character vector) vector of age categories to use; defaults to c("adult", "metamorph", "juvenile", "egg mass", "NR", NA)
+#' @param req.cols (character vector) which columns are required in the output dataframe; defaults to c("unique.id", "site.id", "lat", "lon", "day", "month", "year", "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")
 #'
-#' @returns A list containing ranges as sf objects
+#' @returns A dataframe containing clean and summarized observation data from one dataset.
 #' @export
 #'
 #' @importFrom tidyselect any_of
@@ -17,7 +20,6 @@
 DND_filter <- function(data,
                        covs.mean,
                        covs.sum,
-                       sp.code,
                        DND.maybe,
                        age.use = c("adult", "metamorph", "juvenile", "egg mass", "NR", NA),
                        req.cols = c("unique.id", "site.id", "lat", "lon",

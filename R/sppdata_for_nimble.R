@@ -321,8 +321,7 @@
 #       dndstart <- DND_filter(data,
 #                              covs.mean,
 #                              covs.sum,
-#                              DND.maybe = 1,
-#                              sp.code = sp.code)
+#                              DND.maybe = 1)
 #
 #
 #       # remove if only one data point
