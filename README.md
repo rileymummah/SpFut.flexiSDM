@@ -33,7 +33,7 @@ SpFut.flexiSDM contains the following functions:
 
 ### Prep species data
 
-- load_species_data - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)
+- load_species_data - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
 - PO_filter - (CLS) this function is unnecessary and can be removed - DONE
 - count_filter
 - DND_filter - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM)

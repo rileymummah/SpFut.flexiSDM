@@ -1,29 +1,46 @@
-#' Load species data
+#' Loads species data
 #'
-#' @description
+#' @description Loads species data and does initial cleaning necessary for iSDM
 #'
 #' @param sp.code (character) 4-letter species code
-#' @param file.name vector of data file names to read in
-#' @param file.label vector of labels for data files
-#' @param file.path path where data files are located
+#' @param file.name (character vector) data file names to read in
+#' @param file.label (character vector) labels for data files
+#' @param file.path (character) path where data files are located
 #' @param keep.subsp (logical) whether to keep records of subsp (T) or not (F)
-#' @param keep.cols list of column names to keep for each data file
-#' @param region region (output from make_region())
-#' @param filter.region Only keep data within region (T) or not (F)
-#' @param year.start keep data during or after this year
-#' @param year.end keep data during or before this year
-#' @param coordunc If data has coord.unc column (e.g., GBIF data), remove records with coord.unc > coordunc
-#' @param coordunc_na.rm If data has coord.unc column (e.g., GBIF data), remove records with coord.unc == NA (T) or not (F)
-#' @param spat.thin If data is PO, do spatial thinning at 2km x 2km grid cell
-#' @param keep.conus.grid.id Which grid cells to keep (e.g., for cross validation); defaults to all grid cells in the region
+#' @param keep.cols (character list) column names to keep for each data file
+#' @param region (sf list) region (output from make_region())
+#' @param filter.region (logical) Only keep data within region (T) or not (F)
+#' @param year.start (numeric) keep data during or after this year
+#' @param year.end (numeric) keep data during or before this year; defaults to current year
+#' @param coordunc (numeric) if data has coord.unc column (e.g., GBIF data), remove records with coord.unc > coordunc
+#' @param coordunc_na.rm (logical) if data has coord.unc column (e.g., GBIF data), remove records with coord.unc == NA (T) or not (F)
+#' @param spat.thin (logical) if data is PO, do spatial thinning at 2km x 2km grid cell (T) or not (F)
+#' @param keep.conus.grid.id (character vector) Which grid cells to keep (e.g., for cross validation); defaults to all grid cells in the region
 #'
-#' @returns
+#' @returns A list with two objects. The first object (locs) is a dataframe containing the coordinate locations of all observations. The second object (obs) is a list containing a dataframe for each dataset and the conus.grid.id location of each observation.
 #' @export
 #'
 #' @importFrom utils read.csv
 #'
 #' @examples
+#'\dontrun{
+#' 
+#' species.data <- load_species_data(sp.code = "ANMI",
+#'                 file.name = c("name-of-file.csv"),
+#'                 file.label = c("File Label"),
+#'                 file.path = "DATA SWAMP/data-ready/",
+#'                 keep.subsp = F,
+#'                 keep.cols = list(c("duration")),
+#'                 region = region, 
+#'                 filter.region = T,
+#'                 year.start = 1994,
+#'                 year.end = 2004,
+#'                 coordunc = 1000,
+#'                 coordunc_na.rm = T,
+#'                 spat.thin = F,
+#'                 keep.conus.grid.id = region$sp.grid$conus.grid.id
 #'
+#'}
 
 
 load_species_data <- function(sp.code,
@@ -35,7 +52,7 @@ load_species_data <- function(sp.code,
                               region,
                               filter.region,
                               year.start,
-                              year.end,
+                              year.end = as.numeric(format(Sys.Date(), "%Y")),
                               coordunc = 1000,
                               coordunc_na.rm = T,
                               spat.thin = F,
