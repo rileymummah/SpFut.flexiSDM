@@ -160,7 +160,7 @@ make_spatkey <- function(grid) {
     dplyr::full_join(spatkey1, ., by = 'cell') %>%
     dplyr::select(-geometry, -cell) -> spatkey
 
-  dplyr::select(tmp, -cell) -> spat.grid
+  dplyr::select(tmp1, -cell) -> spat.grid
 
   return(spatModel = list(spatkey = spatkey,
                           spat.grid = spat.grid))
