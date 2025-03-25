@@ -13,10 +13,6 @@
 #' }
 
 
-## The area section in here is total nonsense right now. I don't think it works at all.
-## Luckily only one dataset (RACA) actually has area
-
-
 data_for_nimble <- function(sp.data,
                             covar,
                             covs.z,
@@ -60,53 +56,6 @@ data_for_nimble <- function(sp.data,
   constants <- unlist(constants, recursive  = F, use.names = T)
   constants$nD <- nD
 
-  # set up area
-  if (area == T) {
-    surv <- grep("count|PO|DND", names(sp.data))
-    surv <- as.numeric(gsub("count|PO|POstates|DND", "", names(sp.data)[surv]))
-    for (i in 1:length(surv)) {
-
-      if (paste0("Xy", surv[i]) %in% names(data)) { # if it is a count survey and has covariates...
-        tmp <- data[[paste0("Xy", surv[i])]]
-
-
-        if("area" %in% colnames(tmp)) {
-          data[[paste0("area", surv[i])]] <- tmp$area
-          tmp$area <- NULL
-        } else {
-          data[[paste0("area", surv[i])]] <- rep(1, nrow(tmp))
-        }
-        
-        
-      } else if (paste0("Xv", surv[i]) %in% names(data)) { # if it is a DND survey and has covariates....
-        tmp <- data[[paste0("Xv", surv[i])]]
-
-        # pull area out of covariates if it is in there
-        if("area" %in% colnames(tmp)) {
-          data[[paste0("area", surv[i])]] <- tmp$area
-          tmp$area <- NULL
-        } else {
-          data[[paste0("area", surv[i])]] <- rep(1, nrow(tmp))
-        }
-        
-        
-      } else {
-        if (paste0("Y", surv[i]) %in% names(data)) {
-          data[[paste0("area", surv[i])]] <- rep(1, length(data[[paste0("Y", surv[i])]]))
-        }
-        if (paste0("W", surv[i]) %in% names(data)) {
-          data[[paste0("area", surv[i])]] <- rep(1, length(data[[paste0("W", surv[i])]]))
-        }
-        if (paste0("V", surv[i]) %in% names(data)) {
-          data[[paste0("area", surv[i])]] <- rep(1, length(data[[paste0("V", surv[i])]]))
-        }
-      }
-
-    } # end loop through surveys
-
-  } # end set up area
-
-  
   
   if (coarse.grid == T) {
     spatkey <- spatRegion$spatkey

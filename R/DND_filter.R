@@ -6,6 +6,7 @@
 #' @param covs.mean (character vector) vector of column names to use as detection covariates that should be averaged across passes (e.g., water temperature)
 #' @param covs.sum (character vector) vector of column names to use as detection covariates that should be summed across passes (e.g., survey duration)
 #' @param DND.maybe (numeric) what to categorize "maybe" detections as (1 = detection; 0 = nondetection)
+#' @param offset.area (character) name of column to use for area offset 
 #' @param age.use (character vector) vector of age categories to use; defaults to c("adult", "metamorph", "juvenile", "egg mass", "NR", NA)
 #' @param req.cols (character vector) which columns are required in the output dataframe; defaults to c("unique.id", "site.id", "lat", "lon", "day", "month", "year", "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")
 #'
@@ -18,6 +19,7 @@ DND_filter <- function(data,
                        covs.mean,
                        covs.sum,
                        DND.maybe,
+                       offset.area,
                        age.use = c("adult", "metamorph", "juvenile", "egg mass", "NR", NA),
                        req.cols = c("unique.id", "site.id", "lat", "lon",
                                     "day", "month", "year", "survey.conducted", "survey.id", "data.type",
@@ -47,7 +49,7 @@ DND_filter <- function(data,
     # get mean covariates (temperature, moon visibility, etc.)
     if (length(covs.mean) > 0) {
       dndcovs.mean <- dndstart %>%
-        dplyr::select(survey.id, pass.id, tidyselect::any_of(covs.mean)) %>%
+        dplyr::select(survey.id, pass.id, tidyselect::any_of(covs.mean), tidyselect::any_of(offset.area)) %>%
         dplyr::distinct() %>%
         dplyr::select(!pass.id) %>%
 
@@ -77,11 +79,15 @@ DND_filter <- function(data,
     # put them together
     dndstart <- dplyr::inner_join(dndcols, dndcount, by = "survey.id")
 
-    if (length(covs.mean) > 0) {
+    if (length(c(covs.mean, offset.area)) > 0) {
       dndstart <- dplyr::full_join(dndstart, dndcovs.mean, by = "survey.id")
     }
     if (length(covs.sum) > 0) {
       dndstart <- dplyr::full_join(dndstart, dndcovs.sum, by = "survey.id")
+    }
+    
+    if (offset.area %in% colnames(dndstart)) {
+      colnames(dndstart)[grep(offset.area, colnames(dndstart))] <- "area"
     }
 
 
