@@ -73,7 +73,7 @@ SpFut.flexiSDM contains the following functions:
 - plot_pars
 - plot_effects
 - plot_auc
-- map_species_data
+- map_species_data - (CLS) cleaned, commented, and documented
 
 
 
