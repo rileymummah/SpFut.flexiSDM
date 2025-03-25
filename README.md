@@ -14,8 +14,7 @@ SpFut.flexiSDM contains the following functions:
 ### Helpers
 - scale_this - DONE (ROM)
 - get_cpus_per_task - DONE (ROM)
-
-- id_dup_records
+- id_dup_records - (CLS) cleaned, commented, and documented
 
 
 ### Setup range and spatial grid
@@ -26,26 +25,26 @@ SpFut.flexiSDM contains the following functions:
 
 ### Prep covariate data
 
-- load_covar - I'm not sure we need this anymore (CLS)
-- plot_covar - (CLS) commmented - added documentation (CLS)
-- cor_covar - (CLS) commented - added documentation (CLS)
-- select_covar 
-- add_int_cols
+- load_covar - (CLS) cleaned, commented, and documented - this requires the species-futures directory right now. Revisit it.
+- plot_covar - (CLS) cleaned, commented, and documented
+- cor_covar - (CLS) cleaned, commented, and documented
+- select_covar - (CLS) cleaned, commented, and documented
+- add_int_cols - this is for interactions which we haven't actually done any of. Don't include it for now?
 
 ### Prep species data
 
-- load_species_data - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
+- load_species_data - (CLS) cleaned, commented, and documented
 - PO_filter - (CLS) this function is unnecessary and can be removed - DONE
-- count_filter
-- DND_filter - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation 
-- PO_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
-- survey_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
-- sppdata_for_nimble - (CLS) halfway cleaned and commented (see comments in code)
+- count_filter - (CLS) cleaned, commented, and documented
+- DND_filter - (CLS) cleaned, commented, and documented 
+- PO_for_nimble - (CLS) cleaned, commented, and documented
+- survey_for_nimble - (CLS) cleaned, commented, and documented
+- sppdata_for_nimble - (CLS) cleaned, commented, and documented
 
 ### Combine all data
 
-- z_for_nimble - (CLS) cleaned and commented - NEEDS DOCUMENTATION (ROM) - (CLS) added documentation
-- data_for_nimble - (CLS) started this but it needs some work (see comments in code)
+- z_for_nimble - (CLS) cleaned, commented, and documented
+- data_for_nimble - (CLS) cleaned, commented, and documented
 
 ### Set up NIMBLE
 
@@ -57,7 +56,7 @@ SpFut.flexiSDM contains the following functions:
 
 - run_nimbleMCMC - (ROM) outline added
 - nimbleParallel - (ROM) outline added
-- check_progress_MCMC
+- check_progress_MCMC - (CLS) can delete
 
 ### Process NIMBLE output
 
