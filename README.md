@@ -49,7 +49,7 @@ SpFut.flexiSDM contains the following functions:
 
 ### Set up NIMBLE
 
-- nimble_code
+- nimble_code - (CLS) cleaned, commented, and documented
 - nimble_inits - (CLS) cleaned, commented, and documented
 - nimble_params - (CLS) cleaned, commented, and documented
 
