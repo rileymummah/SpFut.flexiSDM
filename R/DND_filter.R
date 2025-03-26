@@ -34,8 +34,6 @@ DND_filter <- function(data,
   if (nrow(dndstart) > 0) {
 
     # get max count (0 or 1)
-    all.covs <- c(covs.mean, covs.sum)
-
     dndcount <- dndstart %>%
       dplyr::select(survey.id, pass.id, age, count) %>%
       dplyr::mutate(count = dplyr::case_when(count == 0 ~ 0,
@@ -45,11 +43,25 @@ DND_filter <- function(data,
       # aggregate across passes
       dplyr::group_by(survey.id) %>%
       dplyr::summarize(count = max(count), .groups = "drop")
+    
+    
+    # get area if it exists
+    if (length(offset.area) > 0) {
+      dnd.area <- dndstart %>%
+        dplyr::select(survey.id, pass.id, tidyselect::any_of(offset.area)) %>%
+        dplyr::distinct() %>%
+        dplyr::select(!pass.id) %>%
+        
+        # aggregate across passes
+        dplyr::group_by(survey.id) %>%
+        dplyr::summarize_all(mean, na.rm = T)
+    }
+    
 
     # get mean covariates (temperature, moon visibility, etc.)
     if (length(covs.mean) > 0) {
       dndcovs.mean <- dndstart %>%
-        dplyr::select(survey.id, pass.id, tidyselect::any_of(covs.mean), tidyselect::any_of(offset.area)) %>%
+        dplyr::select(survey.id, pass.id, tidyselect::any_of(covs.mean)) %>%
         dplyr::distinct() %>%
         dplyr::select(!pass.id) %>%
 
@@ -79,15 +91,18 @@ DND_filter <- function(data,
     # put them together
     dndstart <- dplyr::inner_join(dndcols, dndcount, by = "survey.id")
 
-    if (length(c(covs.mean, offset.area)) > 0) {
+    if (length(covs.mean) > 0) {
       dndstart <- dplyr::full_join(dndstart, dndcovs.mean, by = "survey.id")
     }
     if (length(covs.sum) > 0) {
       dndstart <- dplyr::full_join(dndstart, dndcovs.sum, by = "survey.id")
     }
     
-    if (offset.area %in% colnames(dndstart)) {
-      colnames(dndstart)[grep(offset.area, colnames(dndstart))] <- "area"
+    if (length(offset.area) > 0) {
+      colnames(dnd.area)[grep(offset.area, colnames(dnd.area))] <- "area"
+      
+      dndstart <- dplyr::full_join(dndstart, dnd.area, by = "survey.id")
+      
     }
 
 

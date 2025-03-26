@@ -278,12 +278,16 @@ sppdata_for_nimble <- function(species.data,
 
       # pull out covariates for this dataset
       dnd.covs.mean <- unlist(strsplit(covs.mean[DNDind[d]], split = ", "))
-      covs.mean <- dnd.covs.mean[which(is.na(dnd.covs.mean) == F)]
+      covs.mean1 <- dnd.covs.mean[which(is.na(dnd.covs.mean) == F)]
 
       dnd.covs.sum <- unlist(strsplit(covs.sum[DNDind[d]], split = ", "))
-      covs.sum <- dnd.covs.sum[which(is.na(dnd.covs.sum) == F)]
+      covs.sum1 <- dnd.covs.sum[which(is.na(dnd.covs.sum) == F)]
 
-      cov.names <- c(covs.mean, covs.sum)
+      cov.names <- c(covs.mean1, covs.sum1)
+      
+      dnd.area <- unlist(strsplit(offset.area[DNDind[d]], split = ", "))
+      dnd.area <- dnd.area[which(is.na(dnd.area) == F)]
+      
 
       data <- species.data$obs[[DNDind[d]]]
       name <- file.names[DNDind[d]]
@@ -297,10 +301,10 @@ sppdata_for_nimble <- function(species.data,
 
       # filter and aggregate DND observations
       dndstart <- DND_filter(data,
-                             covs.mean,
-                             covs.sum,
+                             covs.mean1,
+                             covs.sum1,
                              DND.maybe = 1,
-                             offset.area = offset.area[countind[d]])
+                             offset.area = dnd.area)
 
 
       # remove if only one data point
@@ -345,7 +349,7 @@ sppdata_for_nimble <- function(species.data,
 
         DND$constants[[paste0("name", counter)]] <- name
 
-        if(offset.area[countind[d]] != "") {
+        if(offset.area[DNDind[d]] != "") {
           DND$data[[paste0("area", counter)]] <- area
         } else {
           DND$data[[paste0("area", counter)]] <- rep(1, length(DND$constants[[paste0("Vcells", counter)]]))
@@ -374,13 +378,18 @@ sppdata_for_nimble <- function(species.data,
 
       # pull out covariates for this dataset
       count.covs.mean <- unlist(strsplit(covs.mean[countind[d]], split = ", "))
-      covs.mean <- count.covs.mean[which(is.na(count.covs.mean) == F)]
+      covs.mean1 <- count.covs.mean[which(is.na(count.covs.mean) == F)]
 
       count.covs.sum <- unlist(strsplit(covs.sum[countind[d]], split = ", "))
-      covs.sum <- count.covs.sum[which(is.na(count.covs.sum) == F)]
+      covs.sum1 <- count.covs.sum[which(is.na(count.covs.sum) == F)]
 
-      count.covs <- c(covs.mean, covs.sum)
+      count.covs <- c(covs.mean1, covs.sum1)
 
+      
+      count.area <- unlist(strsplit(offset.area[countind[d]], split = ", "))
+      count.area <- count.area[which(is.na(count.area) == F)]
+      
+      
       data <- species.data$obs[[countind[d]]]
       name <- data$source[1]
 
@@ -393,9 +402,9 @@ sppdata_for_nimble <- function(species.data,
 
       # Filter data
       count.start <- count_filter(data,
-                                  covs.mean,
-                                  covs.sum,
-                                  offset.area = offset.area[countind[d]])
+                                  covs.mean1,
+                                  covs.sum1,
+                                  offset.area = count.area)
 
       # remove if 0 or 1 data point
       if(nrow(count.start) < 2) {
@@ -422,7 +431,7 @@ sppdata_for_nimble <- function(species.data,
           count.covs <- c(count.covs, "yday2")
         }
 
-        if (offset.area[countind[d]] != "") {
+        if (length(count.area) > 0) {
           area <- data$area
           data$area <- NULL
         }
@@ -442,7 +451,7 @@ sppdata_for_nimble <- function(species.data,
 
         COUNT$constants[[paste0("name", counter)]] <- name
 
-        if(offset.area[countind[d]] != "") {
+        if(length(count.area) > 0) {
           COUNT$data[[paste0("area", counter)]] <- area
         } else {
           COUNT$data[[paste0("area", counter)]] <- rep(1, length(COUNT$constants[[paste0("Ycells", counter)]]))
