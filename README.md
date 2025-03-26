@@ -26,32 +26,32 @@ SpFut.flexiSDM contains the following functions:
 ### Prep covariate data
 
 - load_covar - (CLS) cleaned, commented, and documented - this requires the species-futures directory right now. Revisit it.
-- plot_covar - (CLS) cleaned, commented, and documented
-- cor_covar - (CLS) cleaned, commented, and documented
-- select_covar - (CLS) cleaned, commented, and documented
+- plot_covar - (CLS) cleaned, commented, and documented - DONE
+- cor_covar - (CLS) cleaned, commented, and documented - DONE
+- select_covar - (CLS) cleaned, commented, and documented - DONE
 - add_int_cols - this is for interactions which we haven't actually done any of. Don't include it for now? - EXCLUDED FOR NOW
 
 ### Prep species data
 
-- load_species_data - (CLS) cleaned, commented, and documented
+- load_species_data - (CLS) cleaned, commented, and documented - DONE
 - PO_filter - (CLS) this function is unnecessary and can be removed - DONE
-- count_filter - (CLS) cleaned, commented, and documented
-- DND_filter - (CLS) cleaned, commented, and documented 
-- PO_for_nimble - (CLS) cleaned, commented, and documented
-- survey_for_nimble - (CLS) cleaned, commented, and documented
-- sppdata_for_nimble - (CLS) cleaned, commented, and documented
+- count_filter - (CLS) cleaned, commented, and documented - DONE
+- DND_filter - (CLS) cleaned, commented, and documented - DONE
+- PO_for_nimble - (CLS) cleaned, commented, and documented - DONE
+- survey_for_nimble - (CLS) cleaned, commented, and documented - DONE 
+- sppdata_for_nimble - (CLS) cleaned, commented, and documented - DOCUMENTATION NEEDED (ROM)
 - map_species_data - (CLS) cleaned, commented, and documented - DOCUMENTATION NEEDED (ROM)
 
 ### Combine all data
 
-- z_for_nimble - (CLS) cleaned, commented, and documented
-- data_for_nimble - (CLS) cleaned, commented, and documented
+- z_for_nimble - (CLS) cleaned, commented, and documented - DONE
+- data_for_nimble - (CLS) cleaned, commented, and documented - DOCUMENTATION NEEDED (ROM)
 
 ### Set up NIMBLE
 
-- nimble_code - (CLS) cleaned, commented, and documented
-- nimble_inits - (CLS) cleaned, commented, and documented
-- nimble_params - (CLS) cleaned, commented, and documented
+- nimble_code - (CLS) cleaned, commented, and documented - DONE
+- nimble_inits - (CLS) cleaned, commented, and documented - DONE
+- nimble_params - (CLS) cleaned, commented, and documented - DONE
 
 ### Run NIMBLE
 

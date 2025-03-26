@@ -12,9 +12,10 @@
 #' @param burnin (numeric) The number of iterations to discard as burnin
 #' @param thin (numeric) The number of iterations to thin by
 #'
-#' @returns A list of mcmc objects. Each element of the list is one chain of samples saved as a code::mcmc object.
-#' @importFrom parallel makeCluster stopCluster parLapply
+#' @returns A list of mcmc objects. Each element of the list is one chain of samples saved as a coda::mcmc object.
 #' @export
+#'
+#' @importFrom parallel makeCluster stopCluster parLapply
 #'
 #' @examples
 
