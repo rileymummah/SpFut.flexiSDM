@@ -22,7 +22,7 @@
 nimbleParallel <- function(cores = 3, code, constants, data,
                            inits, param, iter, burnin, thin) {
 
-  this_cluster <- makeCluster(cores)
+  this_cluster <- parallel::makeCluster(cores)
 
   tmp <- lapply(1:cores, function(x) list(seed = x,
                                           inits = inits(x)))
@@ -31,21 +31,21 @@ nimbleParallel <- function(cores = 3, code, constants, data,
   cat("Jack be NIMBLE... \n")
   cat("Jack be quick... \n")
 
-  chain_output <- parLapply(cl = this_cluster,
-                            X = tmp,
-                            fun = run_nimbleMCMC,
-                            code = code,
-                            constants = constants,
-                            data = data,
-                            param = param,
-                            iter = iter,
-                            burnin = burnin,
-                            thin = thin)
+  chain_output <- parallel::parLapply(cl = this_cluster,
+                                      X = tmp,
+                                      fun = run_nimbleMCMC,
+                                      code = code,
+                                      constants = constants,
+                                      data = data,
+                                      param = param,
+                                      iter = iter,
+                                      burnin = burnin,
+                                      thin = thin)
 
   cat("Jack jumped over the candlestick! \n")
   cat("Ha ha aren't we funny?! No, really, your model is done fitting.")
 
-  stopCluster(this_cluster)
+  parallel::stopCluster(this_cluster)
 
   return(chain_output)
 }

@@ -12,6 +12,7 @@
 #' @param thin (numeric) The number of iterations to thin by
 #'
 #' @importFrom nimble nimbleModel configureMCMC buildMCMC compileNimble runMCMC
+#'
 #' @returns An coda::mcmc object of the posterior samples
 #' @export
 #'
@@ -34,27 +35,27 @@ run_nimbleMCMC <- function(info, code, constants, data, param,
   #                       setSeed = info$seed,
   #                       samplesAsCodaMCMC = TRUE)
 
-  Rmodel <- nimbleModel(code = code,
-                        name = 'Rmodel',
-                        constants = constants,
-                        data = data,
-                        inits = info$inits,
-                        check = FALSE)
+  Rmodel <- nimble::nimbleModel(code = code,
+                                name = 'Rmodel',
+                                constants = constants,
+                                data = data,
+                                inits = info$inits,
+                                check = FALSE)
   # Must have this for HMC
   # buildDerivs = T)
   # Rmodel$initializeInfo()
-  conf <- configureMCMC(Rmodel, monitors = param)
+  conf <- nimble::configureMCMC(Rmodel, monitors = param)
   # conf$addSampler(target = 'B', type = 'NUTS')
-  Rmcmc <- buildMCMC(conf)
-  Cmodel <- compileNimble(Rmodel)
-  Cmcmc <- compileNimble(Rmcmc, project = Rmodel)
+  Rmcmc <- nimble::buildMCMC(conf)
+  Cmodel <- nimble::compileNimble(Rmodel)
+  Cmcmc <- nimble::compileNimble(Rmcmc, project = Rmodel)
 
-  samples <- runMCMC(Cmcmc,
-                     niter = iter,
-                     nburnin = burnin,
-                     thin = thin,
-                     setSeed = info$seed,
-                     samplesAsCodaMCMC = TRUE)
+  samples <- nimble::runMCMC(Cmcmc,
+                             niter = iter,
+                             nburnin = burnin,
+                             thin = thin,
+                             setSeed = info$seed,
+                             samplesAsCodaMCMC = TRUE)
 
   return(samples)
 }
