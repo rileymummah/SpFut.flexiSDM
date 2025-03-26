@@ -54,17 +54,30 @@ nimble_params <- function(data,
     if (paste0("Xy", d) %in% names(data)) {
       # count
       
-      params <- c(params, paste0("C", d))
+      if (constants[[paste0("nCovY", d)]] > 0) {
+        params <- c(params, paste0("C", d))
+      } else {
+        params <- c(params, paste0("p", d))
+      }
+      
 
     } else if (paste0("Xw", d) %in% names(data)) {
       # PO
 
-      params <- c(params, paste0("A", d))
+      if (constants[[paste0("nCovV", d)]] > 0) {
+        params <- c(params, paste0("A", d))
+      } else {
+        params <- c(params, paste0("p", d))
+      }
 
     } else if (paste0("Xv", d) %in% names(data)) {
       # DND
 
-      params <- c(params, paste0("D", d))
+      if (constants[[paste0("nCovV", d)]] > 0) {
+        params <- c(params, paste0("D", d))
+      } else {
+        params <- c(params, paste0("p", d))
+      }
     }
 
   } # end loop through datasets
