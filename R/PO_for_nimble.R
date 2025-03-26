@@ -7,6 +7,8 @@
 #' @param rename (character) character suffix to add to data and constants object names; defaults to empty string
 #'
 #' @returns A list containing data and constants for nimble code
+#'
+#' @importFrom dplyr pull select
 
 
 PO_for_nimble <- function(POdata,

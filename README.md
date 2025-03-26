@@ -29,7 +29,7 @@ SpFut.flexiSDM contains the following functions:
 - plot_covar - (CLS) cleaned, commented, and documented
 - cor_covar - (CLS) cleaned, commented, and documented
 - select_covar - (CLS) cleaned, commented, and documented
-- add_int_cols - this is for interactions which we haven't actually done any of. Don't include it for now?
+- add_int_cols - this is for interactions which we haven't actually done any of. Don't include it for now? - EXCLUDED FOR NOW
 
 ### Prep species data
 
@@ -40,6 +40,7 @@ SpFut.flexiSDM contains the following functions:
 - PO_for_nimble - (CLS) cleaned, commented, and documented
 - survey_for_nimble - (CLS) cleaned, commented, and documented
 - sppdata_for_nimble - (CLS) cleaned, commented, and documented
+- map_species_data - (CLS) cleaned, commented, and documented - DOCUMENTATION NEEDED (ROM)
 
 ### Combine all data
 
@@ -72,7 +73,7 @@ SpFut.flexiSDM contains the following functions:
 - plot_pars
 - plot_effects
 - plot_auc
-- map_species_data - (CLS) cleaned, commented, and documented
+
 
 
 
@@ -82,7 +83,7 @@ You can install the development version of SpFut.flexiSDM from [GitHub](https://
 
 ``` r
 # install.packages("pak")
-pak::pak("rileymummah/SpFut.flexiSDM")
+remotes::install_github("rileymummah/SpFut.flexiSDM")
 ```
 
 ## Example

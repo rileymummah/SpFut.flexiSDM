@@ -23,8 +23,10 @@ BugReports: https://github.com/rileymummah/SpFut.flexiSDM/issues
 Imports: 
     dplyr,
     ggplot2,
+    lubridate,
     magrittr,
     nimble,
+    readr,
     rnaturalearth,
     sf,
     spdep,

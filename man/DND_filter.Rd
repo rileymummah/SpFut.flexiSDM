@@ -9,6 +9,7 @@ DND_filter(
   covs.mean,
   covs.sum,
   DND.maybe,
+  offset.area,
   age.use = c("adult", "metamorph", "juvenile", "egg mass", "NR", NA),
   req.cols = c("unique.id", "site.id", "lat", "lon", "day", "month", "year",
     "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")
@@ -22,6 +23,8 @@ DND_filter(
 \item{covs.sum}{(character vector) vector of column names to use as detection covariates that should be summed across passes (e.g., survey duration)}
 
 \item{DND.maybe}{(numeric) what to categorize "maybe" detections as (1 = detection; 0 = nondetection)}
+
+\item{offset.area}{(character) name of column to use for area offset}
 
 \item{age.use}{(character vector) vector of age categories to use; defaults to c("adult", "metamorph", "juvenile", "egg mass", "NR", NA)}
 
