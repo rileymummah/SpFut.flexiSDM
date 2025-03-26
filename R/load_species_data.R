@@ -21,17 +21,18 @@
 #' @export
 #'
 #' @importFrom utils read.csv
+#' @importFrom tidyselect any_of
 #'
 #' @examples
 #'\dontrun{
-#' 
+#'
 #' species.data <- load_species_data(sp.code = "ANMI",
 #'                 file.name = c("name-of-file.csv"),
 #'                 file.label = c("File Label"),
 #'                 file.path = "DATA SWAMP/data-ready/",
 #'                 keep.subsp = F,
 #'                 keep.cols = list(c("duration")),
-#'                 region = region, 
+#'                 region = region,
 #'                 filter.region = T,
 #'                 year.start = 1994,
 #'                 year.end = 2004,
@@ -259,7 +260,7 @@ load_species_data <- function(sp.code,
               dplyr::select(source, data.type, site.id, lat, lon, conus.grid.id,
                             unique.id, survey.id, pass.id, day, month, year,
                             survey.conducted, species, age, time.to.detect,
-                            individual.id, count, any_of(keep.cols[[f]]))
+                            individual.id, count, tidyselect::any_of(keep.cols[[f]]))
 
 
     # If label already exists, just append dfs

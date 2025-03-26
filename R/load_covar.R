@@ -7,9 +7,9 @@
 #' @export
 #'
 #' @examples
-#' 
-#' 
-#' 
+#'
+#'
+#'
 
 
 load_covar <- function(sp.code,
@@ -19,15 +19,15 @@ load_covar <- function(sp.code,
 
   # use grid.ids from region$sp.grid
   locs <- region$sp.grid %>%
-    select(conus.grid.id) %>%
-    st_drop_geometry()
+            dplyr::select(conus.grid.id) %>%
+            sf::st_drop_geometry()
 
 
   # load gridded covariates
   load("data/USA/grid-covar.rdata")
 
   # get covariates for grid.ids in region
-  covar <- inner_join(locs, conus.covar.grid, by = "conus.grid.id")
+  covar <- dplyr::inner_join(locs, conus.covar.grid, by = "conus.grid.id")
 
 
 
@@ -38,29 +38,30 @@ load_covar <- function(sp.code,
     inat <- read.csv(paste0("data/species/", sp.code, "/iNat-supp.csv"))
 
     inat <- inat %>%
-      st_as_sf(crs = 4326,
-               coords = c("lon", "lat")) %>%
-      st_transform(st_crs(region$sp.grid)) %>%
-      st_join(region$sp.grid, join = st_within) %>%
-      filter(is.na(conus.grid.id) == F) %>%
-      group_by(conus.grid.id) %>%
-      summarize(n.inat = n(), .groups = 'drop') %>%
-      st_drop_geometry()
+              sf::st_as_sf(crs = 4326,
+                           coords = c("lon", "lat")) %>%
+              sf::st_transform(sf::st_crs(region$sp.grid)) %>%
+              sf::st_join(region$sp.grid, join = st_within) %>%
+              dplyr::filter(is.na(conus.grid.id) == F) %>%
+              dplyr::group_by(conus.grid.id) %>%
+              dplyr::summarize(n.inat = dplyr::n(), .groups = 'drop') %>%
+              sf::st_drop_geometry()
 
 
-    covar <- left_join(covar, inat, by = c("conus.grid.id"))
+    covar <- dplyr::left_join(covar, inat, by = c("conus.grid.id"))
     covar$n.inat[which(is.na(covar$n.inat))] <- 0
   } else {
     cat("Warning: iNat records of supplemental species have not been downloaded yet\n")
   }
 
   # add centroid lat and lon of each grid cell to covar
-  centroid <- st_centroid(region$sp.grid) %>%
-    st_coordinates() %>%
-    as.data.frame() %>%
-    mutate(conus.grid.id = region$sp.grid$conus.grid.id)
+  centroid <- sf::st_centroid(region$sp.grid) %>%
+                sf::st_coordinates() %>%
+                as.data.frame() %>%
+    dplyr::mutate(conus.grid.id = region$sp.grid$conus.grid.id)
+
   colnames(centroid)[1:2] <- c("lon", "lat")
-  covar <- left_join(covar, centroid, by = "conus.grid.id")
+  covar <- dplyr::left_join(covar, centroid, by = "conus.grid.id")
 
   # return
   return(covar)
