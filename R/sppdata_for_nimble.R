@@ -116,7 +116,8 @@ sppdata_for_nimble <- function(species.data,
       PO.inat <- PO_for_nimble(POdata, covariates,
                                rename = counter)
       PO.inat$constants[[paste0("name", counter)]] <- name
-
+      PO.inat$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
+      
       # Add dataset to data list
       dat.ready[[paste0("PO", counter)]] <- PO.inat
 
@@ -173,7 +174,8 @@ sppdata_for_nimble <- function(species.data,
           PO.other <- PO_for_nimble(POdata, covariates,
                                     rename = counter)
           PO.other$constants[[paste0("name", counter)]] <- name
-
+          PO.other$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
+          
           # Add dataset to data list
           dat.ready[[paste0("PO", counter)]] <- PO.other
 
@@ -261,6 +263,7 @@ sppdata_for_nimble <- function(species.data,
         PO.other <- PO_for_nimble(POdata, covariates, rename = counter)
         PO.other$constants[[paste0("name", counter)]] <- name
         PO.other$constants[[paste0("states", counter)]] <- T
+        PO.other$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
 
         if (length(states) > 1) PO.other$data[[paste0("S", counter)]] <- apply(covariates1[,states], 1, max) # use all states
         if (length(states) == 1) PO.other$data[[paste0("S", counter)]] <- covariates1[,states] # use one state
