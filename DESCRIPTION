@@ -31,7 +31,8 @@ Imports:
     stats,
     tibble,
     tidyr,
-    tidyselect
+    tidyselect,
+    viridis
 Suggests: 
     knitr,
     rmarkdown,
