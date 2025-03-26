@@ -224,7 +224,7 @@ sppdata_for_nimble <- function(species.data,
         states <- unique(other.start$state)
         if (length(states) >= 2) {
           all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
-            filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
+                          dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
 
           # make sure these cells are in the same order as the cells in data and constants
           all.states <- all.states[order(match(all.states$conus.grid.id, covar$conus.grid.id)),]

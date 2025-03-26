@@ -1,6 +1,6 @@
 #' Write code for nimble
-#' 
-#' @describeIn Write code for nimble based on contents of data and constants
+#'
+#' @description Write code for nimble based on contents of data and constants
 #'
 #' @param data (list) data formatted for nimble
 #' @param constants (list) constants formatted for nimble
@@ -41,7 +41,7 @@ nimble_code <- function(data,
   if (occupancy == F) min.visits.incl <- Inf
 
 # Set up main parts ----
-  
+
 ## Process model ----
   pro.mod <- "
 # Process Model
@@ -222,7 +222,7 @@ for (d in 1:constants$nD) {
 
     prior1 <- ""
 
-    
+
 
     obs.mod1 <- gsub("p_NUM[j]", "p_NUM", obs.mod1, fixed = T)
 

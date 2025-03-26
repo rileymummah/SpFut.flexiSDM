@@ -1,16 +1,23 @@
 #' Format species data and covariate data for nimble
 #'
-#' @description
+#' @param sp.data
+#' @param covar
+#' @param covs.z
+#' @param sp.auto
+#' @param coarse.grid
+#' @param region
+#' @param area
+#' @param process.intercept
+#' @param gridkey
+#' @param spatRegion
 #'
-#' @param 
-#'
-#' @returns 
+#' @returns
 #' @export
 #'
+#' @importFrom dplyr inner_join
+#' @importFrom spdep poly2nb nb2WB
+#'
 #' @examples
-#' \dontrun{
-#' range <- get_range('ANMI')
-#' }
 
 
 data_for_nimble <- function(sp.data,
@@ -56,7 +63,7 @@ data_for_nimble <- function(sp.data,
   constants <- unlist(constants, recursive  = F, use.names = T)
   constants$nD <- nD
 
-  
+
   if (coarse.grid == T) {
     spatkey <- spatRegion$spatkey
     spat.grid <- spatRegion$spat.grid
@@ -64,8 +71,8 @@ data_for_nimble <- function(sp.data,
   } else {
     spat.grid <- region$sp.grid
   }
-  
-  
+
+
 
   if (sp.auto == T) {
     NB <- spdep::poly2nb(spat.grid)
@@ -77,8 +84,8 @@ data_for_nimble <- function(sp.data,
     constants$num <- NBinfo$num
   }
 
-  
-  
+
+
   if (coarse.grid == T) {
     # These are the spatial cells that correspond to each grid cell i
     # When indexed by i in the model, they should correspond correctly
@@ -91,7 +98,7 @@ data_for_nimble <- function(sp.data,
   cells <- grep("cells", names(constants))
   for (e in cells) {
     tmp <- data.frame(conus.grid.id = as.character(constants[[e]])) %>%
-      inner_join(gridkey, by = "conus.grid.id")
+            dplyr::inner_join(gridkey, by = "conus.grid.id")
     constants[[names(constants)[e]]] <- tmp$grid.id
   }
 
