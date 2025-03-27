@@ -64,7 +64,7 @@ nimble_params <- function(data,
     } else if (paste0("Xw", d) %in% names(data)) {
       # PO
 
-      if (constants[[paste0("nCovV", d)]] > 0) {
+      if (constants[[paste0("nCovW", d)]] > 0) {
         params <- c(params, paste0("A", d))
       } else {
         params <- c(params, paste0("p", d))
