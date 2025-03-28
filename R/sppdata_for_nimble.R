@@ -1,20 +1,20 @@
 #' Format species data for nimble
 #'
-#' @param species.data
-#' @param region
-#' @param data.type
-#' @param PO.extent
-#' @param covar
-#' @param covs.inat
-#' @param covs.PO
-#' @param covs.mean
-#' @param covs.sum
-#' @param offset.area
-#' @param DND.maybe
-#' @param keep.conus.grid.id
-#' @param min.visits.incl
+#' @param species.data (list) output from load_species_data()
+#' @param region (list) output from make_region()
+#' @param data.type (character vector) vector of data types for each dataset in species.data
+#' @param PO.extent (character vector) vector of extents for each PO dataset (CONUS or state code); use NA for non-PO datasets
+#' @param covar (data.frame) dataframe containing covariates for PO data
+#' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
+#' @param covs.PO (character vector) vector of column names (from covar) to use for effort covariates for non-iNat PO data
+#' @param covs.mean (list) list containing one vector for each dataset that says which columns to use as detection covariates that should be averaged (e.g., water temperature)
+#' @param covs.sum (list) list containing one vector for each dataset that says which columns to use as detection covariates that should be summed (e.g., survey duration)
+#' @param offset.area (character vector) vector containing column names to use for area offset for each dataset
+#' @param DND.maybe (numeric) whether to treat maybe detections as detections (1) or non-detections(0); defaults to 1
+#' @param keep.conus.grid.id (vector) vector of conus.grid.ids to use to fit the model
+#' @param min.visits.incl (numeric) minimum number (inclusive) of median visits per site to use n-mixture or occupancy models
 #'
-#' @returns
+#' @returns (list) list of species data partially formatted for nimble, needs to be input into data_for_nimble before use in nimble
 #' @export
 #'
 #' @importFrom tidyselect any_of all_of

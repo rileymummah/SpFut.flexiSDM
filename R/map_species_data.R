@@ -1,30 +1,30 @@
-#' Title
+#' Map species data
 #'
-#' @param title
-#' @param region
-#' @param plot.range
-#' @param plot.region
-#' @param plot.cells
-#' @param species.data
-#' @param year.start
-#' @param year.end
-#' @param plot
-#' @param details
-#' @param plot.blocks
-#' @param blocks
-#' @param out
-#' @param plot.current
-#' @param plot.uncertainty
-#' @param plot.log
-#' @param plot.exp
-#' @param plot.change
-#' @param proj
-#' @param proj.names
-#' @param threshold
-#' @param coarse.grid
-#' @param spatRegion
+#' @param title (character) string to use as title of map
+#' @param region (list) output from make_region()
+#' @param plot (character) indicates what should be mapped; possible values are "samples", "lambda", "psi", "spat", "boundary", "XB"
+#' @param plot.range (logical) whether to plot range outlines contained in region$range (T) or not (F); defaults to T
+#' @param plot.region (logical) whether to plot region contained in region$region (T) or not (F); defaults to F
+#' @param plot.cells (logical) whether to plot grid cells contained in region$sp.grid (T) or not (F); defaults to F
+#' @param species.data (list) output from load_species_data(); only required if plot == "samples"
+#' @param year.start (numeric) plot data from during or after this year; defaults to 1900; only required if plot == "samples"
+#' @param year.end (numeric) plot data from during or before this year; defaults to current year; only required if plot == "samples"
+#' @param details (logical) whether to add dataset details to map (T) or not (F); defaults to F; only required if plot == "samples"
+#' @param plot.blocks (logical) whether to add blocks to map (T) or not (F); defaults to F; only required if plot == "samples"
+#' @param blocks (sf) sf object containing blocks, e.g., output from cv_spatial(), out$blocks; only required if plot.blocks == T
+#' @param out (list) summarized output from nimble model; output from summarize_samples(); only required if plot != "samples"
+#' @param plot.current (logical) whether to plot the current output (T) or projections (F); defaults to T; only required if plot != "samples"
+#' @param plot.uncertainty (logical) whether to plot uncertainty (T) or mean values (F); defaults to F; only required if plot != "samples"
+#' @param plot.log (logical) whether to plot the log of the value (T) or not (F); defaults to F; only required if plot != "samples"
+#' @param plot.exp (logical) whether to plot the exponent of the value (T) or not (F); defaults to F; only required if plot != "samples"
+#' @param plot.change (logical) whether to plot the projected value (F) or the projected change from current (T); defaults to F; only required if plot.current == F
+#' @param proj (numeric) number of projections; only required if plot.current == F
+#' @param proj.names (character vector) names for each projection; only required if plot.current == F
+#' @param threshold (numeric) value between 0 and 1 to use as occupancy probability threshold for drawing range boundary; defaults to 0.5; only required if plot == "boundary"
+#' @param coarse.grid (logical) whether to use coarse grid (T) or not (F)
+#' @param spatRegion (list) output from make_spatKey(); only required if coarse.grid == T
 #'
-#' @returns
+#' @returns ggplot object containing map of desired data
 #' @export
 #'
 #' @importFrom rnaturalearth ne_countries
@@ -38,6 +38,7 @@
 
 map_species_data <- function(title,
                              region,
+                             plot = "samples",
 
                              # Map features
                              plot.range = T,
@@ -46,9 +47,8 @@ map_species_data <- function(title,
 
                              # For map of data samples
                              species.data,
-                             year.start,
+                             year.start = 1900,
                              year.end = as.numeric(format(Sys.Date(), "%Y")),
-                             plot = "samples",
                              details = F,
                              plot.blocks = F,
                              blocks,
