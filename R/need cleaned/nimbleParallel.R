@@ -16,6 +16,7 @@
 #' @export
 #'
 #' @importFrom parallel makeCluster stopCluster parLapply
+#' @import nimble
 #'
 #' @examples
 

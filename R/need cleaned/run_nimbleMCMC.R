@@ -13,7 +13,7 @@
 #'
 #' @import nimble
 #'
-#' @returns An coda::mcmc object of the posterior samples
+#' @returns A coda::mcmc object of the posterior samples
 #' @export
 #'
 #' @examples

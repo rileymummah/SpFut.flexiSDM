@@ -11,14 +11,32 @@ data_for_nimble(
   sp.auto = T,
   coarse.grid = T,
   region,
-  area = F,
   process.intercept = T,
   gridkey,
   spatRegion
 )
 }
 \arguments{
-\item{spatRegion}{}
+\item{sp.data}{(list) output from sppdata_for_nimble()}
+
+\item{covar}{(data.frame) dataframe containing process covariates}
+
+\item{covs.z}{(character vector) vector of column names from covar to use as process covariates}
+
+\item{sp.auto}{(logical) whether to use spatial autocorrelation in the model (T) or not (F); defaults to T}
+
+\item{coarse.grid}{(logical) whether to use a coarse grid (T) or not (F); defaults to T}
+
+\item{region}{(list) output from make_region()}
+
+\item{process.intercept}{(logical) whether to include an intercept in the process model or not; defaults to T}
+
+\item{gridkey}{(data.frame) contains conus.grid.ids and associated grid.ids to use for indexing in nimble}
+
+\item{spatRegion}{(list) output from make_spatKey(); only required if coarse.grid == T}
+}
+\value{
+(list) list of data and constants fully formatted for nimble
 }
 \description{
 Format species data and covariate data for nimble

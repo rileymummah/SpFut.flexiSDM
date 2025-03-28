@@ -2,18 +2,18 @@
 % Please edit documentation in R/map_species_data.R
 \name{map_species_data}
 \alias{map_species_data}
-\title{Title}
+\title{Map species data}
 \usage{
 map_species_data(
   title,
   region,
+  plot = "samples",
   plot.range = T,
   plot.region = F,
   plot.cells = F,
   species.data,
-  year.start,
+  year.start = 1900,
   year.end = as.numeric(format(Sys.Date(), "\%Y")),
-  plot = "samples",
   details = F,
   plot.blocks = F,
   blocks,
@@ -31,8 +31,55 @@ map_species_data(
 )
 }
 \arguments{
-\item{spatRegion}{}
+\item{title}{(character) string to use as title of map}
+
+\item{region}{(list) output from make_region()}
+
+\item{plot}{(character) indicates what should be mapped; possible values are "samples", "lambda", "psi", "spat", "boundary", "XB"}
+
+\item{plot.range}{(logical) whether to plot range outlines contained in region$range (T) or not (F); defaults to T}
+
+\item{plot.region}{(logical) whether to plot region contained in region$region (T) or not (F); defaults to F}
+
+\item{plot.cells}{(logical) whether to plot grid cells contained in region$sp.grid (T) or not (F); defaults to F}
+
+\item{species.data}{(list) output from load_species_data(); only required if plot == "samples"}
+
+\item{year.start}{(numeric) plot data from during or after this year; defaults to 1900; only required if plot == "samples"}
+
+\item{year.end}{(numeric) plot data from during or before this year; defaults to current year; only required if plot == "samples"}
+
+\item{details}{(logical) whether to add dataset details to map (T) or not (F); defaults to F; only required if plot == "samples"}
+
+\item{plot.blocks}{(logical) whether to add blocks to map (T) or not (F); defaults to F; only required if plot == "samples"}
+
+\item{blocks}{(sf) sf object containing blocks, e.g., output from cv_spatial(), out$blocks; only required if plot.blocks == T}
+
+\item{out}{(list) summarized output from nimble model; output from summarize_samples(); only required if plot != "samples"}
+
+\item{plot.current}{(logical) whether to plot the current output (T) or projections (F); defaults to T; only required if plot != "samples"}
+
+\item{plot.uncertainty}{(logical) whether to plot uncertainty (T) or mean values (F); defaults to F; only required if plot != "samples"}
+
+\item{plot.log}{(logical) whether to plot the log of the value (T) or not (F); defaults to F; only required if plot != "samples"}
+
+\item{plot.exp}{(logical) whether to plot the exponent of the value (T) or not (F); defaults to F; only required if plot != "samples"}
+
+\item{plot.change}{(logical) whether to plot the projected value (F) or the projected change from current (T); defaults to F; only required if plot.current == F}
+
+\item{proj}{(numeric) number of projections; only required if plot.current == F}
+
+\item{proj.names}{(character vector) names for each projection; only required if plot.current == F}
+
+\item{threshold}{(numeric) value between 0 and 1 to use as occupancy probability threshold for drawing range boundary; defaults to 0.5; only required if plot == "boundary"}
+
+\item{coarse.grid}{(logical) whether to use coarse grid (T) or not (F)}
+
+\item{spatRegion}{(list) output from make_spatKey(); only required if coarse.grid == T}
+}
+\value{
+ggplot object containing map of desired data
 }
 \description{
-Title
+Map species data
 }
