@@ -1,81 +1,77 @@
-
 # SpFut.flexiSDM
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 The goal of SpFut.flexiSDM is to ...
-
 
 ## Functions
 
 SpFut.flexiSDM contains the following functions:
 
 ### Helpers
-- scale_this - DONE (ROM)
-- get_cpus_per_task - DONE (ROM)
-- id_dup_records - (CLS) cleaned, commented, and documented
 
+-   scale_this - DONE (ROM)
+-   get_cpus_per_task - DONE (ROM)
+-   id_dup_records - (CLS) cleaned, commented, and documented
 
 ### Setup range and spatial grid
 
-- get_range - (CLS) cleaned and commented - COMPLETE (ROM)
-- make_region - (CLS) cleaned and commented - COMPLETE (ROM)
-- make_spatkey - NEEDS DOCUMENTATION (ROM)
+-   get_range - COMPLETE (ROM)
+-   make_region - COMPLETE (ROM)
+-   make_spatkey - NEEDS DOCUMENTATION (ROM)
 
 ### Prep covariate data
 
-- load_covar - (CLS) cleaned, commented, and documented - this requires the species-futures directory right now. Revisit it.
-- plot_covar - (CLS) cleaned, commented, and documented - DONE
-- cor_covar - (CLS) cleaned, commented, and documented - DONE
-- select_covar - (CLS) cleaned, commented, and documented - DONE
-- add_int_cols - this is for interactions which we haven't actually done any of. Don't include it for now? - EXCLUDED FOR NOW
+-   load_covar - this requires the species-futures directory right now. Revisit it (CLS)
+-   plot_covar - DONE
+-   cor_covar - DONE
+-   select_covar - DONE
+-   add_int_cols - EXCLUDED FOR NOW
 
 ### Prep species data
 
-- load_species_data - (CLS) cleaned, commented, and documented - DONE
-- PO_filter - (CLS) this function is unnecessary and can be removed - DONE
-- count_filter - (CLS) cleaned, commented, and documented - DONE
-- DND_filter - (CLS) cleaned, commented, and documented - DONE
-- PO_for_nimble - (CLS) cleaned, commented, and documented - DONE
-- survey_for_nimble - (CLS) cleaned, commented, and documented - DONE 
-- sppdata_for_nimble - (CLS) cleaned, commented, and documented - DOCUMENTATION NEEDED (ROM)
-- map_species_data - (CLS) cleaned, commented, and documented - DOCUMENTATION NEEDED (ROM)
+-   load_species_data - DONE
+-   PO_filter - REMOVED
+-   count_filter - DONE
+-   DND_filter - DONE
+-   PO_for_nimble - DONE
+-   survey_for_nimble - DONE
+-   sppdata_for_nimble - (CLS) cleaned, commented, and documented
+-   map_species_data - (CLS) cleaned, commented, and documented
 
 ### Combine all data
 
-- z_for_nimble - (CLS) cleaned, commented, and documented - DONE
-- data_for_nimble - (CLS) cleaned, commented, and documented - DOCUMENTATION NEEDED (ROM)
+-   z_for_nimble - DONE
+-   data_for_nimble - (CLS) cleaned, commented, and documented
 
 ### Set up NIMBLE
 
-- nimble_code - (CLS) cleaned, commented, and documented - DONE
-- nimble_inits - (CLS) cleaned, commented, and documented - DONE
-- nimble_params - (CLS) cleaned, commented, and documented - DONE
+-   nimble_code - DONE
+-   nimble_inits - DONE
+-   nimble_params - DONE
 
 ### Run NIMBLE
 
-- run_nimbleMCMC - (ROM) outline added
-- nimbleParallel - (ROM) outline added
-- check_progress_MCMC - (CLS) can delete
+-   run_nimbleMCMC - (ROM) outline added
+-   nimbleParallel - (ROM) outline added
+-   check_progress_MCMC - (CLS) can delete
 
 ### Process NIMBLE output
 
-- get_projections
-- get_derived
-- chain_summary
-- summarize_samples
+-   get_projections
+-   get_derived
+-   chain_summary
+-   summarize_samples
 
 ### Plot NIMBLE output
 
-- plot_chains
-- plot_convergence
-- plot_pars
-- plot_effects
-- plot_auc
-
-
-
+-   plot_chains
+-   plot_convergence
+-   plot_pars
+-   plot_effects
+-   plot_auc
 
 ## Installation
 
@@ -94,4 +90,3 @@ This is a basic example which shows you how to solve a common problem:
 library(SpFut.flexiSDM)
 ## basic example code
 ```
-
