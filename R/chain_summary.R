@@ -68,7 +68,7 @@ chain_summary <- function(i,
   # get rhat
   tmp1 <- dplyr::bind_rows(s) %>%
             dplyr::mutate(var1 = as.numeric(var1)) %>%
-            dplyr::pivot_wider(.,
+            tidyr::pivot_wider(.,
                                names_from = 'chain',
                                names_prefix = 's',
                                values_from = 'var1',
