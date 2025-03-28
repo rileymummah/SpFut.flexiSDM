@@ -36,7 +36,7 @@ nimbleParallel(
 \item{thin}{(numeric) The number of iterations to thin by}
 }
 \value{
-A list of mcmc objects. Each element of the list is one chain of samples saved as a code::mcmc object.
+A list of mcmc objects. Each element of the list is one chain of samples saved as a coda::mcmc object.
 }
 \description{
 Run NIMBLE chains in parallel using a local cluster

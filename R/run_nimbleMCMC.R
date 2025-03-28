@@ -11,7 +11,7 @@
 #' @param burnin (numeric) The number of iterations to discard as burnin
 #' @param thin (numeric) The number of iterations to thin by
 #'
-#' @importFrom nimble nimbleModel configureMCMC buildMCMC compileNimble runMCMC
+#' @import nimble
 #'
 #' @returns An coda::mcmc object of the posterior samples
 #' @export
@@ -41,6 +41,7 @@ run_nimbleMCMC <- function(info, code, constants, data, param,
                                 data = data,
                                 inits = info$inits,
                                 check = FALSE)
+
   # Must have this for HMC
   # buildDerivs = T)
   # Rmodel$initializeInfo()
