@@ -67,10 +67,11 @@ SpFut.flexiSDM contains the following functions:
 
 ### Plot NIMBLE output
 
--   plot_chains
--   plot_convergence
--   plot_pars
--   plot_effects
+-   plot_chains - (CLS) cleaned, commented, and documented
+-   plot_posteriors - (CLS) cleaned, commented, and documented
+-   plot_convergence - (CLS) cleaned, commented, and documented
+-   plot_pars - (CLS) cleaned, commented, and documented
+-   plot_effects - (CLS) cleaned, commented, and documented
 -   plot_auc
 
 ## Installation
