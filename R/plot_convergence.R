@@ -45,5 +45,5 @@ plot_convergence <- function(out) {
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 0.5,
                                      vjust = 1)) +
-    labs(x = "Parameter", y = "Value", title = "Red shaded area means chains have not converged")
+    labs(x = "Parameter", y = "Value", title = "Red shaded area means chains may not have converged")
 }
