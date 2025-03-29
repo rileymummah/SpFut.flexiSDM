@@ -166,8 +166,9 @@ sppdata_for_nimble <- function(species.data,
             dplyr::filter(is.na(conus.grid.id) == F,
                           conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
 
-          #covariates <- get_covs.PO(covs.PO, covar)
-          covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO))
+          covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO)) %>%
+            dplyr::filter(is.na(conus.grid.id) == F,
+                          conus.grid.id %in% keep.conus.grid.id)
 
           # make sure everything is in the right order
           POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
@@ -253,9 +254,13 @@ sppdata_for_nimble <- function(species.data,
 
           # use states for S (whether cell is in state with PO data or not)
           covariates1 <- dplyr::inner_join(covar, grid.state, by = "conus.grid.id") %>%
-                          dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states))
+                          dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
+            dplyr::filter(is.na(conus.grid.id) == F,
+                          conus.grid.id %in% keep.conus.grid.id)
         } else {
-          covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO))
+          covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO)) %>%
+            dplyr::filter(is.na(conus.grid.id) == F,
+                          conus.grid.id %in% keep.conus.grid.id)
         }
 
         # make sure everything is in the right order
