@@ -183,7 +183,7 @@ map_species_data <- function(title,
 
     # adjust values
     if (plot.log == F & plot != "spat") {
-      q99 <- stat::quantile(intensity$plot.val, 0.99, na.rm = T)
+      q99 <- stats::quantile(intensity$plot.val, 0.99, na.rm = T)
       intensity$plot.val[which(intensity$plot.val > q99)] <- q99
     }
 
