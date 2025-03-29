@@ -107,7 +107,9 @@ sppdata_for_nimble <- function(species.data,
                       conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
 
       # Get the covariates to use for iNat
-      covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.inat))
+      covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.inat)) %>%
+        dplyr::filter(is.na(conus.grid.id) == F,
+                      conus.grid.id %in% keep.conus.grid.id)
 
       # make sure everything is in the right order
       POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
