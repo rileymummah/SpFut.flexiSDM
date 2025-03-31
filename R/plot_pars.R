@@ -100,6 +100,8 @@ plot_pars <- function(out,
   }
   
   if (plot.type == "cv") {
+    blockcols <- c("none" = "black", "1" = "#e79f1e", "2" = "#009e73", "3" = "#cb79a8")
+    
     
     if (plot.group == "process") {
       dat <- out %>%
