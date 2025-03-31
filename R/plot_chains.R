@@ -4,7 +4,7 @@
 #' @param data (list) list containing data that was input into nimble
 #' @param cov.labs (data.frame) dataframe containing covariate column names ("covariate") and labels ("Label")
 #' @param cutoff (numeric) where to cut off chains for plotting; defaults to 0
-#' @param plot (character) which parameter to plot; defaults to "B"; options are "B", "alpha", and "tau"
+#' @param plot (character) which parameter to plot; defaults to "B"; options are "B" and "alpha"
 #' @param chaincols (vector) colors to use for chains; defaults to pink, green, and blue
 #'
 #' @returns ggplot object with plotted chains
@@ -34,10 +34,6 @@ plot_chains <- function(samples,
       bind <- grep("alpha", colnames(samples[[1]]))
       bnames <- data.frame(name = unlist(constants[grep("name", names(constants))]),
                            param = paste0("alpha[", 1:length(bind), "]"))
-    } else if (plot == "tau") {
-      bind <- grep("tau", colnames(samples[[1]]))
-      bnames <- data.frame(name = "tau",
-                           param = paste0("tau[", 1:length(bind), "]"))
     }
 
 
