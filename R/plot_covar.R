@@ -17,6 +17,7 @@
 #' @importFrom tidyselect all_of
 #' @importFrom tidyr pivot_longer
 #' @importFrom grid unit
+#' @import dplyr
 #'
 #' @examples
 #' \dontrun{

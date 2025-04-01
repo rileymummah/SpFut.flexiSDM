@@ -4,10 +4,23 @@
 \alias{get_derived}
 \title{Title}
 \usage{
-get_derived(samples, project, coarse.grid, spatRegion, pathToProj)
+get_derived(samples, data, project, coarse.grid, spatRegion, pathToProj)
 }
 \arguments{
-\item{spatRegion}{}
+\item{samples}{(list of mcmc objects) output from fitting a NIMBLE model}
+
+\item{data}{(NIMBLE data) data created and formatted for NIMBLE}
+
+\item{project}{(numeric) the number of projections}
+
+\item{coarse.grid}{(logical) whether or not a coarse grid was used to fit the spatial model}
+
+\item{spatRegion}{(list) object created from make_spatkey() and used to fit the spatial model}
+
+\item{pathToProj}{(character) path to R script where projections are set up}
+}
+\value{
+A dataframe of the original MCMC samples with estimated psi and lambda, psi, and XB for each projection (if projections are specified)
 }
 \description{
 Title

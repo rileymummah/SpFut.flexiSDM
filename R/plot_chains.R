@@ -10,6 +10,8 @@
 #' @returns ggplot object with plotted chains
 #' @export
 #'
+#' @importFrom rstan Rhat
+#'
 #' @examples
 
 
@@ -21,7 +23,7 @@ plot_chains <- function(samples,
                         plot = "B",
                         chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
 
-  
+
 
     if (plot == "B") {
       bnames <- data.frame(name = colnames(data$Xz),
@@ -43,7 +45,7 @@ plot_chains <- function(samples,
 
 
     chains <- 1:3
-    
+
     # calculate rhat
     all <- list()
     for (i in 1:length(bind)) {
@@ -63,10 +65,10 @@ plot_chains <- function(samples,
     call <- c()
     for (c in chains) {
       c1 <- as.data.frame(samples[[c]][,bind]) %>%
-        mutate(n = 1:nrow(.)) %>%
-        pivot_longer(!n) %>%
-        mutate(chain = c)
-      call <- bind_rows(call, c1)
+              dplyr::mutate(n = 1:nrow(.)) %>%
+              tidyr::pivot_longer(!n) %>%
+              dplyr::mutate(chain = c)
+      call <- dplyr::bind_rows(call, c1)
     }
 
     # If there's only one, need to rename it
@@ -74,34 +76,36 @@ plot_chains <- function(samples,
       call$name <- paste0(plot, "[", 1, "]")
     }
 
-    call <- call %>%
-      full_join(bnames, by = c("name" = "param"))
+    call <- dplyr::full_join(call, bnames, by = c("name" = "param"))
 
     if (plot == "B") {
-      
+
       call <- call %>%
-        mutate(cov1 = gsub("2", "", name.y),
-               tmp = gsub("_x_.*", "", name.y),
-               quad = case_when(substr(tmp, nchar(tmp), nchar(tmp)) == 2 ~ "^2",
-                                T ~ "")) %>%
-        left_join(cov.labs, by = c("cov1" = "covariate")) %>%
-        mutate(name.y = paste0(Label, quad)) %>%
-        select(!tmp)
+                dplyr::mutate(cov1 = gsub("2", "", name.y),
+                              tmp = gsub("_x_.*", "", name.y),
+                              quad = dplyr::case_when(substr(tmp, nchar(tmp),
+                                                             nchar(tmp)) == 2 ~ "^2",
+                                                      T ~ "")) %>%
+                dplyr::left_join(cov.labs, by = c("cov1" = "covariate")) %>%
+                dplyr::mutate(name.y = paste0(Label, quad)) %>%
+                dplyr::select(!tmp)
     }
 
 
-    call <- call %>%
-      mutate(lab = paste0(name.y, "\nRhat = ", rhat))
+    call <- dplyr::mutate(call, lab = paste0(name.y, "\nRhat = ", rhat))
 
 
-    pl <- ggplot(call) +
-      geom_hline(yintercept = 0) +
-      geom_line(aes(x = n, y = value, color = as.factor(chain)), linewidth = 0.1) +
-      geom_vline(xintercept = cutoff) +
-      facet_wrap(~lab, scales = "free_y") +
-      labs(x = "Iteration", y = "Parameter value", color = "Chain", subtitle = "Black vertical line indicates burnin") +
-      scale_color_manual(values = chaincols) +
-      theme_bw()
+    pl <- ggplot2::ggplot(call) +
+            ggplot2::geom_hline(yintercept = 0) +
+            ggplot2::geom_line(ggplot2::aes(x = n, y = value,
+                                            color = as.factor(chain)),
+                               linewidth = 0.1) +
+            ggplot2::geom_vline(xintercept = cutoff) +
+            ggplot2::facet_wrap(~lab, scales = "free_y") +
+            ggplot2::labs(x = "Iteration", y = "Parameter value",
+                          color = "Chain", subtitle = "Black vertical line indicates burnin") +
+            ggplot2::scale_color_manual(values = chaincols) +
+            ggplot2::theme_bw()
 
     return(pl)
     #sub <- paste0(chains, collapse = "")

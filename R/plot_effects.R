@@ -7,6 +7,11 @@
 #' @returns plot of marginal effects
 #' @export
 #'
+#' @importFrom stats quantile
+#' @importFrom dplyr bind_rows case_when inner_join mutate
+#' @importFrom utils read.csv
+#' @import ggplot2
+#'
 #' @examples
 
 
@@ -49,7 +54,7 @@ plot_effects <- function(data,
 
 
     # get scaled covariate values
-    q99 <- quantile(data$Xz[,cov], 0.99)
+    q99 <- stats::quantile(data$Xz[,cov], 0.99)
     data$Xz[,cov][data$Xz[,cov] > q99] <- q99
     s <- seq(min(data$Xz[,cov]), max(data$Xz[,cov]), breaks)
 
@@ -70,7 +75,7 @@ plot_effects <- function(data,
                         lo = exp(blo * s),
                         factor = "none")
 
-      all <- bind_rows(all, use)
+      all <- dplyr::bind_rows(all, use)
     }
 
     # linear term with interaction
@@ -111,7 +116,7 @@ plot_effects <- function(data,
 
       use$factor <- gsub(".*[.]", "", use$factor)
 
-      all <- bind_rows(all, use)
+      all <- dplyr::bind_rows(all, use)
     }
 
     # quadratic term
@@ -137,7 +142,7 @@ plot_effects <- function(data,
                         lo = exp(blo1 * s + blo2 * s^2),
                         factor = "none")
 
-      all <- bind_rows(all, use)
+      all <- dplyr::bind_rows(all, use)
     }
 
     # quadratic term with interaction
@@ -199,39 +204,37 @@ plot_effects <- function(data,
       use$factor2 <- NULL
 
 
-      all <- bind_rows(all, use)
+      all <- dplyr::bind_rows(all, use)
 
 
     }
   }
 
   all1 <- all %>%
-    mutate(hi = case_when(hi > 5000 ~ 5000,
-                          T ~ hi),
-           mean = case_when(mean > 5000 ~ 5000,
-                            T ~ mean),
-           lo = case_when(lo > 5000 ~ 5000,
-                          T ~ lo))
+    mutate(hi = dplyr::case_when(hi > 5000 ~ 5000, T ~ hi),
+           mean = dplyr::case_when(mean > 5000 ~ 5000, T ~ mean),
+           lo = dplyr::case_when(lo > 5000 ~ 5000, T ~ lo))
 
 
-  cov.labs <- read.csv("data/covariate-labels.csv")
+  cov.labs <- utils::read.csv("data/covariate-labels.csv")
 
-  all1 <- inner_join(all1, cov.labs, by = c("cov" = "covariate")) %>%
-    mutate(cov = Label)
+  all1 <- dplyr::inner_join(all1, cov.labs, by = c("cov" = "covariate")) %>%
+            dplyr::mutate(cov = Label)
 
 
 
   if (length(unique(all1$factor)) == 1) { # no interactions
 
-    pl <- ggplot(filter(all1)) +
-      geom_hline(yintercept = 0) +
-      geom_ribbon(aes(x = x, ymax = hi, ymin = lo), alpha = 0.5) +
-      geom_line(aes(x = x, y = mean)) +
-      facet_wrap(~ cov, scales = "free") +
-      theme_bw() +
-      labs(x = "Scaled covariate value", y = "Exp(Estimate)", fill = "Interaction",
-           title = "Marginal effects of process covariates",
-           subtitle = "Ribbon indicates 95% credible interval")
+    pl <- ggplot2::ggplot(filter(all1)) +
+            ggplot2::geom_hline(yintercept = 0) +
+            ggplot2::geom_ribbon(ggplot2::aes(x = x, ymax = hi, ymin = lo), alpha = 0.5) +
+            ggplot2::geom_line(ggplot2::aes(x = x, y = mean)) +
+            ggplot2::facet_wrap(~ cov, scales = "free") +
+            ggplot2::theme_bw() +
+            ggplot2::labs(x = "Scaled covariate value", y = "Exp(Estimate)",
+                          fill = "Interaction",
+                          title = "Marginal effects of process covariates",
+                          subtitle = "Ribbon indicates 95% credible interval")
 
   } else { # interactions
 
@@ -240,30 +243,32 @@ plot_effects <- function(data,
 
     groups <- paste0(as.vector(unique(all1$factor)), collapse = ", ")
     if (groups == c("none, east, west")) {
-      pl <- ggplot(filter(all1)) +
-        geom_hline(yintercept = 0) +
-        geom_ribbon(aes(x = x, ymax = hi, ymin = lo, fill = factor), alpha = 0.5) +
-        geom_line(aes(x = x, y = mean, color = factor)) +
-        scale_fill_manual(values = c("none" = "gray20", "east" = "darkgreen", "west" = "goldenrod"),
-                          labels = c("none" = "No Interaction", "east" = "East", "west" = "West")) +
-        scale_color_manual(values = c("none" = "gray20", "east" = "darkgreen", "west" = "goldenrod"),
-                           labels = c("none" = "No Interaction", "east" = "East", "west" = "West")) +
-        facet_wrap(~ cov, scales = "free") +
-        theme_bw() +
-        labs(x = "Scaled covariate value", y = "Exp(Estimate)", color = "Interaction", fill = "Interaction",
-             title = "Marginal effects of process covariates",
-             subtitle = "Ribbon indicates 95% credible interval")
+      pl <- ggplot2::ggplot(filter(all1)) +
+              ggplot2::geom_hline(yintercept = 0) +
+              ggplot2::geom_ribbon(ggplot2::aes(x = x, ymax = hi, ymin = lo, fill = factor), alpha = 0.5) +
+              ggplot2::geom_line(ggplot2::aes(x = x, y = mean, color = factor)) +
+              ggplot2::scale_fill_manual(values = c("none" = "gray20", "east" = "darkgreen", "west" = "goldenrod"),
+                                         labels = c("none" = "No Interaction", "east" = "East", "west" = "West")) +
+              ggplot2::scale_color_manual(values = c("none" = "gray20", "east" = "darkgreen", "west" = "goldenrod"),
+                                          labels = c("none" = "No Interaction", "east" = "East", "west" = "West")) +
+              ggplot2::facet_wrap(~ cov, scales = "free") +
+              ggplot2::theme_bw() +
+              ggplot2::labs(x = "Scaled covariate value", y = "Exp(Estimate)",
+                            color = "Interaction", fill = "Interaction",
+                            title = "Marginal effects of process covariates",
+                            subtitle = "Ribbon indicates 95% credible interval")
 
     } else {
-      pl <- ggplot(filter(all1)) +
-        geom_hline(yintercept = 0) +
-        geom_ribbon(aes(x = x, ymax = hi, ymin = lo, fill = factor), alpha = 0.5) +
-        geom_line(aes(x = x, y = mean, color = factor)) +
-        facet_wrap(~ cov, scales = "free") +
-        theme_bw() +
-        labs(x = "Scaled covariate value", y = "Exp(Estimate)", color = "Interaction", fill = "Interaction",
-             title = "Marginal effects of process covariates",
-             subtitle = "Ribbon indicates 95% credible interval")
+      pl <- ggplot2::ggplot(filter(all1)) +
+              ggplot2::geom_hline(yintercept = 0) +
+              ggplot2::geom_ribbon(ggplot2::aes(x = x, ymax = hi, ymin = lo, fill = factor), alpha = 0.5) +
+              ggplot2::geom_line(ggplot2::aes(x = x, y = mean, color = factor)) +
+              ggplot2::facet_wrap(~ cov, scales = "free") +
+              ggplot2::theme_bw() +
+              ggplot2::labs(x = "Scaled covariate value", y = "Exp(Estimate)",
+                            color = "Interaction", fill = "Interaction",
+                            title = "Marginal effects of process covariates",
+                            subtitle = "Ribbon indicates 95% credible interval")
 
     }
 

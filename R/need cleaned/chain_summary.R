@@ -9,6 +9,7 @@
 #' @export
 #'
 #' @importFrom dplyr mutate slice summarize filter bind_rows
+#' @importFrom tidyselect everything
 #' @importFrom stats quantile sd
 #' @importFrom tidyr unnest
 #' @importFrom rstan Rhat
@@ -38,19 +39,14 @@ chain_summary <- function(i,
   # summarize
   tmp <- dplyr::bind_rows(s) %>%
           dplyr::filter(chain %in% chains) %>%
-          dplyr::summarize(
-            mean = mean(var1, na.rm = T),
-            lo = stats::quantile(var1, probs = 0.025, na.rm = T),
-            hi = stats::quantile(var1, probs = 0.975, na.rm = T),
-            lotail = mean(var1) - stats::sd(var1),
-            hitail = mean(var1) + stats::sd(var1)
-          ) %>%
-          mutate(
-            param = colnames(samples[[1]])[i],
-            param = gsub("[", '', param, fixed = T),
-            param = gsub("]", '', param, fixed = T)
-          )
-
+          dplyr::summarize(mean = mean(var1, na.rm = T),
+                           lo = stats::quantile(var1, probs = 0.025, na.rm = T),
+                           hi = stats::quantile(var1, probs = 0.975, na.rm = T),
+                           lotail = mean(var1) - stats::sd(var1),
+                           hitail = mean(var1) + stats::sd(var1)) %>%
+          dplyr::mutate(param = colnames(samples[[1]])[i],
+                        param = gsub("[", '', param, fixed = T),
+                        param = gsub("]", '', param, fixed = T))
 
   # get uncertainty
   denstails <- dplyr::bind_rows(s) %>%
@@ -72,9 +68,9 @@ chain_summary <- function(i,
                                names_from = 'chain',
                                names_prefix = 's',
                                values_from = 'var1',
-                               values_fn = list
-                              ) %>%
-                              tidyr::unnest(cols = everything())
+                               values_fn = list) %>%
+            tidyr::unnest(cols = everything())
+
   tmp1 <- tmp1[, chains]
   rhat <- rstan::Rhat(as.matrix(tmp1))
 
@@ -93,7 +89,7 @@ chain_summary <- function(i,
   }
 
   tmp <- tmp %>%
-          dplyr::select(param, everything()) %>%
+          dplyr::select(param, tidyselect::everything()) %>%
           dplyr::mutate(rhat = rhat, ESS = ESS)
 
   return(tmp)

@@ -23,7 +23,6 @@ map_species_data(
   plot.log = F,
   plot.exp = F,
   plot.change = F,
-  proj = 0,
   proj.names = "",
   threshold = 0.5,
   coarse.grid,
@@ -66,8 +65,6 @@ map_species_data(
 \item{plot.exp}{(logical) whether to plot the exponent of the value (T) or not (F); defaults to F; only required if plot != "samples"}
 
 \item{plot.change}{(logical) whether to plot the projected value (F) or the projected change from current (T); defaults to F; only required if plot.current == F}
-
-\item{proj}{(numeric) number of projections; only required if plot.current == F}
 
 \item{proj.names}{(character vector) names for each projection; only required if plot.current == F}
 

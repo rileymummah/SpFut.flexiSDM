@@ -1,18 +1,17 @@
 #' Title
 #'
-#' @param i
-#' @param data
-#' @param beta
-#' @param spat
-#' @param lambda0
+#' @param i (numeric) projection number
+#' @param data (NIMBLE data) data created and formatted for NIMBLE
+#' @param beta (matrix) beta estimates extracted from MCMC samples
+#' @param spat (matrix) spatial effect estimates extracted from MCMC samples
+#' @param lambda0 (matrix) lambda estimates extracted from MCMC samples
 #'
-#' @returns
+#' @returns A data.frame of lambda, psi, and XB estimates for projection i
 #'
 #' @importFrom VGAM clogloglink
 #' @importFrom dplyr bind_cols
 #'
 #' @examples
-
 
 get_projections <- function(i, data, beta, spat, lambda0) {
   # For each projection, calculate XB, lambda, and psi
