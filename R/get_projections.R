@@ -17,6 +17,7 @@ get_projections <- function(i, data, beta, spat, lambda0) {
   # For each projection, calculate XB, lambda, and psi
   which.Xz <- paste0('Xz', i)
 
+  # Calculate X*beta
   XB <- beta %*% t(as.matrix(data[[which.Xz]]))
   lam <- exp(XB + spat)
 

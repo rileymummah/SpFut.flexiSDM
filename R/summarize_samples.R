@@ -32,14 +32,14 @@ summarize_samples <- function(samples,
                               constants,
                               inits,
                               project = 0,
-                              WAIC = F,
-                              all.chains = T,
                               coarse.grid,
+                              WAIC = F,
                               cutoff = 0,
                               block.out,
                               gridkey,
                               spatkey = NULL,
-                              local) {
+                              SLURM = F) {
+
   # Get WAIC ----
   if (WAIC == T) {
     cat("Assessing fit...\n")
@@ -66,46 +66,17 @@ summarize_samples <- function(samples,
     waic <- NA
   }
 
-  # Summarize chains ----
+  # Summarize chains in parallel ----
 
   # select which chains to use
-  if (all.chains == T) {
-    chains <- 1:length(samples)
-  } else {
-    bind <- grep("B", colnames(samples[[1]]))
-
-    chains <- c()
-    tmp1 <- as.data.frame(samples[[1]][, bind])
-    if (F %in% (colMeans(tmp1[, 2:ncol(tmp1)]) < 4) == F &
-        F %in% (colMeans(tmp1[, 2:ncol(tmp1)]) > -4) == F) {
-      chains <- c(chains, 1)
-    }
-    tmp2 <- as.data.frame(samples[[2]][, bind])
-    if (F %in% (colMeans(tmp2[, 2:ncol(tmp2)]) < 4) == F &
-        F %in% (colMeans(tmp2[, 2:ncol(tmp2)]) > -4) == F) {
-      chains <- c(chains, 2)
-    }
-    tmp3 <- as.data.frame(samples[[3]][, bind])
-    if (F %in% (colMeans(tmp3[, 2:ncol(tmp3)]) < 4) == F &
-        F %in% (colMeans(tmp3[, 2:ncol(tmp3)]) > -4) == F) {
-      chains <- c(chains, 3)
-    }
-  }
-
-  if (length(chains) == 0)
-    chains <- 1:3
-
+  chains <- 1:length(samples)
 
   cat("Summarizing chains...\n")
 
-  # This is probably slower but avoids having a huge object
-  # out <- c()
-  # pb <- txtProgressBar(min = 0, max = length(1:ncol(samples[[1]])), initial = 0)
-
-  if (local == 1) {
-    cores <- 5
-  } else {
+  if (SLURM) {
     cores <- get_cpus_per_task() - 1
+  } else {
+    cores <- 5
   }
 
   start <- Sys.time()
@@ -116,16 +87,17 @@ summarize_samples <- function(samples,
                              samples = samples,
                              chains = chains,
                              cutoff = cutoff)
-
   parallel::stopCluster(this_cluster)
+
 
   out <- dplyr::bind_rows(out)
   print(Sys.time() - start)
+
   cat('Chain summarization complete \n')
 
   dat <- list(out = out)
 
-  # Make out objects better ----
+  # Reformat estimated parameters ----
   # lambda
   keep <- grep("lambda0", out$param)
   lambda0 <- out %>%
@@ -202,6 +174,7 @@ summarize_samples <- function(samples,
     key <- dplyr::mutate(gridkey, spat.grid.id = grid.id)
   }
 
+  # spat
   keep <- grep("spat", out$param)
   if (length(keep) > 0) {
     spat <- out %>%
@@ -211,7 +184,6 @@ summarize_samples <- function(samples,
               dplyr::select(conus.grid.id, group, block.out, mean, lo, hi,
                             lotail, hitail, unc.range, unc.rel, rhat, ESS)
 
-    # if (coarse.grid = T)
     dat$spat <- spat
   }
 
@@ -240,6 +212,7 @@ summarize_samples <- function(samples,
     ) %>%
     dplyr::select(name, number, data.type)
 
+  # alpha
   keep <- grep("alpha", out$param)
   alpha <- out %>%
             dplyr::slice(keep) %>%
@@ -283,5 +256,6 @@ summarize_samples <- function(samples,
 
   # Return
   dat$waic <- waic
+
   return(dat)
 }

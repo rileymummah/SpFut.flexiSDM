@@ -45,7 +45,7 @@ get_derived <- function(samples,
     source(pathToProj)
 
 
-    # Pull spat and beta out of the output file
+    # Pull spat from output file
     keep <- grep("spat", colnames(samples))
 
     as.data.frame(coda::as.mcmc(samples)) %>%
@@ -69,6 +69,7 @@ get_derived <- function(samples,
 
     }
 
+    # Pull beta from output file
     keep <- grep('^B', colnames(samples))
 
     as.data.frame(coda::as.mcmc(samples)) %>%

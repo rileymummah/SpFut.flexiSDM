@@ -4,7 +4,7 @@
 \alias{get_derived}
 \title{Title}
 \usage{
-get_derived(samples, data, project, coarse.grid, spatRegion, pathToProj)
+get_derived(samples, data, project, coarse.grid, spatRegion, pathToProj = NULL)
 }
 \arguments{
 \item{samples}{(list of mcmc objects) output from fitting a NIMBLE model}

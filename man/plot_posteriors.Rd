@@ -25,7 +25,7 @@ plot_posteriors(
 
 \item{cutoff}{(numeric) where to cut off chains for plotting; defaults to 0}
 
-\item{plot}{(character) which parameter to plot; defaults to "B"; options are "B", "alpha", and "tau"}
+\item{plot}{(character) which parameter to plot; defaults to "B"; options are "B" and "alpha"}
 
 \item{Bpriordist}{(character) distribution for beta priors; defaults to "dnorm"; options are "dnorm" or "dunif"}
 

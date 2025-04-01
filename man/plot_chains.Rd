@@ -22,7 +22,7 @@ plot_chains(
 
 \item{cutoff}{(numeric) where to cut off chains for plotting; defaults to 0}
 
-\item{plot}{(character) which parameter to plot; defaults to "B"; options are "B", "alpha", and "tau"}
+\item{plot}{(character) which parameter to plot; defaults to "B"; options are "B" and "alpha"}
 
 \item{chaincols}{(vector) colors to use for chains; defaults to pink, green, and blue}
 }
