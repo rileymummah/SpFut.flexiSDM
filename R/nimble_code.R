@@ -19,6 +19,8 @@
 #' @returns nimble code object
 #' @export
 #'
+#' @importFrom nimble nimbleCode
+#'
 #' @examples
 
 
