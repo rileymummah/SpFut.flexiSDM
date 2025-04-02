@@ -24,8 +24,6 @@
 #' @examples
 
 
-
-
 nimble_code <- function(data,
                         constants,
                         sp.auto,
