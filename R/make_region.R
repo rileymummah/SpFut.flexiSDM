@@ -75,7 +75,7 @@ make_region <- function(rangelist,
 
   # If sub == T, find centroid to add buffer to
   if (sub == T) {
-    fullrange1 <- sf::st_centroid(fullrange)
+    fullrange <- sf::st_centroid(fullrange)
   }
 
   # Add buffer
