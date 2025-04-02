@@ -24,8 +24,8 @@ SpFut.flexiSDM contains the following functions:
 
 ### Prep covariate data
 
--   load_covar - this requires the species-futures directory right now. Revisit it (CLS)
--   plot_covar - DONE
+-   load_covar - (CLS) can delete
+-   plot_covar - DONE 
 -   cor_covar - DONE
 -   select_covar - DONE
 -   add_int_cols - EXCLUDED FOR NOW
@@ -72,7 +72,7 @@ SpFut.flexiSDM contains the following functions:
 -   plot_convergence - (CLS) cleaned, commented, and documented
 -   plot_pars - (CLS) cleaned, commented, and documented
 -   plot_effects - (CLS) cleaned, commented, and documented
--   plot_auc
+-   plot_auc - (CLS) cleaned, commented, and documented
 
 ## Installation
 
