@@ -447,14 +447,14 @@ map_species_data <- function(title,
 
     if (length(unique(blocks$folds)) == 1) {
       base <- base +
-              ggplot2::geom_sf(data = blocks, size = 1, linewidth = 1,
-                               ggplot2::aes(fill = as.factor(folds)), color = NA, alpha = 0.5) +
+              ggplot2::geom_sf(data = blocks, size = 1, linewidth = .15,
+                               ggplot2::aes(fill = as.factor(folds)), color = "gray30", alpha = 0.5) +
               ggplot2::scale_fill_manual(values = blockcols, name = "Out-of-sample test area",
                                          label = paste0("Block ", blocks$folds[1]))
     } else {
       base <- base +
-                ggplot2::geom_sf(data = blocks, size = 1, linewidth = 1,
-                                 ggplot2::aes(fill = as.factor(folds)), color = NA, alpha = 0.3) +
+                ggplot2::geom_sf(data = blocks, size = 1, linewidth = .15,
+                                 ggplot2::aes(fill = as.factor(folds)), color = "gray30", alpha = 0.3) +
                 ggplot2::scale_fill_manual(values = blockcols, name = "Block")
     }
 
