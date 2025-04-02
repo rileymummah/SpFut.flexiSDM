@@ -1,12 +1,9 @@
 #' Title
 #'
 #' @param samples
-#' @param code
 #' @param data
 #' @param constants
-#' @param inits
 #' @param project
-#' @param WAIC
 #' @param all.chains
 #' @param coarse.grid
 #' @param cutoff
@@ -27,45 +24,17 @@
 
 
 summarize_samples <- function(samples,
-                              code,
                               data,
                               constants,
-                              inits,
                               project = 0,
                               coarse.grid,
-                              WAIC = F,
                               cutoff = 0,
                               block.out,
                               gridkey,
                               spatkey = NULL,
                               SLURM = F) {
 
-  # Get WAIC ----
-  if (WAIC == T) {
-    cat("Assessing fit...\n")
-
-    # get WAIC
-    cat("Calculating WAIC...\n")
-    mcmc <- lapply(samples, as.matrix)
-    mcmc <- lapply(mcmc, as.data.frame)
-    mcmc <- dplyr::bind_rows(mcmc)
-    mcmc <- coda::as.mcmc(mcmc)
-
-    # set up model
-    mod <- nimble::nimbleModel(code = code,
-                               name = "model",
-                               constants = constants,
-                               data = data,
-                               inits = inits)
-
-    mod1 <- nimble::compileNimble(mod)
-
-    waic <- nimble::calculateWAIC(mcmc = mcmc, model = mod1)
-
-  } else {
-    waic <- NA
-  }
-
+  
   # Summarize chains in parallel ----
 
   # select which chains to use
@@ -255,7 +224,5 @@ summarize_samples <- function(samples,
   dat$obs.coef <- obs.coef
 
   # Return
-  dat$waic <- waic
-
   return(dat)
 }
