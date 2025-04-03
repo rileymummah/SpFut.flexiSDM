@@ -26,6 +26,7 @@ Imports:
     ggplot2,
     lubridate,
     magrittr,
+    nimble,
     readr,
     rnaturalearth,
     rstan,
