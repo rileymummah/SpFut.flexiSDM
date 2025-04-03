@@ -46,7 +46,7 @@ select_covar <- function(covs,
     covs.rm <- c(covs.rm, tmp)
     #cat("removing ", tmp, "\n")
 
-    cors <- dplyr::filter(cores,
+    cors <- dplyr::filter(cors,
                           cov1 != tmp,
                           cov2 != tmp)
 
