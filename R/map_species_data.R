@@ -561,7 +561,8 @@ map_species_data <- function(title,
                            axis.text.x = ggplot2::element_text(angle = 45,
                                                                hjust = 1,
                                                                vjust = 1),
-                           strip.text = ggplot2::element_text(size = 12))
+                           strip.text = ggplot2::element_text(size = 12)) +
+      ggplot2::scale_linetype(guide = "none")
   }
 
   base
