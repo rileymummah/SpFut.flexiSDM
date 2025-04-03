@@ -1,11 +1,11 @@
-#' Title
+#' Summarize chain output from NIMBLE
 #'
-#' @param samples
-#' @param code
-#' @param data
-#' @param constants
-#' @param inits
-#' @param project
+#' @param samples (list) output from NIMBLE
+#' @param code (nimbleCode) output from nimble_code
+#' @param data (list) data created and formatted for NIMBLE by data_for_NIMBLE()$data
+#' @param constants (list) constants created and formatted for NIMBLE by data_for_NIMBLE()$constants
+#' @param inits (function) created from nimble_inits() to set initial values for NIMBLE
+#' @param project (numeric) the number of projections to calculate
 #' @param WAIC
 #' @param all.chains
 #' @param coarse.grid
@@ -13,7 +13,7 @@
 #' @param block.out
 #' @param gridkey
 #' @param spatkey
-#' @param local
+#' @param SLURM
 #'
 #' @returns
 #' @export
