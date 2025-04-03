@@ -1,4 +1,4 @@
-#' Title
+#' Extract and calculate derived quantities for projections
 #'
 #' @param i (numeric) projection number
 #' @param data (NIMBLE data) data created and formatted for NIMBLE

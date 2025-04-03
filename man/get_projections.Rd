@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_projections.R
 \name{get_projections}
 \alias{get_projections}
-\title{Title}
+\title{Extract and calculate derived quantities for projections}
 \usage{
 get_projections(i, data, beta, spat, lambda0)
 }
@@ -21,5 +21,5 @@ get_projections(i, data, beta, spat, lambda0)
 A data.frame of lambda, psi, and XB estimates for projection i
 }
 \description{
-Title
+Extract and calculate derived quantities for projections
 }

@@ -15,7 +15,7 @@
 
 plot_convergence <- function(out) {
   tmp <- c()
-  for (i in 2:(length(out)-1)) {
+  for (i in 2:(length(out))) {#-1)) { # I don't know why the -1 was there but I took it out so that obs.coef are included (CLS 4/3/25)
     tmp1 <- out[[i]] %>% dplyr::mutate(type = names(out)[i])
     tmp <- dplyr::bind_rows(tmp, tmp1)
   }

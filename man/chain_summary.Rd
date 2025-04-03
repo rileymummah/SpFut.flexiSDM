@@ -2,13 +2,19 @@
 % Please edit documentation in R/chain_summary.R
 \name{chain_summary}
 \alias{chain_summary}
-\title{Title}
+\title{Summarize a single chain from NIMBLE output}
 \usage{
 chain_summary(i, samples, chains = 1:3, cutoff = 0)
 }
 \arguments{
-\item{cutoff}{}
+\item{i}{(numeric) index of parameter to summarize}
+
+\item{samples}{(list) output from NIMBLE}
+
+\item{chains}{(numeric vector) sequence of the number of chains; Default is 1:3}
+
+\item{cutoff}{(numeric) where to cutoff chains in addition to the burnin; Default is 0}
 }
 \description{
-Title
+Summarize a single chain from NIMBLE output
 }

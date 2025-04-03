@@ -1,4 +1,4 @@
-#' Title
+#' Extract and calculate derived quantities
 #'
 #' @param samples (list of mcmc objects) output from fitting a NIMBLE model
 #' @param data (NIMBLE data) data created and formatted for NIMBLE

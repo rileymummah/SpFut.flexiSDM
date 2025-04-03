@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_derived.R
 \name{get_derived}
 \alias{get_derived}
-\title{Title}
+\title{Extract and calculate derived quantities}
 \usage{
 get_derived(samples, data, project, coarse.grid, spatRegion, pathToProj = NULL)
 }
@@ -23,5 +23,5 @@ get_derived(samples, data, project, coarse.grid, spatRegion, pathToProj = NULL)
 A dataframe of the original MCMC samples with estimated psi and lambda, psi, and XB for each projection (if projections are specified)
 }
 \description{
-Title
+Extract and calculate derived quantities
 }

@@ -1,9 +1,9 @@
-#' Title
+#' Summarize a single chain from NIMBLE output
 #'
-#' @param i
-#' @param samples
-#' @param chains
-#' @param cutoff
+#' @param i (numeric) index of parameter to summarize
+#' @param samples (list) output from NIMBLE
+#' @param chains (numeric vector) sequence of the number of chains; Default is 1:3
+#' @param cutoff (numeric) where to cutoff chains in addition to the burnin; Default is 0
 #'
 #' @returns
 #' @export

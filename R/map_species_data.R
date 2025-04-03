@@ -437,7 +437,7 @@ map_species_data <- function(title,
   # __d. range ----
   if (plot.range == T) {
     base <- base +
-             ggplot2::geom_sf(data = region$range, fill = NA, linewidth = 0.65)
+             ggplot2::geom_sf(data = region$range, fill = NA, color = "gray35", linewidth = 0.4, aes(linetype = range.name))
   }
 
   # __e. blocks ----
@@ -447,14 +447,14 @@ map_species_data <- function(title,
 
     if (length(unique(blocks$folds)) == 1) {
       base <- base +
-              ggplot2::geom_sf(data = blocks, size = 1, linewidth = 1,
-                               ggplot2::aes(fill = as.factor(folds)), color = NA, alpha = 0.5) +
+              ggplot2::geom_sf(data = blocks, size = 1, linewidth = .15,
+                               ggplot2::aes(fill = as.factor(folds)), color = "gray30", alpha = 0.5) +
               ggplot2::scale_fill_manual(values = blockcols, name = "Out-of-sample test area",
                                          label = paste0("Block ", blocks$folds[1]))
     } else {
       base <- base +
-                ggplot2::geom_sf(data = blocks, size = 1, linewidth = 1,
-                                 ggplot2::aes(fill = as.factor(folds)), color = NA, alpha = 0.3) +
+                ggplot2::geom_sf(data = blocks, size = 1, linewidth = .15,
+                                 ggplot2::aes(fill = as.factor(folds)), color = "gray30", alpha = 0.3) +
                 ggplot2::scale_fill_manual(values = blockcols, name = "Block")
     }
 
@@ -465,34 +465,7 @@ map_species_data <- function(title,
   if (plot == "samples") {
 
     if (details == T) {
-      # plotpoints <- species.data$locs$cont %>%
-      #   filter(year >= year.start,
-      #          year <= year.end,
-      #          survey.conducted == 1) %>%
-      #   select(!unique.id) %>%
-      #   distinct() %>%
-      #   group_by(source) %>%
-      #   mutate(nsites = length(unique(site.id))) %>%
-      #   group_by(source, site.id) %>%
-      #   mutate(nvisits = n()) %>%
-      #   slice_head() %>%
-      #   ungroup()
-      #
-      # sourcesummary <- plotpoints %>%
-      #   st_drop_geometry() %>%
-      #   select(source, data.type, nsites, nvisits) %>%
-      #   group_by(source, data.type) %>%
-      #   summarize(nsites = mean(nsites),
-      #             nvisits = median(nvisits),
-      #             .groups = "drop") %>%
-      #   mutate(nvisits = case_when(data.type == "PO" ~ "",
-      #                              T ~ paste0(", ", nvisits)))
-      #
-      # plotpoints <- plotpoints %>%
-      #   select(!c(nsites, nvisits)) %>%
-      #   full_join(sourcesummary, by = c("source", "data.type")) %>%
-      #   mutate(label = paste0(source, " (", data.type, ": ", nsites, nvisits, ")"))
-
+      
       locs <- species.data$locs$cont %>%
                 sf::st_drop_geometry() %>%
                 dplyr::select(site.id, source) %>%
@@ -537,7 +510,8 @@ map_species_data <- function(title,
                 ggplot2::labs(color = "Data source (data type: number of sites, \nmedian visits per site)",
                               shape = "Data type",
                               subtitle = paste0("All available data between ", year.start, " and ", year.end),
-                              title = title)
+                              title = title,
+                              linetype = "Range")
     } else {
       base <- base +
               ggplot2::geom_sf(data = plotpoints, ggplot2::aes(color = source, shape = data.type), alpha = 1, size = 1.5) +
@@ -545,7 +519,8 @@ map_species_data <- function(title,
               ggplot2::labs(color = "Data source",
                             shape = "Data type",
                             subtitle = paste0("All available data between ", year.start, " and ", year.end),
-                            title = title)
+                            title = title,
+                            linetype = "Range")
     }
 
   }
@@ -586,7 +561,8 @@ map_species_data <- function(title,
                            axis.text.x = ggplot2::element_text(angle = 45,
                                                                hjust = 1,
                                                                vjust = 1),
-                           strip.text = ggplot2::element_text(size = 12))
+                           strip.text = ggplot2::element_text(size = 12)) +
+      ggplot2::scale_linetype(guide = "none")
   }
 
   base
