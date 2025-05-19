@@ -96,14 +96,14 @@ map_species_data <- function(title,
 
   # 2. make base map ----
   base <- ggplot2::ggplot() +
-            ggplot2::geom_sf(data = na, fill = "gray90") +
-            ggplot2::geom_sf(data = st, fill = "gray90", color= "gray40") +
-            ggplot2::geom_sf(data = wa, fill = "lightsteelblue") +
-            ggplot2::theme(panel.background = ggplot2::element_rect(fill = "lightsteelblue"),
-                           panel.grid = ggplot2::element_blank(),
-                           axis.text = ggplot2::element_text(size = 12),
-                           legend.text = ggplot2::element_text(size = 12),
-                           legend.title = ggplot2::element_text(size = 14))
+          ggplot2::geom_sf(data = na, fill = "gray90") +
+          ggplot2::geom_sf(data = st, fill = "gray90", color= "gray40") +
+          ggplot2::geom_sf(data = wa, fill = "lightsteelblue") +
+          ggplot2::theme(panel.background = ggplot2::element_rect(fill = "lightsteelblue"),
+                         panel.grid = ggplot2::element_blank(),
+                         axis.text = ggplot2::element_text(size = 12),
+                         legend.text = ggplot2::element_text(size = 12),
+                         legend.title = ggplot2::element_text(size = 14))
 
 
 
@@ -465,7 +465,7 @@ map_species_data <- function(title,
   if (plot == "samples") {
 
     if (details == T) {
-      
+
       locs <- species.data$locs$cont %>%
                 sf::st_drop_geometry() %>%
                 dplyr::select(site.id, source) %>%
