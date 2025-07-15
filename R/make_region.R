@@ -108,91 +108,104 @@ make_region <- function(rangelist,
   region <- sf::st_intersection(region, sf::st_transform(boundary, crs))
 
 
-  # Overlay with grid
-
-  # this gets grid cells but edge cells are cut off
-  grid <- sf::st_intersection(region, sf::st_transform(grid, crs = crs))
-
-  # this gets the whole grid cells
-  grida <- sf::st_transform(grid, crs = crs) %>%
-            dplyr::filter(conus.grid.id %in% grid$conus.grid.id)
-
-  # find cells that are too small and remove (these are along the edges of the boundary)
-  gridb <- grida %>%
-            dplyr::mutate(area = as.numeric(sf::st_area(geometry))) %>%
-            dplyr::filter(area >= cell.size) %>%
-            dplyr::select(!area)
-
-  # Find which grid cells are split into multiple pieces (eg by water) and remove
-  grid1 <- gridb %>%
-            sf::st_cast("MULTIPOLYGON") %>%
-            sf::st_cast("POLYGON")
-  mult <- as.data.frame(table(grid1$conus.grid.id)) %>%
-            dplyr::filter(Freq > 1) %>%
-            dplyr::pull(Var1)
-
-  if (length(mult) > 0) {
-    gridb <- gridb[-which(gridb$conus.grid.id %in% mult),]
-  }
-
-  # Find cells that are not continuous and remove
-  if (continuous == T) {
-    grid2 <- gridb %>%
-      sf::st_union() %>%
-      sf::st_as_sf() %>%
-      sf::st_cast("POLYGON") %>%
-      dplyr::mutate(area = sf::st_area(x)) %>%
-      dplyr::filter(area == max(area))
-    gridc <- sf::st_intersection(gridb, grid2)
-  } else if (continuous == F) {
-    gridc <- gridb
-  }
-
-
-  if (rm.clumps == T) {
-    # Find and remove cells that are in clumps of less than 20 cells
-    grid1 <- gridc %>%
-      # group neighboring cells
-      dplyr::summarize(geometry = sf::st_union(geometry, by_feature = F)) %>%
-      sf::st_cast("POLYGON")%>%
-
-      # remove cells in group of < 20 (area < 500000000)
-      dplyr::mutate(area = as.numeric(sf::st_area(geometry))) %>%
-      dplyr::filter(area >= cellsize * clump.size)
-    gridd <- sf::st_intersection(gridc, grid1) %>% dplyr::ungroup()
+  # if no part of range is within the boundary, return NA
+  if (nrow(region) == 0) {
+    dat <- NA
   } else {
-    gridd <- gridc
-  }
-
-
-
-  # find which cells are orphans and remove
-  tmp <- sf::st_touches(gridd)
-  tmp1 <- unlist(lapply(tmp, length))
-  orphans <- which(tmp1 <= 1)
-
-  cat("Removing cells with <=1 neighbor...\n")
-
-  while (length(orphans) > 0) {
-
-    cat(paste0((length(orphans)), " remaining ", "\n"))
-    gridd <- gridd[-orphans,]
-
+    # Overlay with grid
+    
+    # this gets grid cells but edge cells are cut off
+    grid <- sf::st_intersection(region, sf::st_transform(grid, crs = crs))
+    
+    # this gets the whole grid cells
+    grida <- sf::st_transform(grid, crs = crs) %>%
+      dplyr::filter(conus.grid.id %in% grid$conus.grid.id)
+    
+    # find cells that are too small and remove (these are along the edges of the boundary)
+    gridb <- grida %>%
+      dplyr::mutate(area = as.numeric(sf::st_area(geometry))) %>%
+      dplyr::filter(area >= cell.size) %>%
+      dplyr::select(!area)
+    
+    # Find which grid cells are split into multiple pieces (eg by water) and remove
+    grid1 <- gridb %>%
+      sf::st_cast("MULTIPOLYGON") %>%
+      sf::st_cast("POLYGON")
+    mult <- as.data.frame(table(grid1$conus.grid.id)) %>%
+      dplyr::filter(Freq > 1) %>%
+      dplyr::pull(Var1)
+    
+    if (length(mult) > 0) {
+      gridb <- gridb[-which(gridb$conus.grid.id %in% mult),]
+    }
+    
+    # Find cells that are not continuous and remove
+    if (continuous == T) {
+      grid2 <- gridb %>%
+        sf::st_union() %>%
+        sf::st_as_sf() %>%
+        sf::st_cast("POLYGON") %>%
+        dplyr::mutate(area = sf::st_area(x)) %>%
+        dplyr::filter(area == max(area))
+      gridc <- sf::st_intersection(gridb, grid2)
+    } else if (continuous == F) {
+      gridc <- gridb
+    }
+    
+    
+    if (rm.clumps == T) {
+      # Find and remove cells that are in clumps of less than 20 cells
+      grid1 <- gridc %>%
+        # group neighboring cells
+        dplyr::summarize(geometry = sf::st_union(geometry, by_feature = F)) %>%
+        sf::st_cast("POLYGON")%>%
+        
+        # remove cells in group of < 20 (area < 500000000)
+        dplyr::mutate(area = as.numeric(sf::st_area(geometry))) %>%
+        dplyr::filter(area >= cellsize * clump.size)
+      gridd <- sf::st_intersection(gridc, grid1) %>% dplyr::ungroup()
+      
+      
+      
+    } else {
+      gridd <- gridc
+    }
+    
+    
+    
+    # find which cells are orphans and remove
     tmp <- sf::st_touches(gridd)
     tmp1 <- unlist(lapply(tmp, length))
     orphans <- which(tmp1 <= 1)
+    
+    cat("Removing cells with <=1 neighbor...\n")
+    
+    while (length(orphans) > 0) {
+      
+      cat(paste0((length(orphans)), " remaining ", "\n"))
+      gridd <- gridd[-orphans,]
+      
+      tmp <- sf::st_touches(gridd)
+      tmp1 <- unlist(lapply(tmp, length))
+      orphans <- which(tmp1 <= 1)
+    }
+    
+    
+    
+    
+    # Save output
+    dat <- list(range = fullrangeout,
+                region = region,
+                sp.grid = gridd,
+                boundary = boundary)
+    
+    return(dat)
+    
+    
   }
-
-
-
-
-  # Save output
-  dat <- list(range = fullrangeout,
-              region = region,
-              sp.grid = gridd,
-              boundary = boundary)
-
-  return(dat)
+  
+  
+  
 }
 
 
