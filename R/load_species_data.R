@@ -3,10 +3,10 @@
 #' @description Loads species data and does initial cleaning necessary for iSDM
 #'
 #' @param sp.code (character) 4-letter species code
+#' @param sp.code.all (character) string of all species codes to pull for use in analysis, separated by |
 #' @param file.name (character vector) data file names to read in
 #' @param file.label (character vector) labels for data files
 #' @param file.path (character) path where data files are located
-#' @param keep.subsp (logical) whether to keep records of subsp (T) or not (F)
 #' @param keep.cols (character list) column names to keep for each data file
 #' @param region (sf list) region (output from make_region())
 #' @param filter.region (logical) Only keep data within region (T) or not (F)
@@ -27,10 +27,10 @@
 #'\dontrun{
 #'
 #' species.data <- load_species_data(sp.code = "ANMI",
+#'                 sp.code.all = "ANMI",
 #'                 file.name = c("name-of-file.csv"),
 #'                 file.label = c("File Label"),
 #'                 file.path = "DATA SWAMP/data-ready/",
-#'                 keep.subsp = F,
 #'                 keep.cols = list(c("duration")),
 #'                 region = region,
 #'                 filter.region = T,
@@ -45,10 +45,10 @@
 
 
 load_species_data <- function(sp.code,
+                              sp.code.all,
                               file.name,
                               file.label,
                               file.path,
-                              keep.subsp,
                               keep.cols,
                               region,
                               filter.region,
@@ -86,13 +86,17 @@ load_species_data <- function(sp.code,
     file <- dplyr::mutate(file, source = file.label[f])
 
     # filter to get the correct species
-    if (keep.subsp == T) {
-      file <- file %>%
-        dplyr::mutate(species1 = substr(species, 1, 4)) %>%
-        dplyr::filter(species1 == sp.code)
-    } else {
-      file <- dplyr::filter(file, species == sp.code)
-    }
+    # if (keep.subsp == T) {
+    #   file <- file %>%
+    #     dplyr::mutate(species1 = substr(species, 1, 4)) %>%
+    #     dplyr::filter(species1 == sp.code)
+    # } else {
+    #   file <- dplyr::filter(file, species == sp.code)
+    # }
+    #file <- dplyr::filter(file, species == sp.code)
+    tmp1 <- gsub("[|]", "$|^", sp.code.all)
+    tmp2 <- paste0("^", tmp1, "$")
+    file <- file[grep(tmp2, file$species),]
 
 
     # filter to get only survey.conducted == 1
@@ -249,6 +253,27 @@ load_species_data <- function(sp.code,
       next
     }
 
+    # iNaturalist records for subspecies names might be duplicates, remove here
+    if (file$source[1] == "iNaturalist") {
+      new <- paste0(locs.c$lat, locs.c$lon, locs.c$day, locs.c$month, locs.c$year)
+      
+      old <- locs.cont[which(locs.cont$source == "iNaturalist"),]
+      old <- paste0(old$lat, old$lon, old$day, old$month, old$year)
+      
+      if (length(old) > 0) {
+        rm <- which(new %in% old)
+        
+        locs.c <- locs.c[-rm,]
+        locs.d <- locs.d[-rm,]
+        
+        if (nrow(locs.c) == 0) {
+          cat("All iNaturalist records are potential duplicates\n")
+          next
+        }
+      }
+      
+    }
+    
 
     locs.cont <- dplyr::bind_rows(locs.cont, locs.c)
     locs.disc <- dplyr::bind_rows(locs.disc, locs.d)
