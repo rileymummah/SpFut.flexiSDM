@@ -6,10 +6,10 @@
 \usage{
 load_species_data(
   sp.code,
+  sp.code.all,
   file.name,
   file.label,
   file.path,
-  keep.subsp,
   keep.cols,
   region,
   filter.region,
@@ -24,13 +24,13 @@ load_species_data(
 \arguments{
 \item{sp.code}{(character) 4-letter species code}
 
+\item{sp.code.all}{(character) string of all species codes to pull for use in analysis, separated by |}
+
 \item{file.name}{(character vector) data file names to read in}
 
 \item{file.label}{(character vector) labels for data files}
 
 \item{file.path}{(character) path where data files are located}
-
-\item{keep.subsp}{(logical) whether to keep records of subsp (T) or not (F)}
 
 \item{keep.cols}{(character list) column names to keep for each data file}
 
@@ -60,10 +60,10 @@ Loads species data and does initial cleaning necessary for iSDM
 \dontrun{
 
 species.data <- load_species_data(sp.code = "ANMI",
+                sp.code.all = "ANMI",
                 file.name = c("name-of-file.csv"),
                 file.label = c("File Label"),
                 file.path = "DATA SWAMP/data-ready/",
-                keep.subsp = F,
                 keep.cols = list(c("duration")),
                 region = region,
                 filter.region = T,
