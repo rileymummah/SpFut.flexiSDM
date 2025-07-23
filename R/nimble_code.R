@@ -102,6 +102,8 @@ _DEout
 # Now fill out each section for each dataset ----
 for (d in 1:constants$nD) {
 
+  name <- constants[[paste0("name", d)]]
+  
   if (paste0("Wcells", d) %in% names(constants)) {
     type <- "PO"
     #loop <- paste0("asRow(Wcells", d, ")")
@@ -120,7 +122,12 @@ for (d in 1:constants$nD) {
 
     mod <- "poisPO"
     obs <- "W_NUM[j] ~ dpois(lambdaD_NUM[j] * E_NUM[j]) # Poisson"
-    link <- "log"
+    
+    if (name == "iNaturalist") {
+      link <- "logit"
+    } else {
+      link <- "log"
+    }
 
     obs.mod1 <- gsub("# _NOBS observations, _NVIS median visits per site", paste0("# ", nobs, " cells"), obs.mod)
 
@@ -181,7 +188,6 @@ for (d in 1:constants$nD) {
     next
   }
 
-  name <- constants[[paste0("name", d)]]
 
 
   obs.mod1 <- gsub("_TYPE", type, obs.mod1)
