@@ -239,18 +239,24 @@ sppdata_for_nimble <- function(species.data,
           stateints <- all.states[,c("conus.grid.id", statecols)]
           covariates <- covar %>%
             dplyr::inner_join(stateints, by = "conus.grid.id") %>%
-            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(statecols))
+            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(statecols)) %>%
+            dplyr::filter(is.na(conus.grid.id) == F,
+                          conus.grid.id %in% keep.conus.grid.id)
 
           # use all states because this is for S (whether cell is in state with PO data or not)
           covariates1 <- covar %>%
             dplyr::inner_join(all.states, by = "conus.grid.id") %>%
-            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states))
+            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
+            dplyr::filter(is.na(conus.grid.id) == F,
+                          conus.grid.id %in% keep.conus.grid.id)
         } else if (length(states) == 1) {
           grid.state <- readr::read_rds("data/USA/grid-states.rds")
 
           # don't need intercept since it's just one state
           covariates <- covar %>%
-            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO))
+            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO)) %>%
+            dplyr::filter(is.na(conus.grid.id) == F,
+                          conus.grid.id %in% keep.conus.grid.id)
 
           # use states for S (whether cell is in state with PO data or not)
           covariates1 <- dplyr::inner_join(covar, grid.state, by = "conus.grid.id") %>%
