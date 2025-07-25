@@ -142,7 +142,7 @@ load_species_data <- function(sp.code,
                                                         is.na(coord.unc) ~ "keep",
                                                         T ~ "remove"))
 
-      tmp <- nrow(dplyr::filter(file, rm == "keep"))
+      tmp <- nrow(dplyr::filter(file, rm == "remove"))
       cat("Removing", tmp, "observations whose coordinate uncertainty is above the threshold of", coordunc, "\n")
 
       file <- file %>%
