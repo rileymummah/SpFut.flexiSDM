@@ -281,11 +281,13 @@ load_species_data <- function(sp.code,
 
     # observations
     # add grid.id from locs.d and save
+    keepcols <- keep.cols[[file.name[f]]]
+    if (length(keepcols) > 0) cat("Using ", keepcols, " as covariate(s)\n")
     file1 <- dplyr::inner_join(file, dplyr::select(locs.d, unique.id, conus.grid.id), by = "unique.id") %>%
               dplyr::select(source, data.type, site.id, lat, lon, conus.grid.id,
                             unique.id, survey.id, pass.id, day, month, year,
                             survey.conducted, species, age, time.to.detect,
-                            individual.id, count, tidyselect::any_of(keep.cols[[f]]))
+                            individual.id, count, tidyselect::any_of(keepcols))
 
 
     # If label already exists, just append dfs
