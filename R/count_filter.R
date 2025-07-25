@@ -66,6 +66,9 @@ count_filter <- function(data,
                           dplyr::distinct() %>%
                           dplyr::group_by(survey.id) %>%
                           dplyr::summarize_all(sum, na.rm = T)
+        
+        # if all values are NA, it becomes 0. Make it NA again.
+        countcovs.sum[countcovs.sum == 0] <- NA
       }
 
 
