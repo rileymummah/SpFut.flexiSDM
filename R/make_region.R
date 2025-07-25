@@ -162,7 +162,7 @@ make_region <- function(rangelist,
         
         # remove cells in group of < 20 (area < 500000000)
         dplyr::mutate(area = as.numeric(sf::st_area(geometry))) %>%
-        dplyr::filter(area >= cellsize * clump.size)
+        dplyr::filter(area >= cell.size * clump.size)
       gridd <- sf::st_intersection(gridc, grid1) %>% dplyr::ungroup()
       
       
