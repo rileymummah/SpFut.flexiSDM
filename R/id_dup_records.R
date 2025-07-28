@@ -57,8 +57,8 @@ id_dup_records <- function(species.data) {
   # find points that overlap on the same date
   inter1 <- dplyr::filter(inter,
                           #date == date.1,
-                          day == day.1,
-                          month == month.1,
+                          day.x == day.y.1,
+                          month.x == month.y.1,
                           year == year.1) %>%
 
               # pull site.survey.id for iNat record

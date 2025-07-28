@@ -220,7 +220,7 @@ load_species_data <- function(sp.code,
 
     # locs for continuous space
     locs.c <- dplyr::select(locs, unique.id, site.id, survey.id, pass.id,
-                            survey.conducted, lat, lon, year, geometry, data.type, source)
+                            survey.conducted, lat, lon, day, month, year, geometry, data.type, source)
 
 
     # locs for discrete space
