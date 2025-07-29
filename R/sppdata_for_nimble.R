@@ -239,6 +239,7 @@ sppdata_for_nimble <- function(species.data,
           # all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
           #                 dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
           all.states <- utils::data(grid-states.rds) %>%
+            tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
             dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
 
           # make sure these cells are in the same order as the cells in data and constants
