@@ -215,7 +215,24 @@ for (d in 1:constants$nD) {
 
 
   # Fix detection/effort equation
-  if (constants[[ncov]] == 0) {
+  if (name == "iNaturalist") {
+    # not fixed, goes on the inside
+    obs.mod1 <- gsub("_DEout", "", obs.mod1)
+    obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
+    
+    eqn <- "_LINK(eff_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
+        E_NUM <- eff_NUM * S_NUM
+
+  # Prior for X imputation
+  X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
+    
+    prior1 <- "
+# Observation priors, _TYPE _NUM: _NAME
+for (b in 1:nCov_LETTER_NUM) {
+  _PARAM_NUM[b] ~ dnorm(0,1)
+}"
+    
+  } else if (constants[[ncov]] == 0) {
     # fixed, goes on the outside
 
     # This will only ever happen when link == log, because if link == logit,
@@ -240,13 +257,12 @@ for (d in 1:constants$nD) {
       # not fixed, goes on the inside
       obs.mod1 <- gsub("_DEout", "", obs.mod1)
       obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
-
-      eqn <- "_LINK(_DORE_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
+      
+        eqn <- "_LINK(_DORE_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
 
   # Prior for X imputation
   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
-
-
+      
       prior1 <- "
 # Observation priors, _TYPE _NUM: _NAME
 for (b in 1:nCov_LETTER_NUM) {

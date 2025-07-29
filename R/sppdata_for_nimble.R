@@ -120,6 +120,14 @@ sppdata_for_nimble <- function(species.data,
       PO.inat$constants[[paste0("name", counter)]] <- name
       PO.inat$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
       
+      
+      # iNat always has a logit link so it needs an intercept
+        PO.inat$data[[paste0("Xw", counter)]] <- PO.inat$data[[paste0("Xw", counter)]] %>%
+          tibble::add_column(.before = 1, intercept = 1)
+        PO.inat$constants[[paste0("nCovW", counter)]] <- PO.inat$constants[[paste0("nCovW", counter)]] + 1
+      
+      
+      
       # Add dataset to data list
       dat.ready[[paste0("PO", counter)]] <- PO.inat
 
