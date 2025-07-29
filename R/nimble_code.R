@@ -221,7 +221,7 @@ for (d in 1:constants$nD) {
     obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
     
     eqn <- "_LINK(eff_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
-        E_NUM <- eff_NUM * S_NUM
+  E_NUM[j] <- eff_NUM[j] * S_NUM[j]
 
   # Prior for X imputation
   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
