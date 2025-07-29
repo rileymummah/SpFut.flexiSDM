@@ -238,7 +238,7 @@ sppdata_for_nimble <- function(species.data,
         if (length(states) >= 2) {
           # all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
           #                 dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
-          all.states <- utils::data(grid-states.rds) %>%
+          all.states <- utils::data(grid-states) %>%
             tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
             dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
 
@@ -261,8 +261,11 @@ sppdata_for_nimble <- function(species.data,
             dplyr::filter(is.na(conus.grid.id) == F,
                           conus.grid.id %in% keep.conus.grid.id)
         } else if (length(states) == 1) {
-          grid.state <- readr::read_rds("data/USA/grid-states.rds")
-
+          # grid.state <- readr::read_rds("data/USA/grid-states.rds")
+          all.states <- utils::data(grid-states) %>%
+            tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
+            dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
+          
           # don't need intercept since it's just one state
           covariates <- covar %>%
             dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO)) %>%
