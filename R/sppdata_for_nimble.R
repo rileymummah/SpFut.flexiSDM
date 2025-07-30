@@ -288,7 +288,7 @@ sppdata_for_nimble <- function(species.data,
         # make sure everything is in the right order
         POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
         covariates <- covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),]
-        covariates1 <- covariates[order(match(covariates1$conus.grid.id, keep.conus.grid.id)),]
+        covariates1 <- covariates1[order(match(covariates1$conus.grid.id, keep.conus.grid.id)),]
         
         PO.other <- PO_for_nimble(POdata, covariates, rename = counter)
         PO.other$constants[[paste0("name", counter)]] <- name
