@@ -289,7 +289,7 @@ sppdata_for_nimble <- function(species.data,
                         conus.grid.id %in% keep.conus.grid.id)
 
         # make sure everything is in the right order
-        #POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
+        POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
         covariates <- covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),]
         #covariates1 <- covariates1[order(match(covariates1$conus.grid.id, keep.conus.grid.id)),]
         
