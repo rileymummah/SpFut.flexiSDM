@@ -234,69 +234,72 @@ sppdata_for_nimble <- function(species.data,
                         conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
 
         # Get covariates
-        states <- unique(other.start$state)
-        if (length(states) >= 2) {
-          # all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
-          #                 dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
-          utils::data("grid_states")
-          all.states <- stategrid %>%
-            tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
-            dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
-
-          # make sure these cells are in the same order as the cells in data and constants
-          all.states <- all.states[order(match(all.states$conus.grid.id, covar$conus.grid.id)),]
-
-          # leave out first state because this is for state intercept
-          statecols <- states[2:length(states)]
-          stateints <- all.states[,c("conus.grid.id", statecols)]
-          covariates <- covar %>%
-            dplyr::inner_join(stateints, by = "conus.grid.id") %>%
-            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(statecols)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id)
-
-          # use all states because this is for S (whether cell is in state with PO data or not)
-          covariates1 <- covar %>%
-            dplyr::inner_join(all.states, by = "conus.grid.id") %>%
-            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id)
-        } else if (length(states) == 1) {
-          # grid.state <- readr::read_rds("data/USA/grid-states.rds")
-          utils::data("grid_states")
-          all.states <- stategrid %>%
-            tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
-            dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
-          
-          # don't need intercept since it's just one state
-          covariates <- covar %>%
-            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id)
-
-          # use states for S (whether cell is in state with PO data or not)
-          covariates1 <- dplyr::inner_join(covar, grid.state, by = "conus.grid.id") %>%
-                          dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id)
-        } else {
-          covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id)
-        }
+        # states <- unique(other.start$state)
+        # if (length(states) >= 2) {
+        #   # all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
+        #   #                 dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
+        #   utils::data("grid_states")
+        #   all.states <- stategrid %>%
+        #     tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
+        #     dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
+        # 
+        #   # make sure these cells are in the same order as the cells in data and constants
+        #   all.states <- all.states[order(match(all.states$conus.grid.id, covar$conus.grid.id)),]
+        # 
+        #   # leave out first state because this is for state intercept
+        #   statecols <- states[2:length(states)]
+        #   stateints <- all.states[,c("conus.grid.id", statecols)]
+        #   covariates <- covar %>%
+        #     dplyr::inner_join(stateints, by = "conus.grid.id") %>%
+        #     dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(statecols)) %>%
+        #     dplyr::filter(is.na(conus.grid.id) == F,
+        #                   conus.grid.id %in% keep.conus.grid.id)
+        # 
+        #   # use all states because this is for S (whether cell is in state with PO data or not)
+        #   covariates1 <- covar %>%
+        #     dplyr::inner_join(all.states, by = "conus.grid.id") %>%
+        #     dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
+        #     dplyr::filter(is.na(conus.grid.id) == F,
+        #                   conus.grid.id %in% keep.conus.grid.id)
+        # } else if (length(states) == 1) {
+        #   # grid.state <- readr::read_rds("data/USA/grid-states.rds")
+        #   utils::data("grid_states")
+        #   all.states <- stategrid %>%
+        #     tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
+        #     dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
+        #   
+        #   # don't need intercept since it's just one state
+        #   covariates <- covar %>%
+        #     dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO)) %>%
+        #     dplyr::filter(is.na(conus.grid.id) == F,
+        #                   conus.grid.id %in% keep.conus.grid.id)
+        # 
+        #   # use states for S (whether cell is in state with PO data or not)
+        #   covariates1 <- dplyr::inner_join(covar, grid.state, by = "conus.grid.id") %>%
+        #                   dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
+        #     dplyr::filter(is.na(conus.grid.id) == F,
+        #                   conus.grid.id %in% keep.conus.grid.id)
+        # } else {
+        #   covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO)) %>%
+        #     dplyr::filter(is.na(conus.grid.id) == F,
+        #                   conus.grid.id %in% keep.conus.grid.id)
+        # }
+        covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO)) %>%
+          dplyr::filter(is.na(conus.grid.id) == F,
+                        conus.grid.id %in% keep.conus.grid.id)
 
         # make sure everything is in the right order
-        POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
+        #POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
         covariates <- covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),]
-        covariates1 <- covariates1[order(match(covariates1$conus.grid.id, keep.conus.grid.id)),]
+        #covariates1 <- covariates1[order(match(covariates1$conus.grid.id, keep.conus.grid.id)),]
         
         PO.other <- PO_for_nimble(POdata, covariates, rename = counter)
         PO.other$constants[[paste0("name", counter)]] <- name
         PO.other$constants[[paste0("states", counter)]] <- T
         PO.other$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
 
-        if (length(states) > 1) PO.other$data[[paste0("S", counter)]] <- apply(covariates1[,states], 1, max) # use all states
-        if (length(states) == 1) PO.other$data[[paste0("S", counter)]] <- covariates1[,states] # use one state
+        # if (length(states) > 1) PO.other$data[[paste0("S", counter)]] <- apply(covariates1[,states], 1, max) # use all states
+        # if (length(states) == 1) PO.other$data[[paste0("S", counter)]] <- covariates1[,states] # use one state
 
 
         # Add dataset to data list
