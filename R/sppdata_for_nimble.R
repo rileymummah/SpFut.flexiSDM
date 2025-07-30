@@ -234,7 +234,7 @@ sppdata_for_nimble <- function(species.data,
                         conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
 
         # Get covariates
-        # states <- unique(other.start$state)
+        states <- unique(other.start$state)
         # if (length(states) >= 2) {
         #   # all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
         #   #                 dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
@@ -295,7 +295,7 @@ sppdata_for_nimble <- function(species.data,
         
         PO.other <- PO_for_nimble(POdata, covariates, rename = counter)
         PO.other$constants[[paste0("name", counter)]] <- name
-        PO.other$constants[[paste0("states", counter)]] <- T
+        PO.other$constants[[paste0("states", counter)]] <- states
         PO.other$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
 
         # if (length(states) > 1) PO.other$data[[paste0("S", counter)]] <- apply(covariates1[,states], 1, max) # use all states
