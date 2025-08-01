@@ -13,7 +13,8 @@ data_for_nimble(
   region,
   process.intercept = T,
   gridkey,
-  spatRegion
+  spatRegion,
+  keep.conus.grid.id
 )
 }
 \arguments{
