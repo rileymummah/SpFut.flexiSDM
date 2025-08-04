@@ -71,7 +71,11 @@ get_AUC <- function(species.data,
       
     } else {
       # if there is out of sample data
-      AUCout <- pROC::auc(val.out$pa, val.out$mean)
+      if (length(unique(val.out$pa)) < 2) {
+        AUCin <- NA
+      } else {
+        AUCout <- pROC::auc(val.out$pa, val.out$mean)
+      }
     }
     
     
