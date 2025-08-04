@@ -1,0 +1,11 @@
+#' conus.grid.ids by state
+#'
+#' conus.grid.ids by state
+#'
+#' @format A data frame with 543,049 rows and 3 variables:
+#' \describe{
+#'   \item{conus.grid.id}{integer from 1 to 531296}
+#'   \item{name}{two-digit United States state code}
+#'   \item{value}{set to 1}
+#' }
+"stategrid"

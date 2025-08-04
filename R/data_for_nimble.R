@@ -9,6 +9,7 @@
 #' @param process.intercept (logical) whether to include an intercept in the process model or not; defaults to T
 #' @param gridkey (data.frame) contains conus.grid.ids and associated grid.ids to use for indexing in nimble
 #' @param spatRegion (list) output from make_spatKey(); only required if coarse.grid == T
+#' @param keep.conus.grid.id (logical) keep the conus.grid id in the output
 #'
 #' @returns (list) list of data and constants fully formatted for nimble
 #' @export
@@ -45,7 +46,7 @@ data_for_nimble <- function(sp.data,
   }
 
   covariates <- covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),]
-  
+
   Z <- z_for_nimble(covariates)
 
 
