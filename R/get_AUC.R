@@ -76,34 +76,39 @@ get_AUC <- function(species.data,
       } else {
         AUCout <- pROC::auc(val.out$pa, val.out$mean)
       }
+      
+      
+      
+      # each dataset
+      dats <- unique(val.out$source)
+      aucsout <- c()
+      for (s in 1:length(dats)) {
+        val.out1 <- filter(val.out, source == dats[s])
+        
+        if (length(unique(val.out1$pa)) < 2) {
+          AUCout1 <- NA
+        } else {
+          AUCout1 <- pROC::auc(val.out1$pa, val.out1$mean)
+        }
+        
+        tmpout <- data.frame(source = dats[s],
+                             AUCout = as.numeric(AUCout1),
+                             out.n = nrow(val.out1),
+                             out.cell = length(unique(val.out1$conus.grid.id)))
+        
+        aucsout <- dplyr::bind_rows(aucsout, tmpout)
+        
+      } 
+      
     }
     
     
-    # each dataset
-    dats <- unique(val.out$source)
-    aucsout <- c()
-    for (s in 1:length(dats)) {
-      val.out1 <- filter(val.out, source == dats[s])
-      
-      if (length(unique(val.out1$pa)) < 2) {
-        AUCout1 <- NA
-      } else {
-        AUCout1 <- pROC::auc(val.out1$pa, val.out1$mean)
-      }
-      
-      tmpout <- data.frame(source = dats[s],
-                           AUCout = as.numeric(AUCout1),
-                           out.n = nrow(val.out1),
-                           out.cell = length(unique(val.out1$conus.grid.id)))
-      
-      aucsout <- dplyr::bind_rows(aucsout, tmpout)
-      
-    }
     
     
     
-    if (block.out != "none") {aucs <- dplyr::full_join(aucsin, aucsout, by = "source")}
-    if (block.out == "none") {aucs <- aucsin}
+    
+    if (nrow(val.out) != 0) {aucs <- dplyr::full_join(aucsin, aucsout, by = "source")}
+    if (nrow(val.out) == 0) {aucs <- aucsin}
     
     all.auc <- data.frame(sp.code = sp.code,
                           block = block.out,
