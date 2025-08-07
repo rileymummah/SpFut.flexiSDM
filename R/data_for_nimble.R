@@ -28,8 +28,7 @@ data_for_nimble <- function(sp.data,
                             region,
                             process.intercept = T,
                             gridkey,
-                            spatRegion,
-                            keep.conus.grid.id) {
+                            spatRegion) {
 
   # get number of datasets
   nD <- length(sp.data)
@@ -45,7 +44,7 @@ data_for_nimble <- function(sp.data,
                         covar[,covs.z])
   }
 
-  covariates <- covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),]
+  covariates <- covariates[order(match(covariates$conus.grid.id, gridkey$conus.grid.id)),]
 
   Z <- z_for_nimble(covariates)
 
