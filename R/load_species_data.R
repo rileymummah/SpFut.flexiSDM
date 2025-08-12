@@ -281,7 +281,7 @@ load_species_data <- function(sp.code,
 
     # observations
     # add grid.id from locs.d and save
-    keepcols <- keep.cols[[file.name[f]]]
+    keepcols <- keep.cols[[f]]
     if (length(keepcols) > 0) cat("Using ", keepcols, " as covariate(s)\n")
     file1 <- dplyr::inner_join(file, dplyr::select(locs.d, unique.id, conus.grid.id), by = "unique.id") %>%
               dplyr::select(source, data.type, site.id, lat, lon, conus.grid.id,
