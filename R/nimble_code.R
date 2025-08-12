@@ -57,7 +57,7 @@ for (i in 1:nCell) {
 
 "
 
-  pro.mod <- gsub("_NCELLS", length(constants$nCell), pro.mod)
+  pro.mod <- gsub("_NCELLS", constants$nCell, pro.mod)
 
 
 
