@@ -28,6 +28,7 @@ add_state_ind <- function(species.data,
                           keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]) {
   
   data("grid_states")
+  gridkey1 <- filter(gridkey, conus.grid.id %in% keep.conus.grid.id)
   
   # Add state indicator variable for iNat data to indicate which states have taxon geoprivacy
   if ("iNaturalist" %in% names(species.data$obs)) {
@@ -38,12 +39,12 @@ add_state_ind <- function(species.data,
       
       # iNat is always dataset1 if it exists
       S1 <- data.frame(grid.id = constants$Wcells1) %>%
-        dplyr::left_join(gridkey, by = "grid.id") %>%
+        dplyr::left_join(gridkey1, by = "grid.id") %>%
         dplyr::mutate(S1 = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 0,
                               T ~ 1)) %>%
         dplyr::pull(S1)
     } else {
-      S1 <- rep(1, nrow(region$sp.grid))
+      S1 <- rep(1, length(keep.conus.grid.id))
     }
     constants$S1 <- S1
   }
@@ -59,7 +60,7 @@ add_state_ind <- function(species.data,
              conus.grid.id %in% keep.conus.grid.id)
     
     S <- data.frame(grid.id = constants[[paste0("Wcells", num)]]) %>%
-      dplyr::left_join(gridkey, by = "grid.id") %>%
+      dplyr::left_join(gridkey1, by = "grid.id") %>%
       dplyr::mutate(S = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
                            T ~ 0)) %>%
       dplyr::pull(S)
