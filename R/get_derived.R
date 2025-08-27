@@ -79,10 +79,10 @@ get_derived <- function(samples,
         spat <- tmp
         rm(tmp)
         
-      } else {
-        spat <- data.frame(spat = rep(0, times = nrow(beta)))
       } 
-    }
+    } else {
+      spat <- data.frame(spat = rep(0, times = nrow(beta)))
+    } 
     
     
     
