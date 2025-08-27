@@ -27,6 +27,7 @@ Imports:
     lubridate,
     magrittr,
     nimble,
+    pROC,
     readr,
     rnaturalearth,
     rstan,
