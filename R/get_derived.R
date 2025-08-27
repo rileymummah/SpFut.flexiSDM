@@ -42,7 +42,7 @@ get_derived <- function(samples,
   # Projections
   
   # Load projections
-  if (project > 0) {
+  if (sp.auto == T & project > 0) {
     source(pathToProj)
     
     
@@ -56,34 +56,29 @@ get_derived <- function(samples,
     
     
     
-    if (sp.auto == T) {
-      # Pull spat from output file
-      keep <- grep("spat", colnames(samples))
-      
-      as.data.frame(coda::as.mcmc(samples)) %>%
-        dplyr::select(tidyselect::all_of(keep)) %>%
-        as.matrix() -> spat
-      
-      # Realign the spatial grid to the species grid if coarse.grid
-      # This loop could probably be sped up if it was vectorized.
-      if (coarse.grid == T) {
-        cells <- spatRegion$spatkey$spat.grid.id
-        
-        tmp <- c()
-        suppressMessages(for (i in 1:length(cells)) {
-          index <- which(colnames(spat) == paste0('spat[', cells[i], ']'))
-          tmp <- dplyr::bind_cols(tmp, spat[, index])
-        })
-        
-        colnames(tmp) <- paste0('spat[', 1:length(cells), ']')
-        spat <- tmp
-        rm(tmp)
-        
-      } 
-    } else {
-      spat <- data.frame(spat = rep(0, times = nrow(beta)))
-    } 
+    # Pull spat from output file
+    keep <- grep("spat", colnames(samples))
     
+    as.data.frame(coda::as.mcmc(samples)) %>%
+      dplyr::select(tidyselect::all_of(keep)) %>%
+      as.matrix() -> spat
+    
+    # Realign the spatial grid to the species grid if coarse.grid
+    # This loop could probably be sped up if it was vectorized.
+    if (coarse.grid == T) {
+      cells <- spatRegion$spatkey$spat.grid.id
+      
+      tmp <- c()
+      suppressMessages(for (i in 1:length(cells)) {
+        index <- which(colnames(spat) == paste0('spat[', cells[i], ']'))
+        tmp <- dplyr::bind_cols(tmp, spat[, index])
+      })
+      
+      colnames(tmp) <- paste0('spat[', 1:length(cells), ']')
+      spat <- tmp
+      rm(tmp)
+      
+    }
     
     
     # Get projections
