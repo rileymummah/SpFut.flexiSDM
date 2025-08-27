@@ -24,28 +24,28 @@ get_derived <- function(samples,
                         spatRegion,
                         pathToProj = NULL,
                         sp.auto = T) {
-
+  
   # Pull out lambda
   keep <- grep("lambda0", colnames(samples))
-
+  
   as.data.frame(coda::as.mcmc(samples)) %>%
     dplyr::select(tidyselect::all_of(keep)) -> lambda0
-
-
+  
+  
   # Convert lambda to psi for all samples
   psi0 <- lapply(lambda0, function(x) VGAM::clogloglink(log(x), inverse = T)) %>%
-            data.frame()
+    data.frame()
   names(psi0) <- gsub('lambda0.', 'psi0[', names(psi0))
   names(psi0) <- gsub('[.]', ']', names(psi0))
-
-
+  
+  
   # Projections
-
+  
   # Load projections
   if (project > 0) {
     source(pathToProj)
-
-
+    
+    
     
     # Pull beta from output file
     keep <- grep('^B', colnames(samples))
@@ -79,24 +79,24 @@ get_derived <- function(samples,
         spat <- tmp
         rm(tmp)
         
-      }
-    } else {
-      spat <- data.frame(spat = rep(0, times = nrow(beta)))
+      } else {
+        spat <- data.frame(spat = rep(0, times = nrow(beta)))
+      } 
     }
     
-
-
+    
+    
     # Get projections
     proj <- lapply(1:project, get_projections, data = data,
                    beta = beta, spat = spat, lambda0 = lambda0)
-
+    
     proj <- do.call(cbind, proj)
-
+    
     derived <- dplyr::bind_cols(samples, psi0, proj)
-
+    
   } else {
     derived <- dplyr::bind_cols(samples, psi0)
   }
-
+  
   return(derived)
 }
