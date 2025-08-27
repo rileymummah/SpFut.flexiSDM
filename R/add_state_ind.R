@@ -34,14 +34,14 @@ add_state_ind <- function(species.data,
   if ("iNaturalist" %in% names(species.data$obs)) {
     if (length(obsc.state) > 0) {
       grid.states <- stategrid %>%
-        dplyr::filter(name %in% obsc.state,
+        dplyr::filter(name %in% obsc.state == F,
                conus.grid.id %in% keep.conus.grid.id)
       
       # iNat is always dataset1 if it exists
       S1 <- data.frame(grid.id = constants$Wcells1) %>%
         dplyr::left_join(gridkey1, by = "grid.id") %>%
-        dplyr::mutate(S1 = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 0,
-                              T ~ 1)) %>%
+        dplyr::mutate(S1 = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
+                              T ~ 0)) %>%
         dplyr::pull(S1)
     } else {
       S1 <- rep(1, length(keep.conus.grid.id))
