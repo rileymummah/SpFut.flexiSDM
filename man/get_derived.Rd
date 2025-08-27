@@ -4,7 +4,15 @@
 \alias{get_derived}
 \title{Extract and calculate derived quantities}
 \usage{
-get_derived(samples, data, project, coarse.grid, spatRegion, pathToProj = NULL)
+get_derived(
+  samples,
+  data,
+  project,
+  coarse.grid,
+  spatRegion,
+  pathToProj = NULL,
+  sp.auto = T
+)
 }
 \arguments{
 \item{samples}{(list of mcmc objects) output from fitting a NIMBLE model}
