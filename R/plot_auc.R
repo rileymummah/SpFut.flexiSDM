@@ -45,7 +45,7 @@ plot_auc <- function(auc,
             ggplot2::theme_bw() +
             ggplot2::scale_shape_manual(values = c(16, 1)) +
             ggplot2::scale_color_manual(values = blockcols) +
-            ggplot2::labs(x = "Dataset", y = "AUC", color = "Excluded block",
+            ggplot2::labs(x = "Dataset", y = "AUC", color = "Excluded fold",
                           shape = "Validation", size = "Number of cells \nwith data",
                           title = "Accuracy of predictions") +
             ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 0, hjust = 0.5, vjust = 1)) +
@@ -60,7 +60,7 @@ plot_auc <- function(auc,
             ggplot2::theme_bw() +
             ggplot2::scale_shape_manual(values = c(16, 1)) +
             ggplot2::scale_color_manual(values = blockcols) +
-            ggplot2::labs(x = "Dataset", y = "AUC", color = "Excluded block",
+            ggplot2::labs(x = "Dataset", y = "AUC", color = "Excluded fold",
                           shape = "Validation", size = "Number of cells \nwith data",
                           title = "Accuracy of predictions") +
             ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 0, hjust = 0.5, vjust = 1)) +
