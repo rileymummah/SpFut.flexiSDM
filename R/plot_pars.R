@@ -164,7 +164,7 @@ plot_pars <- function(out,
                                                   col = as.factor(block.out)),
                                      position = ggplot2::position_dodge(width = 0.5)) +
             ggplot2::scale_color_manual(values = blockcols) +
-            ggplot2::labs(y = 'Estimate', x = xlab, color = "Excluded block",
+            ggplot2::labs(y = 'Estimate', x = xlab, color = "Excluded fold",
                           title = title,
                           subtitle = "Mean and 95% credible intervals")
 
