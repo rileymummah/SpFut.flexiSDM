@@ -507,7 +507,7 @@ map_species_data <- function(title,
       base <- base +
                 ggplot2::geom_sf(data = plotpoints, ggplot2::aes(color = label, shape = data.type), alpha = 1, size = 1.5) +
                 ggplot2::scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
-                ggplot2::labs(color = "Data source (data type: number of sites, \nmedian visits per site)",
+                ggplot2::labs(color = "Dataset (data type: number of sites, \nmedian visits per site)",
                               shape = "Data type",
                               subtitle = paste0("All available data between ", year.start, " and ", year.end),
                               title = title,
@@ -516,7 +516,7 @@ map_species_data <- function(title,
       base <- base +
               ggplot2::geom_sf(data = plotpoints, ggplot2::aes(color = source, shape = data.type), alpha = 1, size = 1.5) +
               ggplot2::scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
-              ggplot2::labs(color = "Data source",
+              ggplot2::labs(color = "Dataset",
                             shape = "Data type",
                             subtitle = paste0("All available data between ", year.start, " and ", year.end),
                             title = title,
