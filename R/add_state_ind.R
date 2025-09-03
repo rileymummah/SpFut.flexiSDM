@@ -15,6 +15,7 @@
 #' @importFrom tibble add_column
 #' @importFrom readr read_rds
 #' @importFrom lubridate yday
+#' @importFrom utils data
 #'
 #' @examples
 
@@ -26,17 +27,17 @@ add_state_ind <- function(species.data,
                           covs.inat = NA,
                           obsc.state = NA,
                           keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]) {
-  
-  data("grid_states")
+
+  utils::data("stategrid")
   gridkey1 <- filter(gridkey, conus.grid.id %in% keep.conus.grid.id)
-  
+
   # Add state indicator variable for iNat data to indicate which states have taxon geoprivacy
   if ("iNaturalist" %in% names(species.data$obs)) {
     if (length(obsc.state) > 0) {
       grid.states <- stategrid %>%
         dplyr::filter(name %in% obsc.state == F,
                conus.grid.id %in% keep.conus.grid.id)
-      
+
       # iNat is always dataset1 if it exists
       S1 <- data.frame(grid.id = constants$Wcells1) %>%
         dplyr::left_join(gridkey1, by = "grid.id") %>%
@@ -48,17 +49,17 @@ add_state_ind <- function(species.data,
     }
     constants$S1 <- S1
   }
-  
+
   # Add state indicator for multi-state PO to indicate which states have data
   st <- grep("states", names(constants))
   if (length(st) > 0) {
     num <- gsub("states", "", names(constants)[st])
     states <- constants[[st]]
-    
+
     grid.states <- stategrid %>%
       dplyr::filter(name %in% states,
              conus.grid.id %in% keep.conus.grid.id)
-    
+
     S <- data.frame(grid.id = constants[[paste0("Wcells", num)]]) %>%
       dplyr::left_join(gridkey1, by = "grid.id") %>%
       dplyr::mutate(S = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
@@ -66,7 +67,7 @@ add_state_ind <- function(species.data,
       dplyr::pull(S)
     constants[[paste0("S", num)]] <- S
   }
-  
+
   return(constants)
 }
 

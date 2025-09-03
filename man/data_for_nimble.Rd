@@ -34,8 +34,6 @@ data_for_nimble(
 \item{gridkey}{(data.frame) contains conus.grid.ids and associated grid.ids to use for indexing in nimble}
 
 \item{spatRegion}{(list) output from make_spatKey(); only required if coarse.grid == T}
-
-\item{keep.conus.grid.id}{(logical) keep the conus.grid id in the output}
 }
 \value{
 (list) list of data and constants fully formatted for nimble

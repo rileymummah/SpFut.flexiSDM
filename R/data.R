@@ -1,6 +1,6 @@
-#' conus.grid.ids by state
+#' A dataframe of CONUS grid IDs by state
 #'
-#' conus.grid.ids by state
+#' A dataframe of conus.grid.ids by state
 #'
 #' @format A data frame with 543,049 rows and 3 variables:
 #' \describe{

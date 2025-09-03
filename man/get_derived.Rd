@@ -26,6 +26,8 @@ get_derived(
 \item{spatRegion}{(list) object created from make_spatkey() and used to fit the spatial model}
 
 \item{pathToProj}{(character) path to R script where projections are set up}
+
+\item{sp.auto}{(logical) whether or not spatial autocorrelation was used}
 }
 \value{
 A dataframe of the original MCMC samples with estimated psi and lambda, psi, and XB for each projection (if projections are specified)

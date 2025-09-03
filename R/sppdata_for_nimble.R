@@ -119,15 +119,15 @@ sppdata_for_nimble <- function(species.data,
                                rename = counter)
       PO.inat$constants[[paste0("name", counter)]] <- name
       PO.inat$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
-      
-      
+
+
       # iNat always has a logit link so it needs an intercept
         PO.inat$data[[paste0("Xw", counter)]] <- PO.inat$data[[paste0("Xw", counter)]] %>%
           tibble::add_column(.before = 1, intercept = 1)
         PO.inat$constants[[paste0("nCovW", counter)]] <- PO.inat$constants[[paste0("nCovW", counter)]] + 1
-      
-      
-      
+
+
+
       # Add dataset to data list
       dat.ready[[paste0("PO", counter)]] <- PO.inat
 
@@ -186,7 +186,7 @@ sppdata_for_nimble <- function(species.data,
                                     rename = counter)
           PO.other$constants[[paste0("name", counter)]] <- name
           PO.other$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
-          
+
           # Add dataset to data list
           dat.ready[[paste0("PO", counter)]] <- PO.other
 
@@ -204,7 +204,7 @@ sppdata_for_nimble <- function(species.data,
       # these are all going to be combined into one
       sta.ext <- which(PO.extent[other.ind] != "CONUS")
       sta.ind <- other.ind[sta.ext]
-      
+
       if (length(sta.ind) > 0) {
 
         sta.dat <- c()
@@ -238,7 +238,7 @@ sppdata_for_nimble <- function(species.data,
         if (length(states) >= 2) {
           # all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
           #                 dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
-          utils::data("grid_states")
+          utils::data("stategrid")
           all.states <- stategrid %>%
             tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
             dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
@@ -267,13 +267,13 @@ sppdata_for_nimble <- function(species.data,
         #   all.states <- stategrid %>%
         #     tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
         #     dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
-        # 
+        #
         #   # don't need intercept since it's just one state
         #   covariates <- covar %>%
         #     dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO)) %>%
         #     dplyr::filter(is.na(conus.grid.id) == F,
         #                   conus.grid.id %in% keep.conus.grid.id)
-        # 
+        #
         #   # # use states for S (whether cell is in state with PO data or not)
         #   # covariates1 <- dplyr::inner_join(covar, grid.state, by = "conus.grid.id") %>%
         #   #                 dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
@@ -284,7 +284,7 @@ sppdata_for_nimble <- function(species.data,
             dplyr::filter(is.na(conus.grid.id) == F,
                           conus.grid.id %in% keep.conus.grid.id)
         }
-       
+
         # covariates <- covariates %>%
         #   dplyr::filter(is.na(conus.grid.id) == F,
         #                 conus.grid.id %in% keep.conus.grid.id)
@@ -293,7 +293,7 @@ sppdata_for_nimble <- function(species.data,
         POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
         covariates <- covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),]
         #covariates1 <- covariates1[order(match(covariates1$conus.grid.id, keep.conus.grid.id)),]
-        
+
         PO.other <- PO_for_nimble(POdata, covariates, rename = counter)
         PO.other$constants[[paste0("name", counter)]] <- name
         PO.other$constants[[paste0("states", counter)]] <- states
