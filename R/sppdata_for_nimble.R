@@ -113,7 +113,12 @@ sppdata_for_nimble <- function(species.data,
 
       # make sure everything is in the right order
       POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
-      covariates <- covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),]
+      if (ncol(covariates) > 1) {
+        covariates <- covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),]
+      } else {
+        covariates <- as.data.frame(covariates[order(match(covariates$conus.grid.id, keep.conus.grid.id)),])
+        colnames(covariates)[1] <- "conus.grid.id"
+      }
 
       PO.inat <- PO_for_nimble(POdata, covariates,
                                rename = counter)
