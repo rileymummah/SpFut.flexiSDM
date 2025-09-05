@@ -13,6 +13,7 @@
 #' @param Bpriorvar2 (numeric) second parameter for beta priors; defaults to 1
 #' @param block.out (character or numeric) which block is excluded
 #' @param zero_mean (logical) whether spatial parameter should include zero_mean restriction (T) or not (F); defaults to T
+#' @param tau (character) the value of tau (precision) for the ICAR model
 #' @param rm.state (logical) whether to remove state-specific effort (T) or not (F); defaults to F
 #' @param occupancy (logical) whether to use occupancy models (T) or replace them with Bernoullis (F)
 #'
@@ -103,7 +104,7 @@ _DEout
 for (d in 1:constants$nD) {
 
   name <- constants[[paste0("name", d)]]
-  
+
   if (paste0("Wcells", d) %in% names(constants)) {
     type <- "PO"
     #loop <- paste0("asRow(Wcells", d, ")")
@@ -122,7 +123,7 @@ for (d in 1:constants$nD) {
 
     mod <- "poisPO"
     obs <- "W_NUM[j] ~ dpois(lambdaD_NUM[j] * E_NUM[j]) # Poisson"
-    
+
     if (name == "iNaturalist") {
       link <- "logit"
     } else {
@@ -219,19 +220,19 @@ for (d in 1:constants$nD) {
     # not fixed, goes on the inside
     obs.mod1 <- gsub("_DEout", "", obs.mod1)
     obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
-    
+
     eqn <- "_LINK(eff_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
   E_NUM[j] <- eff_NUM[j] * S_NUM[j]
 
   # Prior for X imputation
   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
-    
+
     prior1 <- "
 # Observation priors, _TYPE _NUM: _NAME
 for (b in 1:nCov_LETTER_NUM) {
   _PARAM_NUM[b] ~ dnorm(0,1)
 }"
-    
+
   } else if (constants[[ncov]] == 0) {
     # fixed, goes on the outside
 
@@ -257,12 +258,12 @@ for (b in 1:nCov_LETTER_NUM) {
       # not fixed, goes on the inside
       obs.mod1 <- gsub("_DEout", "", obs.mod1)
       obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
-      
+
         eqn <- "_LINK(_DORE_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
 
   # Prior for X imputation
   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
-      
+
       prior1 <- "
 # Observation priors, _TYPE _NUM: _NAME
 for (b in 1:nCov_LETTER_NUM) {
@@ -343,27 +344,39 @@ for (b in 1:nCov_LETTER_NUM) {
 
 if (sp.auto == T) {
 
-  if (zero_mean == T && coarse.grid == T) {
+  # if (zero_mean == T && coarse.grid == T) {
+  #   pro.mod <- gsub("# no residual spatial effect", "+ spat[spatCells[i]] # residual spatial effect", pro.mod, fixed = T)
+  #   prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nSpatCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nSpatCell], tau, zero_mean = 1)")
+  #   # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
+  #
+  # } else if (zero_mean == T && coarse.grid == F) {
+  #   pro.mod <- gsub("# no residual spatial effect", "+ spat[i] # residual spatial effect", pro.mod, fixed = T)
+  #   prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
+  #   # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
+  #
+  # } else if (zero_mean == F && coarse.grid == T) {
+  #   pro.mod <- gsub("# no residual spatial effect", "+ spat[spatCells[i]] # residual spatial effect", pro.mod, fixed = T)
+  #   prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nSpatCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nSpatCell], tau)")
+  #   # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
+  #
+  # } else {
+  #   pro.mod <- gsub("# no residual spatial effect", "+ spat[i] # residual spatial effect", pro.mod, fixed = T)
+  #   prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau)")
+  #   # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau)")
+  # }
+
+  if (coarse.grid == T) {
     pro.mod <- gsub("# no residual spatial effect", "+ spat[spatCells[i]] # residual spatial effect", pro.mod, fixed = T)
-    prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nSpatCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nSpatCell], tau, zero_mean = 1)")
-    # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
-
-  } else if (zero_mean == T && coarse.grid == F) {
-    pro.mod <- gsub("# no residual spatial effect", "+ spat[i] # residual spatial effect", pro.mod, fixed = T)
-    prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
-    # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
-
-  } else if (zero_mean == F && coarse.grid == T) {
-    pro.mod <- gsub("# no residual spatial effect", "+ spat[spatCells[i]] # residual spatial effect", pro.mod, fixed = T)
-    prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nSpatCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nSpatCell], tau)")
-    # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
-
+    prior <- paste0(prior, "\n\ntau <- ",tau,"\nspat[1:nSpatCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nSpatCell], tau, zero_mean = 1)")
   } else {
     pro.mod <- gsub("# no residual spatial effect", "+ spat[i] # residual spatial effect", pro.mod, fixed = T)
-    prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau)")
-    # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau)")
+    prior <- paste0(prior, "\n\ntau <- ",tau,"\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
   }
 
+  # Defaults to zero_mean = 1/T
+  if (zero_mean == F) {
+    prior <- gsub('zero_mean = 1','zero_mean = 0', prior, fixed = T)
+  }
 }
 
 

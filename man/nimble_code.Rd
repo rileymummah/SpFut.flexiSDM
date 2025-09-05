@@ -46,6 +46,8 @@ nimble_code(
 \item{rm.state}{(logical) whether to remove state-specific effort (T) or not (F); defaults to F}
 
 \item{occupancy}{(logical) whether to use occupancy models (T) or replace them with Bernoullis (F)}
+
+\item{tau}{(character) the value of tau (precision) for the ICAR model}
 }
 \value{
 nimble code object
