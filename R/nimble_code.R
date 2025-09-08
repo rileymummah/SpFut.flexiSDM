@@ -36,6 +36,7 @@ nimble_code <- function(data,
                         Bpriorvar2 = 1,
                         block.out,
                         zero_mean = T,
+                        tau = tau,
                         rm.state = F,
                         occupancy = T) {
 

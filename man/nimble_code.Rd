@@ -16,6 +16,7 @@ nimble_code(
   Bpriorvar2 = 1,
   block.out,
   zero_mean = T,
+  tau = tau,
   rm.state = F,
   occupancy = T
 )
@@ -43,11 +44,11 @@ nimble_code(
 
 \item{zero_mean}{(logical) whether spatial parameter should include zero_mean restriction (T) or not (F); defaults to T}
 
+\item{tau}{(character) the value of tau (precision) for the ICAR model}
+
 \item{rm.state}{(logical) whether to remove state-specific effort (T) or not (F); defaults to F}
 
 \item{occupancy}{(logical) whether to use occupancy models (T) or replace them with Bernoullis (F)}
-
-\item{tau}{(character) the value of tau (precision) for the ICAR model}
 }
 \value{
 nimble code object
