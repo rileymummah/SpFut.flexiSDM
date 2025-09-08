@@ -374,6 +374,11 @@ if (sp.auto == T) {
     prior <- paste0(prior, "\n\ntau <- ",tau,"\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
   }
 
+  # Change to ~ for distribution
+  if (stringr::str_detect(tau, 'd')) {
+    prior <- gsub('tau <- ', 'tau ~ ', prior, fixed = T)
+  }
+
   # Defaults to zero_mean = 1/T
   if (zero_mean == F) {
     prior <- gsub('zero_mean = 1','zero_mean = 0', prior, fixed = T)
