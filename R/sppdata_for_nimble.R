@@ -389,9 +389,9 @@ sppdata_for_nimble <- function(species.data,
         DND <- survey_for_nimble(data,
                                  cov.names,
                                  type = "DND",
-                                 rename = counter)
-        DND <- DND %>% dplyr::filter(conus.grid.id %in% keep.conus.grid.id)
-        
+                                 rename = counter,
+                                 keep.conus.grid.id = keep.conus.grid.id)
+
         # if this is going to have a logit link (ie nVisits >= min.visits.incl)
         # it needs an intercept
         if (DND$constants[[paste0("nVisitsV", counter)]] >= min.visits.incl) {
@@ -492,8 +492,9 @@ sppdata_for_nimble <- function(species.data,
         # format for nimble
         COUNT <- survey_for_nimble(data,
                                    count.covs,
-                                   rename = counter)
-        COUNT <- COUNT %>% dplyr::filter(conus.grid.id %in% keep.conus.grid.id)
+                                   type = "count",
+                                   rename = counter,
+                                   keep.conus.grid.id = keep.conus.grid.id)
 
         # if this is going to have a logit link (ie nVisits >= min.visits.incl)
         # it needs an intercept

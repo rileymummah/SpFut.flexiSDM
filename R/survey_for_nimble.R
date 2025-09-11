@@ -16,7 +16,8 @@
 survey_for_nimble <- function(data,
                               cov.names,
                               rename = "",
-                              type = "count") {
+                              type = "count",
+                              keep.conus.grid.id) {
 
 
   if ("count" %in% colnames(data) == F) {stop("There must be exactly one column named 'count' in survey")}
@@ -24,6 +25,9 @@ survey_for_nimble <- function(data,
   if (length(grep("grid.id", colnames(data))) != 1) {stop("There must be exactly one column named 'grid.id' in survey")}
   if (length(grep("site.id", colnames(data))) != 1) {stop("There must be exactly one column named 'site.id' in survey")}
 
+  
+  data <- filter(data, conus.grid.id %in% keep.conus.grid.id)
+  
   surveydata <- dplyr::select(data, !tidyselect::any_of(cov.names))
   covariates <- dplyr::select(data, conus.grid.id, site.id, survey.id, tidyselect::any_of(cov.names))
 
