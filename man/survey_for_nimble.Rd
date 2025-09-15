@@ -4,7 +4,13 @@
 \alias{survey_for_nimble}
 \title{Format survey data for nimble}
 \usage{
-survey_for_nimble(data, cov.names, rename = "", type = "count")
+survey_for_nimble(
+  data,
+  cov.names,
+  rename = "",
+  type = "count",
+  keep.conus.grid.id
+)
 }
 \arguments{
 \item{data}{(data.frame) dataframe containing DND or count data and detection covariates}

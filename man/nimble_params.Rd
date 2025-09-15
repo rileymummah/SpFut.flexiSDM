@@ -4,7 +4,7 @@
 \alias{nimble_params}
 \title{Set up nimble parameters}
 \usage{
-nimble_params(data, constants, sp.auto, lambda = T, XB = T)
+nimble_params(data, constants, sp.auto, lambda = T, XB = T, effort = F)
 }
 \arguments{
 \item{data}{(list) data formatted for nimble}
