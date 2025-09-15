@@ -30,7 +30,8 @@ nimble_params <- function(data,
                           constants,
                           sp.auto,
                           lambda = T,
-                          XB = T) {
+                          XB = T,
+                          effort = F) {
 
   # always trace these
   params <- c("B", "alpha")
@@ -68,6 +69,10 @@ nimble_params <- function(data,
         params <- c(params, paste0("A", d))
       } else {
         params <- c(params, paste0("p", d))
+      }
+      
+      if (effort == T) {
+        params <- c(params, paste0("E", d))
       }
 
     } else if (paste0("Xv", d) %in% names(data)) {
