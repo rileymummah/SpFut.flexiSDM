@@ -222,7 +222,7 @@ for (d in 1:constants$nD) {
     obs.mod1 <- gsub("_DEout", "", obs.mod1)
     obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
 
-    eqn <- "_LINK(eff_NUM[j]) <- _PARAM_NUM[1:nCovY_NUM] * X_LOWLETTER_NUM[j,1:nCovY_NUM]
+    eqn <- "_LINK(eff_NUM[j]) <- _PARAM_NUM[1:nCovW_NUM] * X_LOWLETTER_NUM[j,1:nCovW_NUM]
   E_NUM[j] <- eff_NUM[j] * S_NUM[j]
 
   # Prior for X imputation
