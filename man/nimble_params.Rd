@@ -16,6 +16,8 @@ nimble_params(data, constants, sp.auto, lambda = T, XB = T, effort = F)
 \item{lambda}{(logical) whether to trace lambda (T) or not (F)}
 
 \item{XB}{(logical) whether to trace XB (T) or not (F)}
+
+\item{effort}{(logical) whether to trace effort parameters (T) or not (F)}
 }
 \value{
 A vector of parameters to trace
@@ -30,7 +32,8 @@ params <- nimble_params(data,
                        constants,
                        lambda = T,
                        XB = T,
-                       sp.auto = T)
+                       sp.auto = T,
+                       effort = F)
 
 }
 }

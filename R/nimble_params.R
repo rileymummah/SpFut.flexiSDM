@@ -2,11 +2,12 @@
 #'
 #' @description Sets up vector of parameters to trace
 #'
-#' @param data (list) data formatted for nimble 
+#' @param data (list) data formatted for nimble
 #' @param constants (list) constants formatted for nimble
 #' @param sp.auto (logical) whether to trace parameters associated with spatial model (T) or not (F)
 #' @param lambda (logical) whether to trace lambda (T) or not (F)
 #' @param XB (logical) whether to trace XB (T) or not (F)
+#' @param effort (logical) whether to trace effort parameters (T) or not (F)
 #'
 #' @returns A vector of parameters to trace
 #' @export
@@ -20,7 +21,8 @@
 #'                        constants,
 #'                        lambda = T,
 #'                        XB = T,
-#'                        sp.auto = T)
+#'                        sp.auto = T,
+#'                        effort = F)
 #'
 #'}
 
@@ -54,13 +56,13 @@ nimble_params <- function(data,
 
     if (paste0("Xy", d) %in% names(data)) {
       # count
-      
+
       if (constants[[paste0("nCovY", d)]] > 0) {
         params <- c(params, paste0("C", d))
       } else {
         params <- c(params, paste0("p", d))
       }
-      
+
 
     } else if (paste0("Xw", d) %in% names(data)) {
       # PO
@@ -70,7 +72,7 @@ nimble_params <- function(data,
       } else {
         params <- c(params, paste0("p", d))
       }
-      
+
       if (effort == T) {
         params <- c(params, paste0("E", d))
       }
