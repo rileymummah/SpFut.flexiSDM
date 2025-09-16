@@ -31,6 +31,7 @@ summarize_samples <- function(samples,
                               block.out,
                               gridkey,
                               spatkey = NULL,
+                              effort = F,
                               SLURM = F) {
 
 
@@ -98,6 +99,35 @@ summarize_samples <- function(samples,
                         lotail, hitail, unc.range, unc.rel, rhat, ESS)
 
   dat$XB0 <- XB0
+  
+  # effort
+  if (effort == T) {
+    datasetnames <- grep("nW", names(constants))
+    datasetnames <- gsub("nW", "", names(constants)[datasetnames])
+    datasetnames <- grep(paste0("name", datasetnames, collapse = "|"), names(constants))
+    dnames <- c()
+    for (i in 1:length(datasetnames)) {
+      dnames <- c(dnames, constants[[datasetnames[i]]])
+    }
+    dnames <- data.frame(PO.dataset = paste0("E", 1:length(dnames)),
+                         PO.dataset.name = dnames)
+
+    keep <- grep("E", out$param)
+    Enames <- colnames(samples[[1]][grep("E", colnames(samples[[1]]))])
+    E <- out %>%
+      dplyr::slice(keep) %>%
+      dplyr::mutate(name1 = Enames,
+                    grid.id = gsub(".*[[]", "", name1),
+                    grid.id = as.numeric(gsub("[]]", "", grid.id)),
+                    PO.dataset = gsub("[[].*", "", name1),
+                    block.out = block.out) %>%
+      dplyr::inner_join(gridkey, by = "grid.id") %>%
+      dplyr::inner_join(dnames, by = "PO.dataset") %>%
+      dplyr::select(conus.grid.id, PO.dataset.name, group, block.out, mean, lo, hi,
+                    lotail, hitail, unc.range, unc.rel, rhat, ESS)
+    
+    dat$effort <- E
+  }
 
   if (project > 0) {
     for (z in 1:project) {
@@ -221,6 +251,16 @@ summarize_samples <- function(samples,
                               lotail, hitail, unc.range, unc.rel, rhat, ESS)
 
   dat$obs.coef <- obs.coef
+  
+  
+  # Tau
+  keep <- grep("tau", out$param)
+  tau <- out %>%
+    dplyr::slice(keep) %>%
+    dplyr::mutate(block.out = block.out) %>%
+    dplyr::select(block.out, mean, lo, hi,
+                  lotail, hitail, unc.range, unc.rel, rhat, ESS)
+  dat$tau <- tau
 
   # Return
   return(dat)

@@ -70,8 +70,8 @@ map_species_data <- function(title,
     stop("Options for uncertainty are F (do not plot uncertainty) or 'unc.rel.', 'unc.range', 'hitail', or 'lotail'")
   }
 
-  if (plot %in% c("samples", "lambda", "psi", "spat", "boundary", "XB") == F) {
-    stop("Options for plot are 'samples', 'lambda', 'psi', 'boundary', 'XB' or 'spat'")
+  if (plot %in% c("samples", "lambda", "psi", "spat", "boundary", "XB", "effort") == F) {
+    stop("Options for plot are 'samples', 'lambda', 'psi', 'boundary', 'effort', 'XB' or 'spat'")
   }
 
   blockcols <- c("none" = "black", "1" = "#e79f1e", "2" = "#009e73", "3" = "#cb79a8")
@@ -126,7 +126,7 @@ map_species_data <- function(title,
 
 
   # for anything other than plot == "samples"
-  if (plot %in% c("lambda", "psi", "spat", "boundary", "XB")) {
+  if (plot %in% c("lambda", "psi", "spat", "boundary", "XB", "effort")) {
 
     if (plot == "lambda") {
       fill <- "Relative abundance"
@@ -138,6 +138,8 @@ map_species_data <- function(title,
       fill <- paste0(threshold, " occupancy probability threshold")
     } else if (plot == "XB") {
       fill <- "XB"
+    } else if (plot == "effort") {
+      fill <- "Effort"
     }
 
 
@@ -153,6 +155,9 @@ map_species_data <- function(title,
       intensity <- dplyr::bind_rows(intensity, tmp)
 
     }
+    
+    if (plot == "effort") intensity$scenario <- 0
+    
 
     # get correct column to plot
     if (plot.uncertainty == F) {
@@ -565,6 +570,8 @@ map_species_data <- function(title,
       ggplot2::scale_linetype(guide = "none")
   }
 
+  if (plot == "effort") base <- base + facet_wrap(~ PO.dataset.name)
+  
   base
 
 

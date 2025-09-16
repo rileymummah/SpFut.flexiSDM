@@ -74,8 +74,11 @@ plot_pars <- function(out,
     } else if (plot.group == "dataset") {
       dat <- out$alpha %>% dplyr::rename(x = name)
       xlab <- "Dataset"
+    } else if (plot.group == "tau") {
+      dat <- out$tau %>% dplyr::mutate(x = "tau")
+      xlab <- "Tau"
     } else {
-      stop("plot.group must be 'process' or 'observation' or 'dataset'")
+      stop("plot.group must be 'process' or 'observation' or 'dataset' or 'tau'")
     }
 
 
@@ -85,7 +88,7 @@ plot_pars <- function(out,
             ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 0,
                                                                hjust = 0.5,
                                                                vjust = 1)) +
-            ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 15)) +
+            #ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 15)) +
             ggplot2::geom_point(ggplot2::aes(x = x, y = mean), col='black') +
             ggplot2::geom_segment(ggplot2::aes(x = x, xend = x,
                                                y = lo, yend = hi), col='black') +
@@ -148,6 +151,9 @@ plot_pars <- function(out,
     } else if (plot.group == "dataset") {
       dat <- rename(out, x = name)
       xlab <- "Dataset"
+    } else if (plot.group == "tau") {
+      dat <- out$tau %>% dplyr::mutate(x = "tau")
+      xlab <- "Tau"
     } else {
       stop("plot.group must be 'process' or 'observation' or 'dataset'")
     }
