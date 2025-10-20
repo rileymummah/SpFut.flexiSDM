@@ -5,6 +5,7 @@
 #' @param covar (data.frame) data.frame holding covariate values and conus.grid.id
 #' @param cov.names (character vector) column names from covar to plot
 #' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
+#' @param cov.levels (character vector) column names in order they should appear on plot
 #' @param covs.int.factor (character vector) name of columns in covar that has an interaction
 #' @param out.path (character) path to save figure
 #' @param out.name (character) file name to save figure
@@ -31,6 +32,7 @@
 cor_covar <- function(covar,
                       cov.names,
                       cov.labels = cov.names,
+                      cov.levels = cov.names,
                       covs.int.factor = NA,
                       out.path = "",
                       out.name = "covariate-cor",
@@ -64,6 +66,10 @@ cor_covar <- function(covar,
             dplyr::select(!c(cov1, name)) %>%
             dplyr::rename(cov1 = "label")
 
+  
+  cors$cov1 <- factor(cors$cov1, levels = cov.levels)
+  cors$cov2 <- factor(cors$cov2, levels = cov.levels)
+  
 
   corspl <- ggplot2::ggplot() +
               ggplot2::geom_tile(data = dplyr::filter(cors, value > color.threshold | value < color.threshold*-1),
