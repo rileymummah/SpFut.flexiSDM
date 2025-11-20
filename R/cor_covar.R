@@ -32,7 +32,7 @@
 cor_covar <- function(covar,
                       cov.names,
                       cov.labels = cov.names,
-                      cov.levels = cov.names,
+                      cov.levels = cov.labels,
                       covs.int.factor = NA,
                       out.path = "",
                       out.name = "covariate-cor",
