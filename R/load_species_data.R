@@ -4,6 +4,7 @@
 #'
 #' @param sp.code (character) 4-letter species code
 #' @param sp.code.all (character) string of all species codes to pull for use in analysis, separated by |
+#' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species
 #' @param file.name (character vector) data file names to read in
 #' @param file.label (character vector) labels for data files
 #' @param file.path (character) path where data files are located
@@ -46,10 +47,11 @@
 
 load_species_data <- function(sp.code,
                               sp.code.all,
-                              file.name,
-                              file.label,
+                              file.info,
+                              # file.name,
+                              # file.label,
                               file.path,
-                              keep.cols,
+                              # keep.cols,
                               region,
                               filter.region,
                               year.start,
@@ -60,6 +62,23 @@ load_species_data <- function(sp.code,
                               keep.conus.grid.id = region$sp.grid$conus.grid.id) {
 
 
+  
+  # Pull info from file.info
+  file.name <- file.info$file.name
+  file.label <- file.info$file.label
+  
+  covariates <- list()
+  for (i in 1:nrow(file.info)) {
+    covs.mean <- unlist(strsplit(file.info$covar.mean[i], split = ", "))
+    covs.sum <- unlist(strsplit(file.info$covar.sum[i], split = ", "))
+    #area <- unlist(strsplit(covs$Area[i], split = ","))
+    covs1 <- c(covs.mean, covs.sum)
+    covs1 <- covs1[which(is.na(covs1) == F)]
+    covariates[[file.info$file.name[i]]] <- covs1
+  }
+  
+  
+  
   # Get locations
   locs.cont <- c()
   locs.disc <- c()
@@ -281,7 +300,7 @@ load_species_data <- function(sp.code,
 
     # observations
     # add grid.id from locs.d and save
-    keepcols <- keep.cols[[f]]
+    keepcols <- covariates[[f]]
     if (length(keepcols) > 0) cat("Using ", keepcols, " as covariate(s)\n")
     file1 <- dplyr::inner_join(file, dplyr::select(locs.d, unique.id, conus.grid.id), by = "unique.id") %>%
               dplyr::select(source, data.type, site.id, lat, lon, conus.grid.id,
