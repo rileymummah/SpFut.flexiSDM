@@ -27,18 +27,32 @@
 
 sppdata_for_nimble <- function(species.data,
                                region,
-                               data.type,
-                               PO.extent,
+                               file.info,
+                               # data.type,
+                               # PO.extent,
                                covar,
                                covs.inat = c("traveltime", "density", "n.inat"),
                                covs.PO = c("traveltime", "density"),
-                               covs.mean,
-                               covs.sum,
-                               offset.area,
+                               # covs.mean,
+                               # covs.sum,
+                               # offset.area,
                                DND.maybe = 1,
                                keep.conus.grid.id,
                                min.visits.incl = 3) {
 
+  # Make sure file.info matches data in species.data
+  file.info <- filter(file.info, file.label %in% names(species.data$obs))
+  file.info <- file.info[order(match(file.info$file.label, names(species.data$obs))),] %>% distinct()
+  
+  # remove area
+  file.info$area <- ""
+  
+  # Pull info from file.info
+  data.type <- file.info$data.type
+  PO.extent <- file.info$PO.extent
+  covs.mean <- file.info$covar.mean
+  covs.sum <- file.info$covar.sum
+  offset.area <- file.info$area
 
   # these are indices of datasets that don't have any data (i.e., wrong years, species, etc.)
   # they will be removed at the end
