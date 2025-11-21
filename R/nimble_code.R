@@ -31,9 +31,10 @@ nimble_code <- function(data,
                         coarse.grid,
                         path,
                         min.visits.incl = 3,
-                        Bpriordist = "dnorm",
-                        Bpriorvar1 = 0,
-                        Bpriorvar2 = 1,
+                        Bprior = "dnorm(0,1)",
+                        # Bpriordist = "dnorm",
+                        # Bpriorvar1 = 0,
+                        # Bpriorvar2 = 1,
                         block.out,
                         zero_mean = T,
                         tau = tau,
@@ -68,7 +69,7 @@ for (i in 1:nCell) {
   prior <- "
 # Process priors
 for (a in 1:nCovZ) {
-  B[a] ~ _DIST(_PAR1,_PAR2)
+  B[a] ~ BPRIOR
 }
 
 # Dataset intercepts
@@ -77,9 +78,10 @@ for (a in 1:nD) {
   w[a] ~ dnorm(0,1)
 }"
 
-prior <- gsub("_DIST", Bpriordist, prior)
-prior <- gsub("_PAR1", Bpriorvar1, prior)
-prior <- gsub("_PAR2", Bpriorvar2, prior)
+# prior <- gsub("_DIST", Bpriordist, prior)
+# prior <- gsub("_PAR1", Bpriorvar1, prior)
+# prior <- gsub("_PAR2", Bpriorvar2, prior)
+prior <- gsub("BPRIOR", Bprior, prior)
 
 ## Observation models ----
 obs.all <- ""
