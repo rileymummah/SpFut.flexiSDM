@@ -3,6 +3,7 @@
 #' @param data (list) output from data_for_nimble()
 #' @param out (list) output from summarize_chains()
 #' @param breaks (numeric) distance between covariate values to simulate
+#' @param breaks (data.frame) data.frame containing unscaled covariates, or FALSE
 #'
 #' @returns plot of marginal effects
 #' @export
@@ -17,7 +18,8 @@
 
 plot_effects <- function(data,
                          out,
-                         breaks = 0.01) {
+                         breaks = 0.01,
+                         unscale_covar = F) {
 
   # Start with process covariates
   ball <- out$process.coef
@@ -75,6 +77,19 @@ plot_effects <- function(data,
                         lo = exp(blo * s),
                         factor = "none")
 
+      if (class(unscale_covar) == "data.frame") {
+        # now get unscaled values
+        mn <- mean(covar_unscaled[,cov])
+        sd <- sd(covar_unscaled[,cov])
+        
+        use$x_unscaled <- (use$x * sd) + mn
+        
+        
+        all <- bind_rows(all, use)
+      }
+      
+      
+      
       all <- dplyr::bind_rows(all, use)
     }
 
@@ -116,6 +131,17 @@ plot_effects <- function(data,
 
       use$factor <- gsub(".*[.]", "", use$factor)
 
+      if (class(unscale_covar) == "data.frame") {
+        # now get unscaled values
+        mn <- mean(covar_unscaled[,cov])
+        sd <- sd(covar_unscaled[,cov])
+        
+        use$x_unscaled <- (use$x * sd) + mn
+        
+        
+        all <- bind_rows(all, use)
+      }
+      
       all <- dplyr::bind_rows(all, use)
     }
 
@@ -142,6 +168,17 @@ plot_effects <- function(data,
                         lo = exp(blo1 * s + blo2 * s^2),
                         factor = "none")
 
+      if (class(unscale_covar) == "data.frame") {
+        # now get unscaled values
+        mn <- mean(covar_unscaled[,cov])
+        sd <- sd(covar_unscaled[,cov])
+        
+        use$x_unscaled <- (use$x * sd) + mn
+        
+        
+        all <- bind_rows(all, use)
+      }
+      
       all <- dplyr::bind_rows(all, use)
     }
 
@@ -203,6 +240,17 @@ plot_effects <- function(data,
       use$factor <- gsub(".*[.]", "", use$factor)
       use$factor2 <- NULL
 
+      
+      if (class(unscale_covar) == "data.frame") {
+        # now get unscaled values
+        mn <- mean(covar_unscaled[,cov])
+        sd <- sd(covar_unscaled[,cov])
+        
+        use$x_unscaled <- (use$x * sd) + mn
+        
+        
+        all <- bind_rows(all, use)
+      }
 
       all <- dplyr::bind_rows(all, use)
 
@@ -222,13 +270,20 @@ plot_effects <- function(data,
             dplyr::mutate(cov = Label)
 
 
+  
+  if (class(unscale_covar) != "data.frame") {
+    all1$xplot <- all1$x
+  } else {
+    all1$xplot <- all1$x_unscaled
+  }
+  
 
   if (length(unique(all1$factor)) == 1) { # no interactions
 
     pl <- ggplot2::ggplot(filter(all1)) +
             ggplot2::geom_hline(yintercept = 0) +
-            ggplot2::geom_ribbon(ggplot2::aes(x = x, ymax = hi, ymin = lo), alpha = 0.5) +
-            ggplot2::geom_line(ggplot2::aes(x = x, y = mean)) +
+            ggplot2::geom_ribbon(ggplot2::aes(x = xplot, ymax = hi, ymin = lo), alpha = 0.5) +
+            ggplot2::geom_line(ggplot2::aes(x = xplot, y = mean)) +
             ggplot2::facet_wrap(~ cov, scales = "free") +
             ggplot2::theme_bw() +
             ggplot2::labs(x = "Scaled covariate value", y = "Exp(Estimate)",
@@ -245,8 +300,8 @@ plot_effects <- function(data,
     if (groups == c("none, east, west")) {
       pl <- ggplot2::ggplot(filter(all1)) +
               ggplot2::geom_hline(yintercept = 0) +
-              ggplot2::geom_ribbon(ggplot2::aes(x = x, ymax = hi, ymin = lo, fill = factor), alpha = 0.5) +
-              ggplot2::geom_line(ggplot2::aes(x = x, y = mean, color = factor)) +
+              ggplot2::geom_ribbon(ggplot2::aes(x = xplot, ymax = hi, ymin = lo, fill = factor), alpha = 0.5) +
+              ggplot2::geom_line(ggplot2::aes(x = xplot, y = mean, color = factor)) +
               ggplot2::scale_fill_manual(values = c("none" = "gray20", "east" = "darkgreen", "west" = "goldenrod"),
                                          labels = c("none" = "No Interaction", "east" = "East", "west" = "West")) +
               ggplot2::scale_color_manual(values = c("none" = "gray20", "east" = "darkgreen", "west" = "goldenrod"),
@@ -261,8 +316,8 @@ plot_effects <- function(data,
     } else {
       pl <- ggplot2::ggplot(filter(all1)) +
               ggplot2::geom_hline(yintercept = 0) +
-              ggplot2::geom_ribbon(ggplot2::aes(x = x, ymax = hi, ymin = lo, fill = factor), alpha = 0.5) +
-              ggplot2::geom_line(ggplot2::aes(x = x, y = mean, color = factor)) +
+              ggplot2::geom_ribbon(ggplot2::aes(x = xplot, ymax = hi, ymin = lo, fill = factor), alpha = 0.5) +
+              ggplot2::geom_line(ggplot2::aes(x = xplot, y = mean, color = factor)) +
               ggplot2::facet_wrap(~ cov, scales = "free") +
               ggplot2::theme_bw() +
               ggplot2::labs(x = "Scaled covariate value", y = "Exp(Estimate)",
