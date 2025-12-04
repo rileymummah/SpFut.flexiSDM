@@ -273,8 +273,10 @@ plot_effects <- function(data,
   
   if (class(unscale_covar) != "data.frame") {
     all1$xplot <- all1$x
+    xlab <- "Scaled covariate value"
   } else {
     all1$xplot <- all1$x_unscaled
+    xlab <- "Covariate value"
   }
   
 
@@ -286,7 +288,7 @@ plot_effects <- function(data,
             ggplot2::geom_line(ggplot2::aes(x = xplot, y = mean)) +
             ggplot2::facet_wrap(~ cov, scales = "free") +
             ggplot2::theme_bw() +
-            ggplot2::labs(x = "Scaled covariate value", y = "Exp(Estimate)",
+            ggplot2::labs(x = xlab, y = "Exp(Estimate)",
                           fill = "Interaction",
                           title = "Marginal effects of process covariates",
                           subtitle = "Ribbon indicates 95% credible interval")
@@ -308,7 +310,7 @@ plot_effects <- function(data,
                                           labels = c("none" = "No Interaction", "east" = "East", "west" = "West")) +
               ggplot2::facet_wrap(~ cov, scales = "free") +
               ggplot2::theme_bw() +
-              ggplot2::labs(x = "Scaled covariate value", y = "Exp(Estimate)",
+              ggplot2::labs(x = xlab, y = "Exp(Estimate)",
                             color = "Interaction", fill = "Interaction",
                             title = "Marginal effects of process covariates",
                             subtitle = "Ribbon indicates 95% credible interval")
@@ -320,7 +322,7 @@ plot_effects <- function(data,
               ggplot2::geom_line(ggplot2::aes(x = xplot, y = mean, color = factor)) +
               ggplot2::facet_wrap(~ cov, scales = "free") +
               ggplot2::theme_bw() +
-              ggplot2::labs(x = "Scaled covariate value", y = "Exp(Estimate)",
+              ggplot2::labs(x = xlab, y = "Exp(Estimate)",
                             color = "Interaction", fill = "Interaction",
                             title = "Marginal effects of process covariates",
                             subtitle = "Ribbon indicates 95% credible interval")
