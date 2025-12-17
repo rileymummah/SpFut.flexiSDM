@@ -8,6 +8,7 @@ cor_covar(
   covar,
   cov.names,
   cov.labels = cov.names,
+  cov.levels = cov.labels,
   covs.int.factor = NA,
   out.path = "",
   out.name = "covariate-cor",
@@ -20,6 +21,8 @@ cor_covar(
 \item{cov.names}{(character vector) column names from covar to plot}
 
 \item{cov.labels}{(character vector) labels for covariate names, defaults to use column names as labels}
+
+\item{cov.levels}{(character vector) column names in order they should appear on plot}
 
 \item{covs.int.factor}{(character vector) name of columns in covar that has an interaction}
 

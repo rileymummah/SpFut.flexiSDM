@@ -10,23 +10,21 @@
 #' @returns (character vector) vector of covariate names to remove
 #' @export
 #'
+#' @importFrom rlang .data
 #' @importFrom tidyr pivot_longer
-#'
-#' @examples
-
-
+#' @importFrom dplyr mutate filter rename filter pull summarize group_by
 
 
 select_covar <- function(covs,
                          threshold = 0.4) {
 
   # selectively remove covariates until all high correlations are gone
-  cors <- cor(as.data.frame(covar[,c(covs)])) %>%
+  cors <- cor(as.data.frame(.data$covar[,c(covs)])) %>%
     as.data.frame() %>%
-    dplyr::mutate(cov1 = row.names(.)) %>%
-    tidyr::pivot_longer(!cov1) %>%
-    dplyr::filter(value != 1) %>%
-    dplyr::rename(cov2 = name)
+    mutate(cov1 = row.names()) %>%
+    tidyr::pivot_longer(!.data$cov1) %>%
+    filter(.data$value != 1) %>%
+    rename(cov2 = .data$name)
 
 
   # get the max correlation
@@ -37,18 +35,15 @@ select_covar <- function(covs,
     rm.var <- cors$cov1[which(abs(cors$value) %in% rm.vals)]
 
     tmp <- cors %>%
-            dplyr::filter(cov1 %in% rm.var) %>%
-            dplyr::group_by(cov1) %>%
-            dplyr::summarize(avg = mean(abs(value))) %>%
-            dplyr::filter(avg == max(avg)) %>%
-            dplyr::pull(cov1)
+            filter(.data$cov1 %in% rm.var) %>%
+            group_by(.data$cov1) %>%
+            summarize(avg = mean(abs(.data$value))) %>%
+            filter(avg == max(.data$avg)) %>%
+            pull(.data$cov1)
 
     covs.rm <- c(covs.rm, tmp)
-    #cat("removing ", tmp, "\n")
 
-    cors <- dplyr::filter(cors,
-                          cov1 != tmp,
-                          cov2 != tmp)
+    cors <- filter(cors, .data$cov1 != tmp, .data$cov2 != tmp)
 
     # get the new max correlation
     rm.vals <- max(abs(cors$value))

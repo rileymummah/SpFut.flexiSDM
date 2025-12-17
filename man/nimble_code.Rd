@@ -11,9 +11,7 @@ nimble_code(
   coarse.grid,
   path,
   min.visits.incl = 3,
-  Bpriordist = "dnorm",
-  Bpriorvar1 = 0,
-  Bpriorvar2 = 1,
+  Bprior = "dnorm(0,1)",
   block.out,
   zero_mean = T,
   tau = tau,
@@ -34,11 +32,7 @@ nimble_code(
 
 \item{min.visits.incl}{(numeric) minimum number of median visits per site (inclusive) to use occupancy or N-mixture model; default is 3}
 
-\item{Bpriordist}{(character) distribution for beta priors; defaults to "dnorm"}
-
-\item{Bpriorvar1}{(numeric) first parameter for beta priors; defaults to 0}
-
-\item{Bpriorvar2}{(numeric) second parameter for beta priors; defaults to 1}
+\item{Bprior}{(character) distribution for beta priors; defaults to "dnorm(0,1)"}
 
 \item{block.out}{(character or numeric) which block is excluded}
 

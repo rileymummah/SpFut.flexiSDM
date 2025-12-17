@@ -8,9 +8,7 @@
 #' @param coarse.grid (logical) whether model uses the coarse spatial grid (T) or not (F)
 #' @param path (character) where to save the nimble code
 #' @param min.visits.incl (numeric) minimum number of median visits per site (inclusive) to use occupancy or N-mixture model; default is 3
-#' @param Bpriordist (character) distribution for beta priors; defaults to "dnorm"
-#' @param Bpriorvar1 (numeric) first parameter for beta priors; defaults to 0
-#' @param Bpriorvar2 (numeric) second parameter for beta priors; defaults to 1
+#' @param Bprior (character) distribution for beta priors; defaults to "dnorm(0,1)"
 #' @param block.out (character or numeric) which block is excluded
 #' @param zero_mean (logical) whether spatial parameter should include zero_mean restriction (T) or not (F); defaults to T
 #' @param tau (character) the value of tau (precision) for the ICAR model
@@ -32,9 +30,6 @@ nimble_code <- function(data,
                         path,
                         min.visits.incl = 3,
                         Bprior = "dnorm(0,1)",
-                        # Bpriordist = "dnorm",
-                        # Bpriorvar1 = 0,
-                        # Bpriorvar2 = 1,
                         block.out,
                         zero_mean = T,
                         tau = tau,

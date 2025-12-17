@@ -8,6 +8,10 @@
 #' @returns sf object containing blocks
 #' @export
 #'
+#' @importFrom rlang .data
+#' @importFrom sf st_make_grid st_as_sf st_intersects
+#' @importFrom dplyr mutate rename select
+#'
 #' @examples
 
 
@@ -17,25 +21,26 @@ make_CV_blocks <- function(region,
                            rows,
                            cols,
                            k) {
-  
-  blocks <- sf::st_make_grid(region$sp.grid, n = c(cols, rows), square = T, what = "polygons") %>%
-    sf::st_as_sf() %>%
-    dplyr::mutate(id = 1:nrow(.))
-  
+
+  blocks <- st_make_grid(region$sp.grid, n = c(cols, rows),
+                         square = T, what = "polygons") %>%
+    st_as_sf() %>%
+    mutate(id = 1:n())
+
   # assign folds
   blocks$folds <- rep(1:k, length = nrow(blocks))
-  
+
   # only keep blocks that intersect with region
-  blocks1 <- unlist(sf::st_intersects(region$region, blocks))
+  blocks1 <- unlist(st_intersects(region$region, blocks))
   blocks <- blocks[blocks1,]
-  
-  
+
+
   blocks <- blocks %>%
-    dplyr::mutate(block_id = 1:nrow(blocks)) %>%
-    dplyr::rename(geometry = x) %>%
-    dplyr::select(id, geometry, block_id, folds)
-  
+    mutate(block_id = 1:nrow(blocks)) %>%
+    rename(geometry = .data$x) %>%
+    select(.data$id, .data$geometry, .data$block_id, .data$folds)
+
   return(blocks)
-  
+
 }
 

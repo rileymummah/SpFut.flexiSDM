@@ -11,6 +11,8 @@
 #' @export
 #'
 #' @importFrom spdep poly2nb nb2WB
+#' @importFrom sf st_centroid st_coordinates st_as_sf st_drop_geometry
+#' @importFrom dplyr mutate filter group_by summarize distinct ungroup n
 #'
 #' @examples
 #' \dontrun{
@@ -23,12 +25,12 @@
 make_spatkey <- function(grid) {
 
   # Find the centroid of each grid cell
-  cent <- sf::st_centroid(grid$geometry)
+  cent <- st_centroid(grid$geometry)
 
   # Round the coordinates
-  centXY <- round(sf::st_coordinates(cent),-1) %>%
+  centXY <- round(st_coordinates(cent),-1) %>%
               as.data.frame() %>%
-              dplyr::mutate(conus.grid.id = grid$conus.grid.id)
+              mutate(conus.grid.id = grid$conus.grid.id)
 
   # Sort the coorindates
   X <- sort(unique(centXY[,1]))
@@ -78,9 +80,9 @@ make_spatkey <- function(grid) {
 
   a <- centXY1 %>%
           # Have to filter out missing (orphan) cells, otherwise NA will have more than 7 "neighbors"
-          dplyr::filter(!is.na(cell)) %>%
-          dplyr::group_by(cell) %>%
-          dplyr::summarize(count = dplyr::n())
+          filter(!is.na(cell)) %>%
+          group_by(cell) %>%
+          summarize(count = n())
 
   if(max(a$count)<=7){
     centXY <- centXY1
@@ -103,10 +105,10 @@ make_spatkey <- function(grid) {
   # Isolate cells with NA and give them correct cell affiliations
   centXY %>%
     # Isolate centroids with missing cell assignments
-    dplyr::filter(is.na(cell)) %>%
-    dplyr::left_join(., grid, by = 'conus.grid.id') %>%
-    dplyr::select(cell, conus.grid.id, geometry) %>%
-    sf::st_as_sf() -> cellNA
+    filter(is.na(cell)) %>%
+    left_join(., grid, by = 'conus.grid.id') %>%
+    select(cell, conus.grid.id, geometry) %>%
+    st_as_sf() -> cellNA
 
   NAind <- which(is.na(centXY$cell))
 
@@ -137,30 +139,30 @@ make_spatkey <- function(grid) {
     }
   }
 
-  cellNA <- dplyr::select(cellNA, -neighbors)
+  cellNA <- select(cellNA, -neighbors)
 
   centXY %>%
-    dplyr::left_join(grid, centXY, by = 'conus.grid.id') %>%
-    dplyr::select(conus.grid.id, cell, geometry) -> spatkey1
+    left_join(grid, centXY, by = 'conus.grid.id') %>%
+    select(conus.grid.id, cell, geometry) -> spatkey1
 
   spatkey1$cell[NAind] <- cellNA$cell
 
   spatkey1 %>%
-    dplyr::group_by(cell) %>%
-    dplyr::mutate(geometry = sf::st_union(geometry)) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(cell, geometry) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(spat.grid.id = 1:dplyr::n()) %>%
-    sf::st_as_sf() -> tmp1
+    group_by(cell) %>%
+    mutate(geometry = st_union(geometry)) %>%
+    ungroup() %>%
+    select(cell, geometry) %>%
+    distinct() %>%
+    mutate(spat.grid.id = 1:n()) %>%
+    st_as_sf() -> tmp1
 
   tmp1 %>%
-    sf::st_drop_geometry() %>%
-    dplyr::select(cell, spat.grid.id) %>%
-    dplyr::full_join(spatkey1, ., by = 'cell') %>%
-    dplyr::select(-geometry, -cell) -> spatkey
+    st_drop_geometry() %>%
+    select(cell, spat.grid.id) %>%
+    full_join(spatkey1, ., by = 'cell') %>%
+    select(-geometry, -cell) -> spatkey
 
-  dplyr::select(tmp1, -cell) -> spat.grid
+  select(tmp1, -cell) -> spat.grid
 
   return(spatModel = list(spatkey = spatkey,
                           spat.grid = spat.grid))
