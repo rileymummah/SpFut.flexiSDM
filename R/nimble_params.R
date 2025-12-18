@@ -27,7 +27,6 @@
 #'}
 
 
-
 nimble_params <- function(data,
                           constants,
                           sp.auto,

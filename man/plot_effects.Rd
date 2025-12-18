@@ -11,7 +11,9 @@ plot_effects(data, out, breaks = 0.01, unscale_covar = F)
 
 \item{out}{(list) output from summarize_chains()}
 
-\item{breaks}{(data.frame) data.frame containing unscaled covariates, or FALSE}
+\item{breaks}{(numeric) distance between covariate values to simulate}
+
+\item{unscale_covar}{(data.frame) data.frame containing unscaled covariates, or FALSE}
 }
 \value{
 plot of marginal effects

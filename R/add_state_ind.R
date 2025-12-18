@@ -11,13 +11,10 @@
 #' @returns (list) list of species data partially formatted for nimble, needs to be input into data_for_nimble before use in nimble
 #' @export
 #'
-#' @importFrom tidyselect any_of all_of
-#' @importFrom tibble add_column
-#' @importFrom readr read_rds
-#' @importFrom lubridate yday
 #' @importFrom utils data
-#'
-#' @examples
+#' @importFrom magrittr "%>%"
+#' @importFrom rlang .data
+#' @importFrom dplyr filter left_join mutate pull case_when
 
 
 add_state_ind <- function(species.data,
@@ -29,21 +26,22 @@ add_state_ind <- function(species.data,
                           keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]) {
 
   utils::data("stategrid")
-  gridkey1 <- filter(gridkey, conus.grid.id %in% keep.conus.grid.id)
+
+  gridkey1 <- filter(gridkey, .data$conus.grid.id %in% keep.conus.grid.id)
 
   # Add state indicator variable for iNat data to indicate which states have taxon geoprivacy
   if ("iNaturalist" %in% names(species.data$obs)) {
     if (length(obsc.state) > 0) {
       grid.states <- stategrid %>%
-        dplyr::filter(name %in% obsc.state == F,
-               conus.grid.id %in% keep.conus.grid.id)
+        filter(.data$name %in% obsc.state == F,
+               .data$conus.grid.id %in% keep.conus.grid.id)
 
       # iNat is always dataset1 if it exists
       S1 <- data.frame(grid.id = constants$Wcells1) %>%
-        dplyr::left_join(gridkey1, by = "grid.id") %>%
-        dplyr::mutate(S1 = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
+        left_join(gridkey1, by = "grid.id") %>%
+        mutate(S1 = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
                               T ~ 0)) %>%
-        dplyr::pull(S1)
+        pull(S1)
     } else {
       S1 <- rep(1, length(keep.conus.grid.id))
     }
@@ -57,14 +55,14 @@ add_state_ind <- function(species.data,
     states <- constants[[st]]
 
     grid.states <- stategrid %>%
-      dplyr::filter(name %in% states,
-             conus.grid.id %in% keep.conus.grid.id)
+      filter(.data$name %in% states,
+             .data$conus.grid.id %in% keep.conus.grid.id)
 
     S <- data.frame(grid.id = constants[[paste0("Wcells", num)]]) %>%
-      dplyr::left_join(gridkey1, by = "grid.id") %>%
-      dplyr::mutate(S = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
+      left_join(gridkey1, by = "grid.id") %>%
+      mutate(S = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
                            T ~ 0)) %>%
-      dplyr::pull(S)
+      pull(S)
     constants[[paste0("S", num)]] <- S
   }
 

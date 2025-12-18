@@ -7,9 +7,9 @@
 #' @export
 #'
 #' @importFrom pROC auc
+#' @importFrom rlang .data
+#' @importFrom magrittr "%>%"
 #' @importFrom dplyr mutate bind_rows filter select inner_join full_join
-#'
-#' @examples
 
 
 get_AUC <- function(species.data,
@@ -31,7 +31,7 @@ get_AUC <- function(species.data,
   if (nrow(val.dat) > 0) {
 
     # Calculate AUC for in sample
-    val.in <- filter(out$psi0, group == "train") %>%
+    val.in <- filter(out$psi0, .data$group == "train") %>%
       inner_join(val.dat, by = "conus.grid.id")
 
     # overall
@@ -64,7 +64,8 @@ get_AUC <- function(species.data,
 
 
     # Calculate AUC for out of sample
-    val.out <- filter(out$psi0, group == "test") %>% inner_join(val.dat, by = "conus.grid.id")
+    val.out <- filter(out$psi0, .data$group == "test") %>%
+      inner_join(val.dat, by = "conus.grid.id")
 
     # Overall
     if (nrow(val.out) == 0) {
@@ -112,8 +113,8 @@ get_AUC <- function(species.data,
     if (nrow(val.out) != 0) {aucs <- full_join(aucsin, aucsout, by = "source")}
     if (nrow(val.out) == 0) {aucs <- aucsin}
 
-    all.auc <- data.frame(sp.code = sp.code,
-                          block = block.out,
+    all.auc <- data.frame(sp.code = .data$sp.code,
+                          block = .data$block.out,
                           AUCin.full = as.numeric(AUCin),
                           in.full.n = nrow(val.in),
                           in.full.cell = length(unique(val.in$conus.grid.id)),

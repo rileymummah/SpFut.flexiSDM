@@ -77,6 +77,5 @@ survey_for_nimble <- function(data,
   }
 
 
-
   return(dat)
 }

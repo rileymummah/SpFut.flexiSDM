@@ -11,6 +11,7 @@
 #' @export
 #'
 #' @importFrom rlang .data
+#' @importFrom magrittr "%>%"
 #' @importFrom tidyr pivot_longer
 #' @importFrom dplyr mutate filter rename filter pull summarize group_by
 
@@ -20,11 +21,11 @@ select_covar <- function(covs,
 
   # selectively remove covariates until all high correlations are gone
   cors <- cor(as.data.frame(.data$covar[,c(covs)])) %>%
-    as.data.frame() %>%
-    mutate(cov1 = row.names()) %>%
-    tidyr::pivot_longer(!.data$cov1) %>%
-    filter(.data$value != 1) %>%
-    rename(cov2 = .data$name)
+            as.data.frame() %>%
+            mutate(cov1 = row.names()) %>%
+            pivot_longer(!.data$cov1) %>%
+            filter(.data$value != 1) %>%
+            rename(cov2 = .data$name)
 
 
   # get the max correlation
@@ -38,7 +39,7 @@ select_covar <- function(covs,
             filter(.data$cov1 %in% rm.var) %>%
             group_by(.data$cov1) %>%
             summarize(avg = mean(abs(.data$value))) %>%
-            filter(avg == max(.data$avg)) %>%
+            filter(.data$avg == max(.data$avg)) %>%
             pull(.data$cov1)
 
     covs.rm <- c(covs.rm, tmp)

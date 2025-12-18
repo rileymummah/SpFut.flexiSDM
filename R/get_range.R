@@ -10,6 +10,9 @@
 #' @export
 #'
 #' @importFrom tidyselect everything
+#' @importFrom sf st_read st_transform
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr select mutate
 #'
 #' @examples
 #'\dontrun{
@@ -28,7 +31,6 @@
 #'}
 
 
-
 get_range <- function(range.path,
                       range.name = paste0("range", 1:length(range.path)),
                       crs) {
@@ -43,10 +45,10 @@ get_range <- function(range.path,
       next
     }
 
-    range <- sf::st_read(range.path[p]) %>%
-              sf::st_transform(crs = crs) %>%
-              dplyr::mutate(range.name = range.name[p]) %>%
-              dplyr::select(range.name, tidyselect::everything())
+    range <- st_read(range.path[p]) %>%
+              st_transform(crs = crs) %>%
+              mutate(range.name = range.name[p]) %>%
+              select(range.name, everything())
 
     ranges[[range.name[[p]]]] <- range
   }
@@ -54,36 +56,3 @@ get_range <- function(range.path,
   return(ranges)
 
 }
-
-
-#
-#
-#
-# get_range <- function(sp.code) {
-#
-#   range <- list()
-#
-#   if("GAP" %in% list.files(paste0("data/species/", sp.code))) {
-#     path1 <- paste0("data/species/", sp.code, "/GAP/")
-#     gap.file <- paste0(path1, list.files(path1)[1])
-#     gap.layer <- list.files(path1)[1]
-#     gap <- sf::st_read(dsn = gap.file, layer = gap.layer)
-#
-#     range[["GAP"]] <- gap
-#   } else {
-#     cat("GAP map has not been downloaded yet\n")
-#   }
-#
-#   if("IUCN" %in% list.files(paste0("data/species/", sp.code))) {
-#     path1 <- paste0("data/species/", sp.code, "/IUCN/")
-#     iucn <- sf::st_read(dsn = path1, layer = "data_0")
-#
-#     range[["IUCN"]] <- iucn
-#
-#   } else {
-#     cat("IUCN map has not been downloaded yet\n")
-#   }
-#
-#   return(range)
-#
-# }

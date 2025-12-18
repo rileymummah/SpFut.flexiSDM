@@ -35,8 +35,8 @@ nimble_inits <- function(data,
   set.seed(seed)
 
   # initialize betas and w (for alpha)
-  dat <- list(B = stats::rnorm(constants$nCovZ, 0, 0.01),
-              w = stats::rnorm(constants$nD, 0, 0.1))
+  dat <- list(B = rnorm(constants$nCovZ, 0, 0.01),
+              w = rnorm(constants$nD, 0, 0.1))
 
 
   # initialize parameters for spatial model
@@ -55,10 +55,10 @@ nimble_inits <- function(data,
 
       if (constants[[paste0("nCovY", d)]] == 0) {
         # p is fixed
-        dat[[paste0("p", d)]] <- stats::rbeta(1, 2, 2)
+        dat[[paste0("p", d)]] <- rbeta(1, 2, 2)
 
       } else if (constants[[paste0("nCovY", d)]] > 0) {
-        dat[[paste0("C", d)]] <- stats::rnorm(constants[[paste0("nCovY", d)]])
+        dat[[paste0("C", d)]] <- rnorm(constants[[paste0("nCovY", d)]])
         dat[[paste0("Xy", d)]] <- matrix(nrow = nrow(data[[paste0("Xy", d)]]),
                                          ncol = ncol(data[[paste0("Xy", d)]]),
                                          0)
@@ -75,10 +75,10 @@ nimble_inits <- function(data,
 
       if (constants[[paste0("nCovW", d)]] == 0) {
         # p is fixed
-        dat[[paste0("E", d)]] <- stats::rbeta(1, 2, 2)
+        dat[[paste0("E", d)]] <- rbeta(1, 2, 2)
 
       } else if (constants[[paste0("nCovW", d)]] > 0) {
-        dat[[paste0("A", d)]] <- stats::rnorm(constants[[paste0("nCovW", d)]])
+        dat[[paste0("A", d)]] <- rnorm(constants[[paste0("nCovW", d)]])
         dat[[paste0("Xw", d)]] <- matrix(nrow = nrow(data[[paste0("Xw", d)]]),
                                          ncol = ncol(data[[paste0("Xw", d)]]),
                                          0)
@@ -89,10 +89,10 @@ nimble_inits <- function(data,
 
       if (constants[[paste0("nCovV", d)]] == 0) {
         # p is fixed
-        dat[[paste0("d", d)]] <- stats::rbeta(1, 2, 2)
+        dat[[paste0("d", d)]] <- rbeta(1, 2, 2)
 
       } else if (constants[[paste0("nCovV", d)]] > 0) {
-        dat[[paste0("D", d)]] <- stats::rnorm(constants[[paste0("nCovV", d)]])
+        dat[[paste0("D", d)]] <- rnorm(constants[[paste0("nCovV", d)]])
         dat[[paste0("Xv", d)]] <- matrix(nrow = nrow(data[[paste0("Xv", d)]]),
                                          ncol = ncol(data[[paste0("Xv", d)]]),
                                          0)

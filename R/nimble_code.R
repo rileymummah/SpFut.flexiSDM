@@ -19,8 +19,6 @@
 #' @export
 #'
 #' @importFrom nimble nimbleCode
-#'
-#' @examples
 
 
 nimble_code <- function(data,
@@ -56,8 +54,6 @@ for (i in 1:nCell) {
 "
 
   pro.mod <- gsub("_NCELLS", constants$nCell, pro.mod)
-
-
 
 
   ## Priors ----
@@ -341,28 +337,6 @@ for (b in 1:nCov_LETTER_NUM) {
 # Add spatial component ----
 
 if (sp.auto == T) {
-
-  # if (zero_mean == T && coarse.grid == T) {
-  #   pro.mod <- gsub("# no residual spatial effect", "+ spat[spatCells[i]] # residual spatial effect", pro.mod, fixed = T)
-  #   prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nSpatCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nSpatCell], tau, zero_mean = 1)")
-  #   # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
-  #
-  # } else if (zero_mean == T && coarse.grid == F) {
-  #   pro.mod <- gsub("# no residual spatial effect", "+ spat[i] # residual spatial effect", pro.mod, fixed = T)
-  #   prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
-  #   # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
-  #
-  # } else if (zero_mean == F && coarse.grid == T) {
-  #   pro.mod <- gsub("# no residual spatial effect", "+ spat[spatCells[i]] # residual spatial effect", pro.mod, fixed = T)
-  #   prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nSpatCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nSpatCell], tau)")
-  #   # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau, zero_mean = 1)")
-  #
-  # } else {
-  #   pro.mod <- gsub("# no residual spatial effect", "+ spat[i] # residual spatial effect", pro.mod, fixed = T)
-  #   prior <- paste0(prior, "\n\ntau <- 1\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau)")
-  #   # prior <- paste0(prior, "\n\ntau ~ dnorm(1, 0.01)\nspat[1:nCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nCell], tau)")
-  # }
-
   if (coarse.grid == T) {
     pro.mod <- gsub("# no residual spatial effect", "+ spat[spatCells[i]] # residual spatial effect", pro.mod, fixed = T)
     prior <- paste0(prior, "\n\ntau <- ",tau,"\nspat[1:nSpatCell] ~ dcar_normal(adj[1:L], weights[1:L], num[1:nSpatCell], tau, zero_mean = 1)")

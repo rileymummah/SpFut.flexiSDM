@@ -11,9 +11,9 @@
 #' @export
 #'
 #' @importFrom rstan Rhat
-#'
-#' @examples
-
+#' @importFrom dplyr mutate bind_rows select full_join left_join
+#' @importFrom tidyr pivot_longer
+#' @importFrom ggplot2 ggplot geom_hline geom_line aes geom_vline facet_wrap labs scale_color_manual theme_bw
 
 
 plot_chains <- function(samples,
@@ -22,8 +22,6 @@ plot_chains <- function(samples,
                         cutoff = 0,
                         plot = "B",
                         chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
-
-
 
     if (plot == "B") {
       bnames <- data.frame(name = colnames(data$Xz),
@@ -43,7 +41,6 @@ plot_chains <- function(samples,
     }
 
 
-
     chains <- 1:3
 
     # calculate rhat
@@ -57,7 +54,7 @@ plot_chains <- function(samples,
     }
 
 
-    rhat <- unlist(lapply(all, rstan::Rhat))
+    rhat <- unlist(lapply(all, Rhat))
     bnames$rhat <- round(rhat, 2)
 
 
@@ -65,10 +62,10 @@ plot_chains <- function(samples,
     call <- c()
     for (c in chains) {
       c1 <- as.data.frame(samples[[c]][,bind]) %>%
-              dplyr::mutate(n = 1:nrow(.)) %>%
-              tidyr::pivot_longer(!n) %>%
-              dplyr::mutate(chain = c)
-      call <- dplyr::bind_rows(call, c1)
+              mutate(n = 1:n()) %>%
+              pivot_longer(!n) %>%
+              mutate(chain = c)
+      call <- bind_rows(call, c1)
     }
 
     # If there's only one, need to rename it
@@ -76,40 +73,37 @@ plot_chains <- function(samples,
       call$name <- paste0(plot, "[", 1, "]")
     }
 
-    call <- dplyr::full_join(call, bnames, by = c("name" = "param"))
+    call <- full_join(call, bnames, by = c("name" = "param"))
 
     if (plot == "B") {
 
       call <- call %>%
-                dplyr::mutate(cov1 = gsub("2", "", name.y),
-                              tmp = gsub("_x_.*", "", name.y),
-                              quad = dplyr::case_when(substr(tmp, nchar(tmp),
-                                                             nchar(tmp)) == 2 ~ "^2",
-                                                      T ~ "")) %>%
-                dplyr::left_join(cov.labs, by = c("cov1" = "covariate")) %>%
-                dplyr::mutate(name.y = paste0(Label, quad)) %>%
-                dplyr::select(!tmp)
+                mutate(cov1 = gsub("2", "", .data$name.y),
+                              tmp = gsub("_x_.*", "", .data$name.y),
+                              quad = case_when(substr(.data$tmp, nchar(.data$tmp),
+                                                      nchar(.data$tmp)) == 2 ~ "^2",
+                                               T ~ "")) %>%
+                left_join(cov.labs, by = c("cov1" = "covariate")) %>%
+                mutate(name.y = paste0(.data$Label, .data$quad)) %>%
+                select(!.data$tmp)
     }
 
+    call <- mutate(call, lab = paste0(.data$name.y, "\nRhat = ", rhat))
 
-    call <- dplyr::mutate(call, lab = paste0(name.y, "\nRhat = ", rhat))
 
-
-    pl <- ggplot2::ggplot(call) +
-            ggplot2::geom_hline(yintercept = 0) +
-            ggplot2::geom_line(ggplot2::aes(x = n, y = value,
-                                            color = as.factor(chain)),
-                               linewidth = 0.1) +
-            ggplot2::geom_vline(xintercept = cutoff) +
-            ggplot2::facet_wrap(~lab, scales = "free_y") +
-            ggplot2::labs(x = "Iteration", y = "Parameter value",
-                          color = "Chain", subtitle = "Black vertical line indicates burnin") +
-            ggplot2::scale_color_manual(values = chaincols) +
-            ggplot2::theme_bw()
+    pl <- ggplot(call) +
+            geom_hline(yintercept = 0) +
+            geom_line(aes(x = .data$n, y = .data$value,
+                          color = as.factor(.data$chain)),
+                      linewidth = 0.1) +
+            geom_vline(xintercept = cutoff) +
+            facet_wrap(~lab, scales = "free_y") +
+            labs(x = "Iteration", y = "Parameter value",
+                          color = "Chain",
+                 subtitle = "Black vertical line indicates burnin") +
+            scale_color_manual(values = chaincols) +
+            theme_bw()
 
     return(pl)
-    #sub <- paste0(chains, collapse = "")
-
-
 
 }

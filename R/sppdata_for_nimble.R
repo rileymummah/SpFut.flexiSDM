@@ -2,14 +2,10 @@
 #'
 #' @param species.data (list) output from load_species_data()
 #' @param region (list) output from make_region()
-#' @param data.type (character vector) vector of data types for each dataset in species.data
-#' @param PO.extent (character vector) vector of extents for each PO dataset (CONUS or state code); use NA for non-PO datasets
+#' @param file.info ()
 #' @param covar (data.frame) dataframe containing covariates for PO data
 #' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
 #' @param covs.PO (character vector) vector of column names (from covar) to use for effort covariates for non-iNat PO data
-#' @param covs.mean (list) list containing one vector for each dataset that says which columns to use as detection covariates that should be averaged (e.g., water temperature)
-#' @param covs.sum (list) list containing one vector for each dataset that says which columns to use as detection covariates that should be summed (e.g., survey duration)
-#' @param offset.area (character vector) vector containing column names to use for area offset for each dataset
 #' @param DND.maybe (numeric) whether to treat maybe detections as detections (1) or non-detections(0); defaults to 1
 #' @param keep.conus.grid.id (vector) vector of conus.grid.ids to use to fit the model
 #' @param min.visits.incl (numeric) minimum number (inclusive) of median visits per site to use n-mixture or occupancy models
@@ -21,32 +17,29 @@
 #' @importFrom tibble add_column
 #' @importFrom readr read_rds
 #' @importFrom lubridate yday
-#'
-#' @examples
+#' @importFrom tidyr pivot_wider
+#' @importFrom rlang .data
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr mutate filter select group_by summarize full_join across
 
 
 sppdata_for_nimble <- function(species.data,
                                region,
                                file.info,
-                               # data.type,
-                               # PO.extent,
                                covar,
                                covs.inat = c("traveltime", "density", "n.inat"),
                                covs.PO = c("traveltime", "density"),
-                               # covs.mean,
-                               # covs.sum,
-                               # offset.area,
                                DND.maybe = 1,
                                keep.conus.grid.id,
                                min.visits.incl = 3) {
 
   # Make sure file.info matches data in species.data
-  file.info <- filter(file.info, file.label %in% names(species.data$obs))
+  file.info <- filter(file.info, .data$file.label %in% names(species.data$obs))
   file.info <- file.info[order(match(file.info$file.label, names(species.data$obs))),] %>% distinct()
-  
+
   # remove area
   file.info$area <- ""
-  
+
   # Pull info from file.info
   data.type <- file.info$data.type
   PO.extent <- file.info$PO.extent
@@ -105,25 +98,25 @@ sppdata_for_nimble <- function(species.data,
       POdata <- inat.start %>%
 
         # remove records that were identified as duplicates
-        dplyr::mutate(site.survey.id = paste0(site.id, "-", survey.id)) %>%
-        dplyr::filter((unique.id %in% rm) == F) %>%
-        dplyr::select(!site.survey.id) %>%
+        mutate(site.survey.id = paste0(.data$site.id, "-", .data$survey.id)) %>%
+        filter((.data$unique.id %in% rm) == F) %>%
+        select(!.data$site.survey.id) %>%
 
         # aggregate to grid cell
-        dplyr::group_by(conus.grid.id) %>%
-        dplyr::summarize(count = dplyr::n()) %>%
+        group_by(.data$conus.grid.id) %>%
+        summarize(count = n()) %>%
 
         # add in the rest of grid.ids and fill 0s if there were no records (NA)
-        dplyr::full_join(select(covar, conus.grid.id), by = "conus.grid.id") %>%
-        dplyr::mutate(count = dplyr::case_when(is.na(count) ~ 0,
+        full_join(select(covar, .data$conus.grid.id), by = "conus.grid.id") %>%
+        mutate(count = case_when(is.na(count) ~ 0,
                                                T ~ count)) %>%
-        dplyr::filter(is.na(conus.grid.id) == F,
-                      conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
+        filter(is.na(.data$conus.grid.id) == F,
+               .data$conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
 
       # Get the covariates to use for iNat
-      covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.inat)) %>%
-        dplyr::filter(is.na(conus.grid.id) == F,
-                      conus.grid.id %in% keep.conus.grid.id)
+      covariates <- select(.data$covar, .data$conus.grid.id, all_of(covs.inat)) %>%
+        filter(is.na(.data$conus.grid.id) == F,
+               .data$conus.grid.id %in% keep.conus.grid.id)
 
       # make sure everything is in the right order
       POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
@@ -142,10 +135,8 @@ sppdata_for_nimble <- function(species.data,
 
       # iNat always has a logit link so it needs an intercept
         PO.inat$data[[paste0("Xw", counter)]] <- PO.inat$data[[paste0("Xw", counter)]] %>%
-          tibble::add_column(.before = 1, intercept = 1)
+          add_column(.before = 1, intercept = 1)
         PO.inat$constants[[paste0("nCovW", counter)]] <- PO.inat$constants[[paste0("nCovW", counter)]] + 1
-
-
 
       # Add dataset to data list
       dat.ready[[paste0("PO", counter)]] <- PO.inat
@@ -183,19 +174,19 @@ sppdata_for_nimble <- function(species.data,
           POdata <- other.start %>%
 
             # aggregate to grid cell
-            dplyr::group_by(conus.grid.id) %>%
-            dplyr::summarize(count = dplyr::n()) %>%
+            group_by(.data$conus.grid.id) %>%
+            summarize(count = n()) %>%
 
             # add in the rest of grid.ids and fill 0s if there were no records (NA)
-            dplyr::full_join(dplyr::select(covar, conus.grid.id), by = "conus.grid.id") %>%
-            dplyr::mutate(count = dplyr::case_when(is.na(count) ~ 0,
+            full_join(select(covar, .data$conus.grid.id), by = "conus.grid.id") %>%
+            mutate(count = case_when(is.na(count) ~ 0,
                                                    T ~ count)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
+            filter(is.na(.data$conus.grid.id) == F,
+                   .data$conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
 
-          covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id)
+          covariates <- select(.data$covar, .data$conus.grid.id, all_of(covs.PO)) %>%
+            filter(is.na(.data$conus.grid.id) == F,
+                   .data$conus.grid.id %in% keep.conus.grid.id)
 
           # make sure everything is in the right order
           POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
@@ -203,6 +194,7 @@ sppdata_for_nimble <- function(species.data,
 
           PO.other <- PO_for_nimble(POdata, covariates,
                                     rename = counter)
+
           PO.other$constants[[paste0("name", counter)]] <- name
           PO.other$data[[paste0("area", counter)]] <- rep(1, nrow(POdata))
 
@@ -231,7 +223,7 @@ sppdata_for_nimble <- function(species.data,
           dat <- species.data$obs[[sta.ind[o]]]
           dat$state <- PO.extent[sta.ind[o]]
 
-          sta.dat <- dplyr::bind_rows(sta.dat, dat)
+          sta.dat <- bind_rows(sta.dat, dat)
         }
         name <- paste0(file.names[sta.ind], collapse = ", ")
 
@@ -242,25 +234,25 @@ sppdata_for_nimble <- function(species.data,
         POdata <- other.start %>%
 
           # aggregate to grid cell
-          dplyr::group_by(conus.grid.id) %>%
-          dplyr::summarize(count = dplyr::n(), .groups = "drop") %>%
+          group_by(.data$conus.grid.id) %>%
+          summarize(count = n(), .groups = "drop") %>%
 
           # add in the rest of grid.ids and fill 0s if there were no records (NA)
-          dplyr::full_join(dplyr::select(covar, conus.grid.id), by = "conus.grid.id") %>%
-          dplyr::mutate(count = dplyr::case_when(is.na(count) ~ 0,
+          full_join(select(covar, .data$conus.grid.id), by = "conus.grid.id") %>%
+          mutate(count = case_when(is.na(count) ~ 0,
                                                  T ~ count)) %>%
-          dplyr::filter(is.na(conus.grid.id) == F,
-                        conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
+          filter(is.na(.data$conus.grid.id) == F,
+                 .data$conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
 
         # Get covariates
         states <- unique(other.start$state)
         if (length(states) >= 2) {
           # all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
-          #                 dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
+          #                 filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
           utils::data("stategrid")
           all.states <- stategrid %>%
-            tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
-            dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
+            pivot_wider(names_from = name, values_from = .data$value, values_fill = 0) %>%
+            filter(.data$conus.grid.id %in% region$sp.grid$conus.grid.id)
 
           # make sure these cells are in the same order as the cells in data and constants
           #all.states <- all.states[order(match(all.states$conus.grid.id, covar$conus.grid.id)),]
@@ -269,43 +261,43 @@ sppdata_for_nimble <- function(species.data,
           statecols <- states[2:length(states)]
           stateints <- all.states[,c("conus.grid.id", statecols)]
           covariates <- covar %>%
-            dplyr::inner_join(stateints, by = "conus.grid.id") %>%
-            dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(statecols)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id)
+            inner_join(stateints, by = "conus.grid.id") %>%
+            select(.data$conus.grid.id, all_of(covs.PO), all_of(statecols)) %>%
+            filter(is.na(.data$conus.grid.id) == F,
+                   .data$conus.grid.id %in% keep.conus.grid.id)
 
           # # use all states because this is for S (whether cell is in state with PO data or not)
           # covariates1 <- covar %>%
-          #   dplyr::inner_join(all.states, by = "conus.grid.id") %>%
-          #   dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
-          #   dplyr::filter(is.na(conus.grid.id) == F,
+          #   inner_join(all.states, by = "conus.grid.id") %>%
+          #   select(conus.grid.id, all_of(covs.PO), all_of(states)) %>%
+          #   filter(is.na(conus.grid.id) == F,
           #                 conus.grid.id %in% keep.conus.grid.id)
         # } else if (length(states) == 1) {
         #   # grid.state <- readr::read_rds("data/USA/grid-states.rds")
         #   utils::data("grid_states")
         #   all.states <- stategrid %>%
-        #     tidyr::pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
-        #     dplyr::filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
+        #     pivot_wider(names_from = name, values_from = value, values_fill = 0) %>%
+        #     filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
         #
         #   # don't need intercept since it's just one state
         #   covariates <- covar %>%
-        #     dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO)) %>%
-        #     dplyr::filter(is.na(conus.grid.id) == F,
+        #     select(conus.grid.id, all_of(covs.PO)) %>%
+        #     filter(is.na(conus.grid.id) == F,
         #                   conus.grid.id %in% keep.conus.grid.id)
         #
         #   # # use states for S (whether cell is in state with PO data or not)
-        #   # covariates1 <- dplyr::inner_join(covar, grid.state, by = "conus.grid.id") %>%
-        #   #                 dplyr::select(conus.grid.id, tidyselect::all_of(covs.PO), tidyselect::all_of(states)) %>%
-        #   #   dplyr::filter(is.na(conus.grid.id) == F,
+        #   # covariates1 <- inner_join(covar, grid.state, by = "conus.grid.id") %>%
+        #   #                 select(conus.grid.id, all_of(covs.PO), all_of(states)) %>%
+        #   #   filter(is.na(conus.grid.id) == F,
         #   #                 conus.grid.id %in% keep.conus.grid.id)
         } else {
-          covariates <- dplyr::select(covar, conus.grid.id, tidyselect::all_of(covs.PO)) %>%
-            dplyr::filter(is.na(conus.grid.id) == F,
-                          conus.grid.id %in% keep.conus.grid.id)
+          covariates <- select(covar, .data$conus.grid.id, all_of(covs.PO)) %>%
+            filter(is.na(.data$conus.grid.id) == F,
+                   .data$conus.grid.id %in% keep.conus.grid.id)
         }
 
         # covariates <- covariates %>%
-        #   dplyr::filter(is.na(conus.grid.id) == F,
+        #   filter(is.na(conus.grid.id) == F,
         #                 conus.grid.id %in% keep.conus.grid.id)
 
         # make sure everything is in the right order
@@ -361,7 +353,7 @@ sppdata_for_nimble <- function(species.data,
       # Add yday column
       if ("yday" %in% cov.names) {
         tmp <- as.Date(paste0(data$month, "-", data$day, "-", data$year), format = "%m-%d-%Y")
-        data$yday <- lubridate::yday(tmp)
+        data$yday <- yday(tmp)
       }
 
 
@@ -383,11 +375,12 @@ sppdata_for_nimble <- function(species.data,
 
         # clean up columns
         data <- dndstart %>%
-          dplyr::select(conus.grid.id, site.id, survey.id, tidyselect::any_of(cov.names), count) %>%
-          dplyr::group_by(site.id) %>%
-          dplyr::mutate(site.id = dplyr::cur_group_id()) %>%
-          dplyr::ungroup() %>%
-          dplyr::mutate(dplyr::across(tidyselect::any_of(cov.names), scale_this))
+          select(.data$conus.grid.id, .data$site.id, .data$survey.id,
+                 any_of(cov.names), .data$count) %>%
+          group_by(.data$site.id) %>%
+          mutate(site.id = cur_group_id()) %>%
+          ungroup() %>%
+          mutate(across(any_of(cov.names), scale_this))
 
         if ("yday" %in% cov.names) {
           data$yday2 <- data$yday * data$yday
@@ -410,7 +403,7 @@ sppdata_for_nimble <- function(species.data,
         # it needs an intercept
         if (DND$constants[[paste0("nVisitsV", counter)]] >= min.visits.incl) {
           DND$data[[paste0("Xv", counter)]] <- DND$data[[paste0("Xv", counter)]] %>%
-                                                tibble::add_column(.before = 1, intercept = 1)
+                                                add_column(.before = 1, intercept = 1)
           DND$constants[[paste0("nCovV", counter)]] <- DND$constants[[paste0("nCovV", counter)]] + 1
         }
 
@@ -463,7 +456,7 @@ sppdata_for_nimble <- function(species.data,
       # Add yday
       if ("yday" %in% count.covs) {
         tmp <- as.Date(paste0(data$month, "-", data$day, "-", data$year), format = "%m-%d-%Y")
-        data$yday <- lubridate::yday(tmp)
+        data$yday <- yday(tmp)
       }
 
 
@@ -483,17 +476,17 @@ sppdata_for_nimble <- function(species.data,
 
         # clean up columns
         data <- count.start %>%
-          dplyr::select(conus.grid.id, site.id, survey.id, tidyselect::any_of(count.covs), tidyselect::any_of("area"), count) %>%
-          dplyr::group_by(site.id) %>%
-          dplyr::mutate(site.id = dplyr::cur_group_id()) %>%
-          dplyr::ungroup() %>%
-          dplyr::mutate(dplyr::across(tidyselect::any_of(count.covs), scale_this))
+          select(.data$conus.grid.id, .data$site.id, .data$survey.id, any_of(count.covs), any_of("area"), .data$count) %>%
+          group_by(.data$site.id) %>%
+          mutate(site.id = cur_group_id()) %>%
+          ungroup() %>%
+          mutate(across(any_of(count.covs), scale_this))
 
         # add yday quadratic column
         if ("yday" %in% count.covs) {
           yday2 <- data$yday * data$yday
           data <- data %>%
-            tibble::add_column(.after = "yday", yday2)
+            add_column(.after = "yday", yday2)
 
           count.covs <- c(count.covs, "yday2")
         }
@@ -532,19 +525,13 @@ sppdata_for_nimble <- function(species.data,
         # add one to counter
         counter <- counter + 1
 
-
       }
-
-
-
 
     }
 
   } # end set up count datasets
 
-
   if (length(rm.ind) > 0)   dat.ready <- dat.ready[-rm.ind]
-
 
   return(dat.ready)
 }

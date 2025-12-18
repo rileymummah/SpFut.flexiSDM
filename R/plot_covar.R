@@ -14,15 +14,16 @@
 #' @export
 #'
 #' @importFrom rnaturalearth ne_states
+#' @importFrom sf st_transform st_buffer st_bbox
 #' @importFrom tidyselect all_of
 #' @importFrom tidyr pivot_longer
+#' @importFrom magrittr "%>%"
 #' @importFrom grid unit
-#' @import dplyr
+#' @importFrom dplyr select full_join group_by_at filter mutate left_join
+#' @importFrom ggplot2 ggplot aes geom_sf facet_wrap scale_fill_gradient2 scale_color_gradient2 theme_bw element_blank element_text guides guide_colorbar theme labs coord_sf ggsave
 #'
 #' @examples
 #' \dontrun{
-#'
-#'
 #' plot_covar(covar,
 #'            region,
 #'            cov.names = c("cwd", "permwater"),
@@ -44,67 +45,65 @@ plot_covar <- function(covar,
   cov.labs <- data.frame(name = cov.names,
                          label = cov.labels)
 
-  st <- rnaturalearth::ne_states(country = c("Canada", "Mexico", "United States of America"),
-                                 returnclass = "sf") %>%
-          sf::st_transform(crs = 3857) %>%
-          dplyr::select(!name)
+  st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
+                  returnclass = "sf") %>%
+          st_transform(crs = 3857) %>%
+          select(!.data$name)
 
   bb <- region$sp.grid %>%
-          sf::st_buffer(buffer) %>%
-          sf::st_bbox()
+          st_buffer(.data$buffer) %>%
+          st_bbox()
 
   sp.grid <- region$sp.grid %>%
-              dplyr::full_join(covar, by = c("conus.grid.id")) %>%
-              dplyr::select(tidyselect::all_of(c("conus.grid.id", cov.names)))
+              full_join(covar, by = c("conus.grid.id")) %>%
+              select(all_of(c("conus.grid.id", cov.names)))
 
   if (length(covs.int.factor) == 1 & is.na(covs.int.factor) == F) {
     # convert factors to numbers
     tmp <- sp.grid %>%
-            dplyr::group_by_at(covs.int.factor) %>%
-            dplyr::mutate(factor = dplyr::cur_group_id())
+            group_by_at(covs.int.factor) %>%
+            mutate(factor = cur_group_id())
     sp.grid[[covs.int.factor]] <- tmp$factor
   }
 
-  sp.grid <- sp.grid %>% tidyr::pivot_longer(!c(conus.grid.id, geometry)) %>%
+  sp.grid <- sp.grid %>% pivot_longer(!c(.data$conus.grid.id, .data$geometry)) %>%
 
               # remove covariates that are squares
-              dplyr::mutate(square = substr(name, nchar(name), nchar(name))) %>%
-              dplyr::filter(square != 2) %>%
-              dplyr::mutate(value = dplyr::case_when(value < -5 ~ -5,
-                                                     value > 5 ~ 5,
-                                                     T ~ value)) %>%
+              mutate(square = substr(.data$name, nchar(.data$name), nchar(.data$name))) %>%
+              filter(.data$square != 2) %>%
+              mutate(value = case_when(value < -5 ~ -5,
+                                       value > 5 ~ 5,
+                                       T ~ value)) %>%
 
               # add labels
-              dplyr::left_join(cov.labs, by = "name")
+              left_join(cov.labs, by = "name")
 
 
-  pl <- ggplot2::ggplot(dplyr::filter(sp.grid, is.na(value) == F)) +
-          ggplot2::geom_sf(ggplot2::aes(fill = value, color = value)) +
-          ggplot2::geom_sf(data = st, fill = NA, color= "gray40") +
-          ggplot2::facet_wrap(~label) +
-          ggplot2::scale_fill_gradient2(high = "darkblue", low = "darkred", mid = "white") +
-          ggplot2::scale_color_gradient2(high = "darkblue", low = "darkred", mid = "white", guide = "none") +
-          ggplot2::theme_bw() +
-          ggplot2::theme(panel.grid = ggplot2::element_blank(),
-                         axis.text = ggplot2::element_text(size = 16),
-                         axis.text.x = ggplot2::element_text(angle = 90,
-                                                             hjust = 0.5,
-                                                             vjust = 1),
-                         strip.text = ggplot2::element_text(size = 16),
-                         legend.title = ggplot2::element_text(size = 20),
-                         legend.text = ggplot2::element_text(size = 17),
-                         text = ggplot2::element_text(size = 18)) +
-          ggplot2::guides(fill = ggplot2::guide_colorbar(theme = ggplot2::theme(legend.key.height = grid::unit(20, "lines"),
-                                                                                legend.key.width = grid::unit(1.5, "lines")),
-                                                         title.hjust = 0, title.vjust = 1)) +
-          ggplot2::labs(fill = "Value", color = "Value",
-                        title = "Scaled covariate values") +
-          ggplot2::coord_sf(xlim = c(bb$xmin, bb$xmax), ylim = c(bb$ymin, bb$ymax))
+  pl <- ggplot(filter(sp.grid, is.na(.data$value) == F)) +
+          geom_sf(aes(fill = .data$value, color = .data$value)) +
+          geom_sf(data = st, fill = NA, color= "gray40") +
+          facet_wrap(~label) +
+          scale_fill_gradient2(high = "darkblue", low = "darkred", mid = "white") +
+          scale_color_gradient2(high = "darkblue", low = "darkred", mid = "white", guide = "none") +
+          theme_bw() +
+          theme(panel.grid = element_blank(),
+                axis.text = element_text(size = 16),
+                axis.text.x = element_text(angle = 90,
+                                           hjust = 0.5,
+                                           vjust = 1),
+                strip.text = element_text(size = 16),
+                legend.title = element_text(size = 20),
+                legend.text = element_text(size = 17),
+                text = element_text(size = 18)) +
+          guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(20, "lines"),
+                                                     legend.key.width = unit(1.5, "lines")),
+                                       title.hjust = 0, title.vjust = 1)) +
+          labs(fill = "Value", color = "Value",
+               title = "Scaled covariate values") +
+          coord_sf(xlim = c(bb$xmin, bb$xmax), ylim = c(bb$ymin, bb$ymax))
 
 
-  ggplot2::ggsave(pl, file = paste0(out.path, out.name, ".jpg"), height = 15, width = 15)
+  ggsave(pl, filename = paste0(out.path, out.name, ".jpg"), height = 15, width = 15)
 
 }
-
-
 

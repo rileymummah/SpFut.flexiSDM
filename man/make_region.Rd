@@ -22,9 +22,9 @@ make_region(
 )
 }
 \arguments{
-\item{rangelist}{(list) List of ranges generated from get_range()}
+\item{rangelist}{(list) list of ranges generated from get_range()}
 
-\item{buffer}{(numeric) Buffer size, unit depends on CRS}
+\item{buffer}{(numeric) buffer size, unit depends on CRS}
 
 \item{boundary}{(sf object) A that says where to cut off the region}
 

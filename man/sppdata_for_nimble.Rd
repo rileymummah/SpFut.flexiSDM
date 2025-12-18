@@ -21,6 +21,8 @@ sppdata_for_nimble(
 
 \item{region}{(list) output from make_region()}
 
+\item{file.info}{()}
+
 \item{covar}{(data.frame) dataframe containing covariates for PO data}
 
 \item{covs.inat}{(character vector) vector of column names (from covar) to use for effort covariates for iNat data}
@@ -32,16 +34,6 @@ sppdata_for_nimble(
 \item{keep.conus.grid.id}{(vector) vector of conus.grid.ids to use to fit the model}
 
 \item{min.visits.incl}{(numeric) minimum number (inclusive) of median visits per site to use n-mixture or occupancy models}
-
-\item{data.type}{(character vector) vector of data types for each dataset in species.data}
-
-\item{PO.extent}{(character vector) vector of extents for each PO dataset (CONUS or state code); use NA for non-PO datasets}
-
-\item{covs.mean}{(list) list containing one vector for each dataset that says which columns to use as detection covariates that should be averaged (e.g., water temperature)}
-
-\item{covs.sum}{(list) list containing one vector for each dataset that says which columns to use as detection covariates that should be summed (e.g., survey duration)}
-
-\item{offset.area}{(character vector) vector containing column names to use for area offset for each dataset}
 }
 \value{
 (list) list of species data partially formatted for nimble, needs to be input into data_for_nimble before use in nimble

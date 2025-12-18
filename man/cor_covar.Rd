@@ -45,6 +45,5 @@ cor_covar(covar,
           cov.labels = c("CWD", "Permanent water"),
           out.path = "outputs/",
           out.name = "covs-cor")
-
 }
 }

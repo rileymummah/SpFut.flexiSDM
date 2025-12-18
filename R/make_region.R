@@ -2,8 +2,8 @@
 #'
 #' @description Define the region for inference using a buffer around external range boundaries.
 #'
-#' @param rangelist (list) List of ranges generated from get_range()
-#' @param buffer (numeric) Buffer size, unit depends on CRS
+#' @param rangelist (list) list of ranges generated from get_range()
+#' @param buffer (numeric) buffer size, unit depends on CRS
 #' @param boundary (sf object) A that says where to cut off the region
 #' @param grid (sf object) grid overlay
 #' @param crs (numeric) default is 3857 so that buffer size can be meters
@@ -20,8 +20,9 @@
 #' @returns A list containing ranges, the full region, sp.grid, and the boundary
 #' @export
 #'
-#' @importFrom sf sf_use_s2 st_buffer st_centroid st_bbox st_as_sfc st_crop st_intersection st_transform st_cast st_union st_as_sf st_touches
-#' @importFrom dplyr bind_rows summarize filter mutate select pull
+#' @importFrom sf sf_use_s2 st_buffer st_centroid st_bbox st_as_sfc st_crop st_area st_intersection st_transform st_cast st_union st_as_sf st_touches
+#' @importFrom dplyr bind_rows summarize filter mutate select pull ungroup
+#' @importFrom magrittr "%>%"
 #'
 #' @examples
 #'\dontrun{
@@ -66,7 +67,6 @@ make_region <- function(rangelist,
 
   sf_use_s2(FALSE)
 
-
   # Put ranges into correct CRS
   for (r in 1:length(rangelist)) {
     rangelist[[r]] <- st_transform(rangelist[[r]], crs = crs)
@@ -74,7 +74,7 @@ make_region <- function(rangelist,
 
   # Combine ranges
   fullrangeout <- bind_rows(rangelist)
-  fullrange <- fullrangeout %>% summarize(geometry = st_union(geometry))
+  fullrange <- fullrangeout %>% summarize(geometry = st_union(.data$geometry))
 
   # If sub == T, find centroid to add buffer to
   if (sub == T) {
@@ -122,21 +122,21 @@ make_region <- function(rangelist,
 
     # this gets the whole grid cells
     grida <- st_transform(grid, crs = crs) %>%
-      filter(conus.grid.id %in% grid$conus.grid.id)
+      filter(.data$conus.grid.id %in% grid$conus.grid.id)
 
     # find cells that are too small and remove (these are along the edges of the boundary)
     gridb <- grida %>%
-      mutate(area = as.numeric(st_area(geometry))) %>%
-      filter(area >= cell.size) %>%
-      select(!area)
+      mutate(area = as.numeric(st_area(.data$geometry))) %>%
+      filter(.data$area >= cell.size) %>%
+      select(!.data$area)
 
     # Find which grid cells are split into multiple pieces (eg by water) and remove
     grid1 <- gridb %>%
       st_cast("MULTIPOLYGON") %>%
       st_cast("POLYGON")
     mult <- as.data.frame(table(grid1$conus.grid.id)) %>%
-      filter(Freq > 1) %>%
-      pull(Var1)
+      filter(.data$Freq > 1) %>%
+      pull(.data$Var1)
 
     if (length(mult) > 0) {
       gridb <- gridb[-which(gridb$conus.grid.id %in% mult),]
@@ -148,8 +148,8 @@ make_region <- function(rangelist,
         st_union() %>%
         st_as_sf() %>%
         st_cast("POLYGON") %>%
-        mutate(area = st_area(x)) %>%
-        filter(area == max(area))
+        mutate(area = st_area(.data$x)) %>%
+        filter(.data$area == max(.data$area))
       gridc <- st_intersection(gridb, grid2)
     } else if (continuous == F) {
       gridc <- gridb
@@ -160,12 +160,12 @@ make_region <- function(rangelist,
       # Find and remove cells that are in clumps of less than 20 cells
       grid1 <- gridc %>%
         # group neighboring cells
-        summarize(geometry = st_union(geometry, by_feature = F)) %>%
+        summarize(geometry = st_union(.data$geometry, by_feature = F)) %>%
         st_cast("POLYGON")%>%
 
         # remove cells in group of < 20 (area < 500000000)
-        mutate(area = as.numeric(st_area(geometry))) %>%
-        filter(area >= cell.size * clump.size)
+        mutate(area = as.numeric(st_area(.data$geometry))) %>%
+        filter(.data$area >= cell.size * clump.size)
       gridd <- st_intersection(gridc, grid1) %>% ungroup()
 
 

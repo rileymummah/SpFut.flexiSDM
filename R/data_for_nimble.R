@@ -15,8 +15,6 @@
 #'
 #' @importFrom dplyr inner_join
 #' @importFrom spdep poly2nb nb2WB
-#'
-#' @examples
 
 
 data_for_nimble <- function(sp.data,
@@ -73,17 +71,15 @@ data_for_nimble <- function(sp.data,
   }
 
 
-
   if (sp.auto == T) {
-    NB <- spdep::poly2nb(spat.grid)
-    NBinfo <- spdep::nb2WB(NB)
+    NB <- poly2nb(spat.grid)
+    NBinfo <- nb2WB(NB)
 
     constants$L <- length(NBinfo$adj)
     constants$adj <- NBinfo$adj
     constants$weights <- NBinfo$weights
     constants$num <- NBinfo$num
   }
-
 
 
   if (coarse.grid == T) {
@@ -98,13 +94,12 @@ data_for_nimble <- function(sp.data,
   cells <- grep("cells", names(constants))
   for (e in cells) {
     tmp <- data.frame(conus.grid.id = as.character(constants[[e]])) %>%
-            dplyr::inner_join(gridkey, by = "conus.grid.id")
+            inner_join(gridkey, by = "conus.grid.id")
     constants[[names(constants)[e]]] <- tmp$grid.id
   }
 
 
   return(list(data = data,
               constants = constants))
-
 
 }

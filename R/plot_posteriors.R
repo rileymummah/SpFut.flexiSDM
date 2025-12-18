@@ -15,21 +15,20 @@
 #'
 #' @importFrom rstan Rhat
 #' @importFrom stats rnorm runif
-#' @import ggplot2 dplyr
-#'
-#' @examples
-
+#' @importFrom ggplot2 ggplot geom_density facet_wrap labs scale_fill_manual scale_color_manual theme_bw
+#' @importFrom tidyr pivot_longer
+#' @importFrom dplyr mutate bind_rows full_join left_join select
 
 
 plot_posteriors <- function(samples,
-                        data,
-                        cov.labs,
-                        cutoff = 0,
-                        plot = "B",
-                        Bpriordist = "dnorm",
-                        Bpriorvar1 = 0,
-                        Bpriorvar2 = 1,
-                        chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
+                            data,
+                            cov.labs,
+                            cutoff = 0,
+                            plot = "B",
+                            Bpriordist = "dnorm",
+                            Bpriorvar1 = 0,
+                            Bpriorvar2 = 1,
+                            chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
 
 
     if (plot == "B") {
@@ -41,7 +40,7 @@ plot_posteriors <- function(samples,
 
     } else if (plot == "alpha") {
       bind <- grep("alpha", colnames(samples[[1]]))
-      bnames <- data.frame(name = unlist(constants[grep("name", names(constants))]),
+      bnames <- data.frame(name = unlist(.data$constants[grep("name", names(.data$constants))]),
                            param = paste0("alpha[", 1:length(bind), "]"))
     }
 
@@ -58,7 +57,7 @@ plot_posteriors <- function(samples,
     }
 
 
-    rhat <- unlist(lapply(all, rstan::Rhat))
+    rhat <- unlist(lapply(all, Rhat))
     bnames$rhat <- round(rhat, 2)
 
 
@@ -66,10 +65,10 @@ plot_posteriors <- function(samples,
     call <- c()
     for (c in chains) {
       c1 <- as.data.frame(samples[[c]][,bind]) %>%
-              dplyr::mutate(n = 1:nrow(.)) %>%
-              tidyr::pivot_longer(!n) %>%
-              dplyr::mutate(chain = c)
-      call <- dplyr::bind_rows(call, c1)
+              mutate(n = 1:n()) %>%
+              pivot_longer(!n) %>%
+              mutate(chain = c)
+      call <- bind_rows(call, c1)
     }
 
     # If there's only one, need to rename it
@@ -77,61 +76,58 @@ plot_posteriors <- function(samples,
       call$name <- paste0(d, "[", 1, "]")
     }
 
-    call <- dplyr::full_join(call, bnames, by = c("name" = "param"))
+    call <- full_join(call, bnames, by = c("name" = "param"))
 
     if (plot == "B") {
       call <- call %>%
-              dplyr::mutate(cov1 = gsub("2", "", name.y),
-                            tmp = gsub("_x_.*", "", name.y),
-                            quad = dplyr::case_when(substr(tmp, nchar(tmp), nchar(tmp)) == 2 ~ "^2",
-                                                    T ~ "")) %>%
-              dplyr::left_join(cov.labs, by = c("cov1" = "covariate")) %>%
-              dplyr::mutate(name.y = paste0(Label, quad)) %>%
-              dplyr::select(!tmp)
+              mutate(cov1 = gsub("2", "", .data$name.y),
+                     tmp = gsub("_x_.*", "", .data$name.y),
+                     quad = case_when(substr(tmp, nchar(tmp), nchar(tmp)) == 2 ~ "^2", T ~ "")) %>%
+              left_join(cov.labs, by = c("cov1" = "covariate")) %>%
+              mutate(name.y = paste0(.data$Label, .data$quad)) %>%
+              select(!.data$tmp)
     }
 
 
-    call <- dplyr::mutate(call, lab = paste0(name.y, "\nRhat = ", rhat))
+    call <- mutate(call, lab = paste0(.data$name.y, "\nRhat = ", rhat))
 
-    pl <- ggplot2::ggplot(data = dplyr::filter(call, n > cutoff)) +
-            ggplot2::geom_density(ggplot2::aes(x = value, color = as.factor(chain),
-                                               fill = as.factor(chain)), alpha = 0.1) +
-            ggplot2::facet_wrap(~lab, scales = "free") +
-            ggplot2::labs(y = "Density", x = "Parameter value", color = "Chain",
-                          fill = "Chain", subtitle = "Posterior distribution after burnin") +
-            ggplot2::scale_fill_manual(values = chaincols) +
-            ggplot2::scale_color_manual(values = chaincols) +
-            ggplot2::theme_bw()
+    pl <- ggplot(data = filter(.data$call, n > cutoff)) +
+            geom_density(aes(x = .data$value, color = as.factor(.data$chain),
+                             fill = as.factor(.data$chain)), alpha = 0.1) +
+            facet_wrap(~lab, scales = "free") +
+            labs(y = "Density", x = "Parameter value", color = "Chain",
+                 fill = "Chain", subtitle = "Posterior distribution after burnin") +
+            scale_fill_manual(values = chaincols) +
+            scale_color_manual(values = chaincols) +
+            theme_bw()
 
     if (plot %in% c("B", "alpha")) {
 
       if (plot == "B") {
         if (Bpriordist == "dnorm") {
-          prior <- stats::rnorm(nrow(call), Bpriorvar1, Bpriorvar2)
+          prior <- rnorm(nrow(call), Bpriorvar1, Bpriorvar2)
         } else if (Bpriordist == "dunif") {
-          prior <- stats::runif(nrow(call), Bpriorvar1, Bpriorvar2)
+          prior <- runif(nrow(call), Bpriorvar1, Bpriorvar2)
         }
       } else if (plot == "alpha") {
-        prior <- stats::rnorm(nrow(call), 0, 1)
+        prior <- rnorm(nrow(call), 0, 1)
         prior <- exp(prior)
       }
 
 
 
       call <- call %>%
-              dplyr::mutate(prior = prior) %>%
-              dplyr::group_by(name) %>%
-              dplyr::mutate(value1 = dplyr::case_when(n > cutoff ~ value,
-                                                      T ~ NA),
-                            min = min(value1, na.rm = T) - 0.1,
-                            max = max(value1, na.rm = T) + 0.1) %>%
-              dplyr::mutate(prior = dplyr::case_when(prior < min | prior > max ~ NA,
-                                                     T ~ prior))
+              mutate(prior = prior) %>%
+              group_by(.data$name) %>%
+              mutate(value1 = case_when(n > cutoff ~ value, T ~ NA),
+                     min = min(.data$value1, na.rm = T) - 0.1,
+                     max = max(.data$value1, na.rm = T) + 0.1) %>%
+              mutate(prior = case_when(prior < min | prior > max ~ NA, T ~ prior))
 
 
-      pl <- pl + ggplot2::geom_density(data = call, ggplot2::aes(x = prior), fill = "gray", alpha = 0.5) +
-            ggplot2::labs(y = "Density", x = "Parameter value", color = "Chain",
-                          fill = "Chain", subtitle = "Posterior distribution after burnin; black indicates prior distribution")
+      pl <- pl + geom_density(data = call, aes(x = .data$prior), fill = "gray", alpha = 0.5) +
+            labs(y = "Density", x = "Parameter value", color = "Chain",
+                 fill = "Chain", subtitle = "Posterior distribution after burnin; black indicates prior distribution")
     }
 
 

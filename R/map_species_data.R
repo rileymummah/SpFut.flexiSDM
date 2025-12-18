@@ -26,13 +26,16 @@
 #' @returns ggplot object containing map of desired data
 #' @export
 #'
-#' @importFrom rnaturalearth ne_countries
+#' @importFrom rlang .data
+#' @importFrom rnaturalearth ne_countries ne_download ne_states
 #' @importFrom viridis scale_fill_viridis scale_color_viridis
 #' @importFrom tidyr pivot_wider pivot_longer
 #' @importFrom tidyselect all_of
 #' @importFrom stats median quantile
-#'
-#' @examples
+#' @importFrom dplyr bind_rows mutate
+#' @importFrom sf st_transform st_crs
+#' @importFrom magrittr "%>%"
+#' @importFrom ggplot2 scale_linetype unit labeller facet_wrap guides guide_colorbar geom_sf theme coord_sf element_blank element_rect element_text scale_shape_manual scale_fill_manual scale_color_manual labs
 
 
 map_species_data <- function(title,
@@ -79,31 +82,31 @@ map_species_data <- function(title,
 
 
   # 1. load map features ----
-  na <- rnaturalearth::ne_countries(continent = "North America",
-                                    returnclass = "sf",
-                                    scale = 10) %>%
-          sf::st_transform(crs = sf::st_crs(region$range))
+  na <- ne_countries(continent = "North America",
+                     returnclass = "sf",
+                     scale = 10) %>%
+          st_transform(crs = st_crs(region$range))
 
-  wa <- rnaturalearth::ne_download(type = "lakes",
-                                   category = "physical", load = T,
-                                   returnclass = "sf",
-                                   scale = 10) %>%
-          sf::st_transform(crs = sf::st_crs(region$range))
+  wa <- ne_download(type = "lakes",
+                    category = "physical", load = T,
+                    returnclass = "sf",
+                    scale = 10) %>%
+          st_transform(crs = st_crs(region$range))
 
-  st <- rnaturalearth::ne_states(country = c("Canada", "Mexico", "United States of America"),
-                                 returnclass = "sf") %>%
-          sf::st_transform(crs = sf::st_crs(region$range))
+  st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
+                  returnclass = "sf") %>%
+          st_transform(crs = st_crs(region$range))
 
   # 2. make base map ----
-  base <- ggplot2::ggplot() +
-          ggplot2::geom_sf(data = na, fill = "gray90") +
-          ggplot2::geom_sf(data = st, fill = "gray90", color= "gray40") +
-          ggplot2::geom_sf(data = wa, fill = "lightsteelblue") +
-          ggplot2::theme(panel.background = ggplot2::element_rect(fill = "lightsteelblue"),
-                         panel.grid = ggplot2::element_blank(),
-                         axis.text = ggplot2::element_text(size = 12),
-                         legend.text = ggplot2::element_text(size = 12),
-                         legend.title = ggplot2::element_text(size = 14))
+  base <- ggplot() +
+          geom_sf(data = na, fill = "gray90") +
+          geom_sf(data = st, fill = "gray90", color= "gray40") +
+          geom_sf(data = wa, fill = "lightsteelblue") +
+          theme(panel.background = element_rect(fill = "lightsteelblue"),
+                panel.grid = element_blank(),
+                axis.text = element_text(size = 12),
+                legend.text = element_text(size = 12),
+                legend.title = element_text(size = 14))
 
 
 
@@ -112,13 +115,13 @@ map_species_data <- function(title,
   # __a. region ----
   if (plot.region == T) {
     base <- base +
-      ggplot2::geom_sf(data = region$region, alpha = 1, fill = "gray80", color = NA)
+      geom_sf(data = region$region, alpha = 1, fill = "gray80", color = NA)
   }
 
   # __b. cells ----
   if (plot.cells == T) {
     base <- base +
-      ggplot2::geom_sf(data = region$sp.grid, alpha = 1, fill = "lightblue", color = "gray20")
+      geom_sf(data = region$sp.grid, alpha = 1, fill = "lightblue", color = "gray20")
   }
 
 
@@ -151,13 +154,13 @@ map_species_data <- function(title,
     for (i in 1:length(ind)) {
 
       tmp <- out[[ind[i]]] %>%
-        dplyr::mutate(scenario = gsub(plot1, "", names(out)[[ind[i]]]))
-      intensity <- dplyr::bind_rows(intensity, tmp)
+        mutate(scenario = gsub(plot1, "", names(out)[[ind[i]]]))
+      intensity <- bind_rows(intensity, tmp)
 
     }
-    
+
     if (plot == "effort") intensity$scenario <- 0
-    
+
 
     # get correct column to plot
     if (plot.uncertainty == F) {
@@ -186,7 +189,7 @@ map_species_data <- function(title,
 
     # adjust values
     if (plot.log == F & plot != "spat") {
-      q99 <- stats::quantile(intensity$plot.val, 0.99, na.rm = T)
+      q99 <- quantile(intensity$plot.val, 0.99, na.rm = T)
       intensity$plot.val[which(intensity$plot.val > q99)] <- q99
     }
 
@@ -203,7 +206,7 @@ map_species_data <- function(title,
     }
 
     # add geometry
-    intensity <- dplyr::full_join(region$sp.grid, intensity, by = "conus.grid.id")
+    intensity <- full_join(region$sp.grid, intensity, by = "conus.grid.id")
 
 
 
@@ -217,40 +220,40 @@ map_species_data <- function(title,
 
           # set color scheme
           base <- base +
-            ggplot2::scale_fill_manual(values = c("white", "darkblue"), na.value = NA) +
-            ggplot2::scale_color_manual(values = c("white", "darkblue"), na.value = NA)
+            scale_fill_manual(values = c("white", "darkblue"), na.value = NA) +
+            scale_color_manual(values = c("white", "darkblue"), na.value = NA)
 
 
           # Plot current
-          intensity0 <- dplyr::filter(intensity, scenario == 0)
+          intensity0 <- filter(intensity, .data$scenario == 0)
 
           base <- base +
-            ggplot2::geom_sf(data = intensity0, ggplot2::aes(fill = plot.val, color = plot.val)) +
-            ggplot2::labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
+            geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
+            labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
 
 
         } else {
           # set color scheme
           base <- base +
-            viridis::scale_fill_viridis(guide = ggplot2::guide_colorbar(),
-                                        option = "magma",
-                                        na.value = NA,
-                                        direction = -1) +
-            viridis::scale_color_viridis(guide = "none",
-                                         option = "magma",
-                                         na.value = NA,
-                                         direction = -1)
+            scale_fill_viridis(guide = guide_colorbar(),
+                               option = "magma",
+                               na.value = NA,
+                               direction = -1) +
+            scale_color_viridis(guide = "none",
+                                option = "magma",
+                                na.value = NA,
+                                direction = -1)
 
 
           # Plot current
-          intensity0 <- dplyr::filter(intensity, scenario == 0)
+          intensity0 <- filter(intensity, .data$scenario == 0)
 
           base <- base +
-            ggplot2::geom_sf(data = intensity0, ggplot2::aes(fill = plot.val, color = plot.val)) +
-            ggplot2::guides(fill = ggplot2::guide_colorbar(theme = ggplot2::theme(legend.key.height = unit(0.75, "lines"),
-                                                                                  legend.key.width = unit(20, "lines")),
-                                                           title.hjust = 0.9, title.vjust = 1)) +
-            ggplot2::labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
+            geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
+            guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
+                                                       legend.key.width = unit(20, "lines")),
+                                         title.hjust = 0.9, title.vjust = 1)) +
+            labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
 
         }
 
@@ -275,38 +278,38 @@ map_species_data <- function(title,
           if (plot == "boundary") {
             # set color scheme
             base <- base +
-              ggplot2::scale_fill_manual(values = c("white", "darkblue"), na.value = NA) +
-              ggplot2::scale_color_manual(values = c("white", "darkblue"), na.value = NA)
+              scale_fill_manual(values = c("white", "darkblue"), na.value = NA) +
+              scale_color_manual(values = c("white", "darkblue"), na.value = NA)
 
-            intensity0 <- dplyr::filter(intensity, scenario != 0, is.na(plot.val) == F)
+            intensity0 <- filter(intensity, .data$scenario != 0, is.na(.data$plot.val) == F)
 
             base <- base +
-              ggplot2::geom_sf(data = intensity0, ggplot2::aes(fill = plot.val, color = plot.val)) +
-              ggplot2::labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
-              ggplot2::facet_wrap(~scenario, labeller = ggplot2::labeller(scenario = labs))
+              geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
+              labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
+              facet_wrap(~scenario, labeller = labeller(scenario = labs))
 
 
           } else {
             # set color scheme
             base <- base +
-              viridis::scale_fill_viridis(guide = ggplot2::guide_colorbar(),
+              scale_fill_viridis(guide = guide_colorbar(),
                                           option = "magma",
                                           na.value = NA,
                                           direction = -1) +
-              viridis::scale_color_viridis(guide = "none",
+              scale_color_viridis(guide = "none",
                                            option = "magma",
                                            na.value = NA,
                                            direction = -1)
 
-            intensity0 <- dplyr::filter(intensity, scenario != 0, is.na(plot.val) == F)
+            intensity0 <- filter(intensity, .data$scenario != 0, is.na(.data$plot.val) == F)
 
             base <- base +
-              ggplot2::geom_sf(data = intensity0, ggplot2::aes(fill = plot.val, color = plot.val)) +
-              ggplot2::guides(fill = ggplot2::guide_colorbar(theme = ggplot2::theme(legend.key.height = unit(0.75, "lines"),
-                                                                                    legend.key.width = unit(20, "lines")),
-                                                             title.hjust = 1, title.vjust = 1)) +
-              ggplot2::labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
-              ggplot2::facet_wrap(~scenario, labeller = ggplot2::labeller(scenario = labs))
+              geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
+              guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
+                                                         legend.key.width = unit(20, "lines")),
+                                           title.hjust = 1, title.vjust = 1)) +
+              labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
+              facet_wrap(~scenario, labeller = labeller(scenario = labs))
           }
 
 
@@ -317,12 +320,12 @@ map_species_data <- function(title,
 
             # set color scheme
             base <- base +
-              ggplot2::scale_fill_manual(values = c("Unsuitable" = "white",
+              scale_fill_manual(values = c("Unsuitable" = "white",
                                                      "Safe" = "darkblue",
                                                      "Loss" = "red",
                                                      "Gain" = "green"),
                                           na.value = NA) +
-              ggplot2::scale_color_manual(values = c("Unsuitable" = "white",
+              scale_color_manual(values = c("Unsuitable" = "white",
                                                       "Safe" = "darkblue",
                                                       "Loss" = "red",
                                                       "Gain" = "green"),
@@ -331,48 +334,48 @@ map_species_data <- function(title,
             scens <- unique(intensity$scenario)
             scens <- scens[-which(scens == "0")]
             intensity0 <- intensity %>%
-                            dplyr::select(conus.grid.id, scenario, plot.val) %>%
-                            tidyr::pivot_wider(names_from = scenario, values_from = plot.val) %>%
-                            tidyr::pivot_longer(cols = tidyselect::all_of(scens)) %>%
-                            dplyr::rename(current = "0",
-                                          future = "value",
-                                          scenario = "name") %>%
-              dplyr::mutate(change = dplyr::case_when(current == "Absent" & future == "Absent" ~ "Unsuitable",
-                                                      current == "Present" & future == "Absent" ~ "Loss",
-                                                      current == "Absent" & future == "Present" ~ "Gain",
-                                                      current == "Present" & future == "Present" ~ "Safe")) %>%
-              dplyr::filter(is.na(change) == F)
+                            select(.data$conus.grid.id, .data$scenario, .data$plot.val) %>%
+                            pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
+                            pivot_longer(cols = all_of(scens)) %>%
+                            rename(current = "0",
+                                   future = "value",
+                                   scenario = "name") %>%
+              mutate(change = case_when(current == "Absent" & future == "Absent" ~ "Unsuitable",
+                                        current == "Present" & future == "Absent" ~ "Loss",
+                                        current == "Absent" & future == "Present" ~ "Gain",
+                                        current == "Present" & future == "Present" ~ "Safe")) %>%
+              filter(is.na(.data$change) == F)
 
             base <- base +
-                      ggplot2::geom_sf(data = intensity0, ggplot2::aes(fill = change, color = change)) +
-                      ggplot2::labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
-                      ggplot2::facet_wrap(~scenario, labeller = ggplot2::labeller(scenario = labs))
+                      geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
+                      labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
+                      facet_wrap(~scenario, labeller = labeller(scenario = labs))
 
           } else {
             # set color scheme
             base <- base +
-              ggplot2::scale_fill_gradient2(guide = ggplot2::guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
-              ggplot2::scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
+              scale_fill_gradient2(guide = guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
+              scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
 
             scens <- unique(intensity$scenario)
             scens <- scens[-which(scens == "0")]
             intensity0 <- intensity %>%
-                            dplyr::select(conus.grid.id, scenario, plot.val) %>%
-                            tidyr::pivot_wider(names_from = scenario, values_from = plot.val) %>%
-                            tidyr::pivot_longer(cols = tidyselect::all_of(scens)) %>%
-                            dplyr::rename(current = "0",
-                                          future = "value",
-                                          scenario = "name") %>%
-                            dplyr::mutate(change = future - current) %>%
-                            dplyr::filter(is.na(change) == F)
+                            select(.data$conus.grid.id, .data$scenario, .data$plot.val) %>%
+                            pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
+                            pivot_longer(cols = all_of(scens)) %>%
+                            rename(current = "0",
+                                   future = "value",
+                                   scenario = "name") %>%
+                            mutate(change = .data$future - .data$current) %>%
+                            filter(is.na(.data$change) == F)
 
             base <- base +
-                      ggplot2::geom_sf(data = intensity0, ggplot2::aes(fill = change, color = change)) +
-                      ggplot2::guides(fill = ggplot2::guide_colorbar(theme = ggplot2::theme(legend.key.height = unit(0.75, "lines"),
+                      geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
+                      guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
                                                                                             legend.key.width = unit(20, "lines")),
                                                                      title.hjust = 1, title.vjust = 1)) +
-                      ggplot2::labs(fill = paste0("Absolute change in ", tolower(fill), unc), title = title) +
-                      ggplot2::facet_wrap(~scenario, labeller = ggplot2::labeller(scenario = labs))
+                      labs(fill = paste0("Absolute change in ", tolower(fill), unc), title = title) +
+                      facet_wrap(~scenario, labeller = labeller(scenario = labs))
           }
 
 
@@ -382,28 +385,28 @@ map_species_data <- function(title,
         } else if (plot.change == "relative") { # Plot estimated relative change
           # set color scheme
           base <- base +
-            ggplot2::scale_fill_gradient2(guide = ggplot2::guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
-            ggplot2::scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
+            scale_fill_gradient2(guide = guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
+            scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
 
           scens <- unique(intensity$scenario)
           scens <- scens[-which(scens == "0")]
           intensity0 <- intensity %>%
-                          dplyr::select(conus.grid.id, scenario, plot.val) %>%
-                          tidyr::pivot_wider(names_from = scenario, values_from = plot.val) %>%
-                          tidyr::pivot_longer(cols = tidyselect::all_of(scens)) %>%
-                          dplyr::rename(current = "0",
-                                        future = "value",
-                                        scenario = "name") %>%
-                          dplyr::mutate(change = (future - current)/current) %>%
-                          dplyr::filter(is.na(change) == F)
+                          select(.data$conus.grid.id, .data$scenario, .data$plot.val) %>%
+                          pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
+                          pivot_longer(cols = all_of(scens)) %>%
+                          rename(current = "0",
+                                 future = "value",
+                                 scenario = "name") %>%
+                          mutate(change = (.data$future - .data$current)/.data$current) %>%
+                          filter(is.na(.data$change) == F)
 
           base <- base +
-                    ggplot2::geom_sf(data = intensity0, ggplot2::aes(fill = change, color = change)) +
-                    ggplot2::guides(fill = ggplot2::guide_colorbar(theme = ggplot2::theme(legend.key.height = unit(0.75, "lines"),
-                                                                                          legend.key.width = unit(20, "lines")),
-                                                                   title.hjust = 1, title.vjust = 1)) +
-            ggplot2::labs(fill = paste0("Relative change in ", tolower(fill), unc), title = title) +
-            ggplot2::facet_wrap(~scenario, labeller = ggplot2::labeller(scenario = labs))
+                    geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
+                    guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
+                                                               legend.key.width = unit(20, "lines")),
+                                                 title.hjust = 1, title.vjust = 1)) +
+            labs(fill = paste0("Relative change in ", tolower(fill), unc), title = title) +
+            facet_wrap(~scenario, labeller = labeller(scenario = labs))
 
         } else {
           stop("plot.change must be FALSE, 'relative', or 'absolute'")
@@ -414,17 +417,16 @@ map_species_data <- function(title,
 
     } else { # if plot == 'spat'
       base <- base +
-        ggplot2::scale_fill_gradient2(guide = ggplot2::guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
-        ggplot2::scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
+        scale_fill_gradient2(guide = guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
+        scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
 
-      intensity <- dplyr::filter(intensity, is.na(plot.val) == F)
+      intensity <- filter(intensity, is.na(.data$plot.val) == F)
 
       base <- base +
-                ggplot2::geom_sf(data = intensity, ggplot2::aes(fill = plot.val, color = plot.val)) +
-                ggplot2::guides(fill = ggplot2::guide_colorbar(theme = ggplot2::theme(legend.key.height = unit(0.75, "lines"),
-                                                                                      legend.key.width = unit(20, "lines")),
-                                                               title.hjust = 1, title.vjust = 1)) +
-                ggplot2::labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
+                geom_sf(data = intensity, aes(fill = .data$plot.val, color = .data$plot.val)) +
+                guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
+                                                           title.hjust = 1, title.vjust = 1))) +
+                labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
     }
 
   }
@@ -434,33 +436,34 @@ map_species_data <- function(title,
 
   # put state lines and water on top of fill color
   base <- base +
-            ggplot2::geom_sf(data = st, fill = NA) +
-            ggplot2::geom_sf(data = wa, fill = "lightsteelblue")
+            geom_sf(data = st, fill = NA) +
+            geom_sf(data = wa, fill = "lightsteelblue")
 
 
 
   # __d. range ----
   if (plot.range == T) {
     base <- base +
-             ggplot2::geom_sf(data = region$range, fill = NA, color = "gray35", linewidth = 0.4, aes(linetype = range.name))
+             geom_sf(data = region$range, fill = NA, color = "gray35",
+                     linewidth = 0.4, aes(linetype = .data$range.name))
   }
 
   # __e. blocks ----
   if (plot.blocks == T) {
 
-    blocks <- sf::st_intersection(blocks, region$region)
+    blocks <- st_intersection(blocks, region$region)
 
     if (length(unique(blocks$folds)) == 1) {
       base <- base +
-              ggplot2::geom_sf(data = blocks, size = 1, linewidth = .15,
-                               ggplot2::aes(fill = as.factor(folds)), color = "gray30", alpha = 0.5) +
-              ggplot2::scale_fill_manual(values = blockcols, name = "Out-of-sample test area",
-                                         label = paste0("Fold ", blocks$folds[1]))
+              geom_sf(data = blocks, size = 1, linewidth = .15,
+                               aes(fill = as.factor(.data$folds)), color = "gray30", alpha = 0.5) +
+              scale_fill_manual(values = blockcols, name = "Out-of-sample test area",
+                                label = paste0("Fold ", blocks$folds[1]))
     } else {
       base <- base +
-                ggplot2::geom_sf(data = blocks, size = 1, linewidth = .15,
-                                 ggplot2::aes(fill = as.factor(folds)), color = "gray30", alpha = 0.3) +
-                ggplot2::scale_fill_manual(values = blockcols, name = "Fold")
+                geom_sf(data = blocks, size = 1, linewidth = .15,
+                        aes(fill = as.factor(.data$folds)), color = "gray30", alpha = 0.3) +
+                scale_fill_manual(values = blockcols, name = "Fold")
     }
 
 
@@ -472,56 +475,58 @@ map_species_data <- function(title,
     if (details == T) {
 
       locs <- species.data$locs$cont %>%
-                sf::st_drop_geometry() %>%
-                dplyr::select(site.id, source) %>%
-                dplyr::distinct()
+                st_drop_geometry() %>%
+                select(.data$site.id, .data$source) %>%
+                distinct()
 
       n.sites <- as.data.frame(table(locs$source))
       colnames(n.sites) <- c("source", "n.sites")
 
       locs <- species.data$locs$cont %>%
-                sf::st_drop_geometry() %>%
-                dplyr::select(site.id, survey.id, source)  %>%
-                dplyr::distinct()
+                st_drop_geometry() %>%
+                select(.data$site.id, .data$survey.id, .data$source)  %>%
+                distinct()
 
       n.surveys <- as.data.frame(table(locs$source, locs$site.id)) %>%
-                    dplyr::filter(Freq != 0) %>%
-                    dplyr::group_by(Var1) %>%
-                    dplyr::summarize(n.visits = stats::median(Freq))
+                    filter(.data$Freq != 0) %>%
+                    group_by(.data$Var1) %>%
+                    summarize(n.visits = median(.data$Freq))
       colnames(n.surveys) <- c("source", "n.visits")
 
-      tab <- dplyr::full_join(n.sites, n.surveys, by = "source") %>%
-              dplyr::select(source, n.sites, n.visits)
+      tab <- full_join(n.sites, n.surveys, by = "source") %>%
+              select(.data$source, .data$n.sites, .data$n.visits)
 
       plotpoints <- species.data$locs$cont %>%
-                    dplyr::full_join(tab, by = "source") %>%
-                    dplyr::mutate(label = paste0(source, " (", data.type, ": ", n.sites, ", ", n.visits, ")"))
+                    full_join(tab, by = "source") %>%
+                    mutate(label = paste0(.data$source, " (", .data$data.type, ": ", .data$n.sites, ", ", .data$n.visits, ")"))
     } else {
       plotpoints <- species.data$locs$cont %>%
-                    dplyr::filter(year >= year.start,
-                                  year <= year.end,
-                                  survey.conducted == 1)
+                    filter(.data$year >= year.start,
+                           .data$year <= year.end,
+                           .data$survey.conducted == 1)
     }
 
 
-    plotpoints <- dplyr::filter(plotpoints, year <= year.end & year >= year.start)
+    plotpoints <- filter(plotpoints, .data$year <= year.end & .data$year >= year.start)
 
 
 
     if (details == T) {
       base <- base +
-                ggplot2::geom_sf(data = plotpoints, ggplot2::aes(color = label, shape = data.type), alpha = 1, size = 1.5) +
-                ggplot2::scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
-                ggplot2::labs(color = "Dataset (data type: number of sites, \nmedian visits per site)",
+                geom_sf(data = plotpoints, aes(color = .data$label, shape = .data$data.type),
+                        alpha = 1, size = 1.5) +
+                scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
+                labs(color = "Dataset (data type: number of sites, \nmedian visits per site)",
                               shape = "Data type",
                               subtitle = paste0("All available data between ", year.start, " and ", year.end),
                               title = title,
                               linetype = "Range")
     } else {
       base <- base +
-              ggplot2::geom_sf(data = plotpoints, ggplot2::aes(color = source, shape = data.type), alpha = 1, size = 1.5) +
-              ggplot2::scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
-              ggplot2::labs(color = "Dataset",
+              geom_sf(data = plotpoints, aes(color = .data$source, shape = .data$data.type),
+                      alpha = 1, size = 1.5) +
+              scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
+              labs(color = "Dataset",
                             shape = "Data type",
                             subtitle = paste0("All available data between ", year.start, " and ", year.end),
                             title = title,
@@ -531,47 +536,40 @@ map_species_data <- function(title,
   }
 
 
-
-
-
-
   # 4. add limits ----
   if (plot.blocks == F) {
-    bb <- sf::st_bbox(region$region)
+    bb <- st_bbox(region$region)
     xlim <- c(bb[1], bb[3])
     ylim <- c(bb[2], bb[4])
   } else {
-    bb <- sf::st_bbox(sf::st_union(region$region, blocks))
+    bb <- st_bbox(st_union(region$region, blocks))
     xlim <- c(bb[1], bb[3])
     ylim <- c(bb[2], bb[4])
   }
 
   base <- base +
-    ggplot2::coord_sf(xlim = xlim, ylim = ylim)
-
-
-
+    coord_sf(xlim = xlim, ylim = ylim)
 
 
   # 5. change theme ----
   if (plot == "samples") {
     base <- base +
-            ggplot2::theme(legend.key = ggplot2::element_rect(fill = "gray90"),
-                           axis.text.x = ggplot2::element_text(angle = 45,
-                                                               hjust = 1,
-                                                               vjust = 1))
+            theme(legend.key = element_rect(fill = "gray90"),
+                  axis.text.x = element_text(angle = 45,
+                                             hjust = 1,
+                                             vjust = 1))
   } else {
     base <- base +
-            ggplot2::theme(legend.position = "bottom",
-                           axis.text.x = ggplot2::element_text(angle = 45,
-                                                               hjust = 1,
-                                                               vjust = 1),
-                           strip.text = ggplot2::element_text(size = 12)) +
-      ggplot2::scale_linetype(guide = "none")
+            theme(legend.position = "bottom",
+                  axis.text.x = element_text(angle = 45,
+                                             hjust = 1,
+                                             vjust = 1),
+                  strip.text = element_text(size = 12)) +
+      scale_linetype(guide = "none")
   }
 
   if (plot == "effort") base <- base + facet_wrap(~ PO.dataset.name)
-  
+
   base
 
 

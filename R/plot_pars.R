@@ -9,11 +9,9 @@
 #' @returns A plot of parameter estimates
 #' @export
 #'
-#' @import ggplot2
-#' @import dplyr
+#' @importFrom ggplot2 ggplot geom_hline theme_bw theme scale_x_discrete geom_point geom_segment labs facet_wrap
+#' @importFrom dplyr mutate left_join select left_join rename
 #' @importFrom stringr str_wrap
-#'
-#' @examples
 
 
 plot_pars <- function(out,
@@ -22,12 +20,11 @@ plot_pars <- function(out,
                       cov.labs,
                       title) {
 
-
   if (plot.type == "full") {
 
     if (plot.group == "process") {
 
-      dat <- out$process.coef %>% dplyr::mutate(x = covariate)
+      dat <- out$process.coef %>% mutate(x = .data$covariate)
       xlab <- "Covariate"
 
       # rename interaction reference level
@@ -46,58 +43,58 @@ plot_pars <- function(out,
       }
 
       dat <- dat %>%
-              dplyr::mutate(cov1 = gsub("2", "", covariate),
-                            tmp = gsub("_x_.*", "", covariate),
-                            quad = dplyr::case_when(substr(tmp, nchar(tmp),
-                                                           nchar(tmp)) == 2 ~ "^2",
-                                                    T ~ "")) %>%
-              dplyr::left_join(cov.labs, by = c("cov1" = "covariate")) %>%
-              dplyr::mutate(x = paste0(Label, quad)) %>%
-              dplyr::select(!tmp)
+              mutate(cov1 = gsub("2", "", .data$covariate),
+                     tmp = gsub("_x_.*", "", .data$covariate),
+                     quad = case_when(substr(tmp, nchar(tmp),
+                                             nchar(tmp)) == 2 ~ "^2",
+                                      T ~ "")) %>%
+              left_join(cov.labs, by = c("cov1" = "covariate")) %>%
+              mutate(x = paste0(.data$Label, .data$quad)) %>%
+              select(!.data$tmp)
 
     } else if (plot.group == "observation") {
       dat <- out$obs.coef %>%
-              dplyr::mutate(x = covariate,
-                            lab = paste0(name, " (", data.type, ')'))
+              mutate(x = .data$covariate, lab = paste0(.data$name, " (", .data$data.type, ')'))
       xlab <- "Covariate"
 
 
       dat <- dat %>%
-              dplyr::mutate(cov1 = gsub("2", "", covariate),
-                            quad = dplyr::case_when(substr(covariate, nchar(covariate), nchar(covariate)) == 2 ~ "^2",
-                                                    T ~ "")) %>%
-              dplyr::left_join(cov.labs, by = c("cov1" = "covariate")) %>%
-              dplyr::mutate(x = paste0(Label, quad)) %>%
-              dplyr::mutate(x = dplyr::case_when(x == "NA" ~ cov1, T ~ x))
+              mutate(cov1 = gsub("2", "", .data$covariate),
+                     quad = case_when(substr(.data$covariate,
+                                             nchar(.data$covariate),
+                                             nchar(.data$covariate)) == 2 ~ "^2",
+                                      T ~ "")) %>%
+              left_join(cov.labs, by = c("cov1" = "covariate")) %>%
+              mutate(x = paste0(.data$Label, .data$quad)) %>%
+              mutate(x = case_when(x == "NA" ~ cov1, T ~ x))
 
 
     } else if (plot.group == "dataset") {
-      dat <- out$alpha %>% dplyr::rename(x = name)
+      dat <- out$alpha %>% rename(x = .data$name)
       xlab <- "Dataset"
     } else if (plot.group == "tau") {
-      dat <- out$tau %>% dplyr::mutate(x = "tau")
+      dat <- out$tau %>% mutate(x = "tau")
       xlab <- "Tau"
     } else {
       stop("plot.group must be 'process' or 'observation' or 'dataset' or 'tau'")
     }
 
 
-    pl <- ggplot2::ggplot(dat) +
-            ggplot2::geom_hline(yintercept = 0) +
-            ggplot2::theme_bw() +
-            ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 0,
-                                                               hjust = 0.5,
-                                                               vjust = 1)) +
-            #ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 15)) +
-            ggplot2::geom_point(ggplot2::aes(x = x, y = mean), col='black') +
-            ggplot2::geom_segment(ggplot2::aes(x = x, xend = x,
-                                               y = lo, yend = hi), col='black') +
-            ggplot2::labs(y = 'Estimate', x = xlab, title = title,
-                          subtitle = "Mean and 95% credible intervals")
+    pl <- ggplot(dat) +
+            geom_hline(yintercept = 0) +
+            theme_bw() +
+            theme(axis.text.x = element_text(angle = 0,
+                                             hjust = 0.5,
+                                             vjust = 1)) +
+            geom_point(aes(x = .data$x, y = .data$mean), col='black') +
+            geom_segment(aes(x = .data$x, xend = .data$x,
+                             y = .data$lo, yend = .data$hi), col='black') +
+            labs(y = 'Estimate', x = xlab, title = title,
+                 subtitle = "Mean and 95% credible intervals")
 
 
     if (plot.group == "observation") {
-      pl <- pl + ggplot2::facet_wrap(~lab, scales = "free")
+      pl <- pl + facet_wrap(~lab, scales = "free")
     }
 
 
@@ -108,7 +105,7 @@ plot_pars <- function(out,
 
 
     if (plot.group == "process") {
-      dat <- dplyr::mutate(out, x = covariate)
+      dat <- mutate(out, x = .data$covariate)
       xlab <- "Covariate"
 
       # rename interaction reference level
@@ -127,64 +124,63 @@ plot_pars <- function(out,
       }
 
       dat <- dat %>%
-              dplyr::mutate(cov1 = gsub("2", "", covariate),
-                            tmp = gsub("_x_.*", "", covariate),
-                            quad = dplyr::case_when(substr(tmp, nchar(tmp), nchar(tmp)) == 2 ~ "^2",
-                                                    T ~ "")) %>%
-              dplyr::left_join(cov.labs, by = c("cov1" = "covariate")) %>%
-              dplyr::mutate(x = paste0(Label, quad)) %>%
-              dplyr::select(!tmp)
+              mutate(cov1 = gsub("2", "", .data$covariate),
+                     tmp = gsub("_x_.*", "", .data$covariate),
+                     quad = case_when(substr(tmp, nchar(tmp), nchar(tmp)) == 2 ~ "^2",
+                                      T ~ "")) %>%
+              left_join(cov.labs, by = c("cov1" = "covariate")) %>%
+              mutate(x = paste0(.data$Label, .data$quad)) %>%
+              select(!.data$tmp)
 
 
     } else if (plot.group == "observation") {
-      dat <- dplyr::mutate(out, x = covariate, lab = paste0(name, ", ", data.type))
+      dat <- mutate(out, x = .data$covariate, lab = paste0(.data$name, ", ", .data$data.type))
       xlab <- "Covariate"
 
       dat <- dat %>%
-              dplyr::mutate(cov1 = gsub("2", "", covariate),
-                            quad = case_when(substr(covariate, nchar(covariate), nchar(covariate)) == 2 ~ "^2",
-                                             T ~ "")) %>%
-              dplyr::left_join(cov.labs, by = c("cov1" = "covariate")) %>%
-              dplyr::mutate(x = paste0(Label, quad)) %>%
-              dplyr::mutate(x = case_when(x == "NA" ~ cov1, T ~ x))
+              mutate(cov1 = gsub("2", "", .data$covariate),
+                     quad = case_when(substr(.data$covariate,
+                                             nchar(.data$covariate),
+                                             nchar(.data$covariate)) == 2 ~ "^2",
+                                      T ~ "")) %>%
+              left_join(cov.labs, by = c("cov1" = "covariate")) %>%
+              mutate(x = paste0(.data$Label, .data$quad)) %>%
+              mutate(x = case_when(x == "NA" ~ cov1, T ~ x))
 
     } else if (plot.group == "dataset") {
-      dat <- rename(out, x = name)
+      dat <- rename(out, x = .data$name)
       xlab <- "Dataset"
     } else if (plot.group == "tau") {
-      dat <- out$tau %>% dplyr::mutate(x = "tau")
+      dat <- out$tau %>% mutate(x = "tau")
       xlab <- "Tau"
     } else {
       stop("plot.group must be 'process' or 'observation' or 'dataset'")
     }
 
 
-    pl <- ggplot2::ggplot(dat) +
-            ggplot2::geom_hline(yintercept = 0) +
-            ggplot2::theme_bw() +
-            ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 0,
-                                                               hjust = 0.5,
-                                                               vjust = 1)) +
-            ggplot2::scale_x_discrete(labels = function(x) str_wrap(x, width = 15)) +
-            ggplot2::geom_pointrange(ggplot2::aes(x = x, y = mean, ymax = hi, ymin = lo,
-                                                  col = as.factor(block.out)),
-                                     position = ggplot2::position_dodge(width = 0.5)) +
-            ggplot2::scale_color_manual(values = blockcols) +
-            ggplot2::labs(y = 'Estimate', x = xlab, color = "Excluded fold",
-                          title = title,
-                          subtitle = "Mean and 95% credible intervals")
+    pl <- ggplot(dat) +
+            geom_hline(yintercept = 0) +
+            theme_bw() +
+            theme(axis.text.x = element_text(angle = 0,
+                                             hjust = 0.5,
+                                             vjust = 1)) +
+            scale_x_discrete(labels = function(x) str_wrap(x, width = 15)) +
+            geom_pointrange(aes(x = .data$x, y = .data$mean,
+                                ymax = .data$hi, ymin = .data$lo,
+                                col = as.factor(.data$block.out)),
+                            position = position_dodge(width = 0.5)) +
+            scale_color_manual(values = blockcols) +
+            labs(y = 'Estimate', x = xlab, color = "Excluded fold",
+                 title = title,
+                 subtitle = "Mean and 95% credible intervals")
 
     if (plot.group == "observation") {
-      pl <- pl + ggplot2::facet_wrap(~lab, scales = "free")
+      pl <- pl + facet_wrap(~lab, scales = "free")
     }
 
 
   }
 
-
-
-
   return(pl)
-
 
 }

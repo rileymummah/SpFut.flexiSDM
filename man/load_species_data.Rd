@@ -43,12 +43,6 @@ load_species_data(
 \item{spat.thin}{(logical) if data is PO, do spatial thinning at 2km x 2km grid cell (T) or not (F)}
 
 \item{keep.conus.grid.id}{(character vector) Which grid cells to keep (e.g., for cross validation); defaults to all grid cells in the region}
-
-\item{file.name}{(character vector) data file names to read in}
-
-\item{file.label}{(character vector) labels for data files}
-
-\item{keep.cols}{(character list) column names to keep for each data file}
 }
 \value{
 A list with two objects. The first object (locs) is a dataframe containing the coordinate locations of all observations. The second object (obs) is a list containing a dataframe for each dataset and the conus.grid.id location of each observation.

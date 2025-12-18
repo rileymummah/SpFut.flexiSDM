@@ -16,12 +16,10 @@
 #' @export
 #'
 #' @importFrom rlang .data
-#' @importFrom dplyr bind_rows mutate slice mutate inner_join select group_by ungroup left_join row_number
+#' @importFrom dplyr right_join bind_rows mutate slice mutate inner_join select group_by ungroup left_join row_number
 #' @importFrom coda as.mcmc
 #' @importFrom parallel makeCluster parLapply stopCluster
 #' @import nimble
-#'
-#' @examples
 
 
 summarize_samples <- function(samples,
@@ -125,9 +123,9 @@ summarize_samples <- function(samples,
     E <- out %>%
       slice(keep) %>%
       mutate(name1 = Enames,
-             grid.id = gsub(".*[[]", "", name1),
-             grid.id = as.numeric(gsub("[]]", "", grid.id)),
-             PO.dataset = gsub("[[].*", "", name1),
+             grid.id = gsub(".*[[]", "", .data$name1),
+             grid.id = as.numeric(gsub("[]]", "", .data$grid.id)),
+             PO.dataset = gsub("[[].*", "", .data$name1),
              block.out = block.out) %>%
       inner_join(gridkey, by = "grid.id") %>%
       inner_join(dnames, by = "PO.dataset") %>%
@@ -186,7 +184,7 @@ summarize_samples <- function(samples,
   if (coarse.grid == T) {
     key <- left_join(gridkey, spatkey, by = 'conus.grid.id')
   } else {
-    key <- mutate(gridkey, spat.grid.id = grid.id)
+    key <- mutate(gridkey, spat.grid.id = .data$grid.id)
   }
 
   # spat
@@ -196,7 +194,9 @@ summarize_samples <- function(samples,
               slice(keep) %>%
               mutate(grid.id = as.numeric(gsub("spat", "", .data$param)),
                      block.out = block.out) %>%
-              left_join(key, ., by = c("spat.grid.id" = "grid.id")) %>%
+      # Changed following line from:
+      # left_join(key, ., by = c("spat.grid.id" = "grid.id"))
+              right_join(key, by = c("spat.grid.id" = "grid.id")) %>%
               select(.data$conus.grid.id, .data$group, .data$block.out,
                      .data$mean, .data$lo, .data$hi, .data$lotail, .data$hitail,
                      .data$unc.range, .data$unc.rel, .data$rhat, .data$ESS)
@@ -221,10 +221,10 @@ summarize_samples <- function(samples,
   datasets <- data.frame(name = unlist(constants[grep("name", names(constants))]),
                          number = names(constants)[grep("name", names(constants))],
                          ncov = names(constants)[grep("nCovW|nCovV|nCovY", names(constants))]) %>%
-    mutate(type = substr(ncov, 5, 5),
+    mutate(type = substr(.data$ncov, 5, 5),
            data.type = case_when(type == "V" ~ "DND", type == "Y" ~ "Count",
                                  type == "W" ~ "PO"),
-           number = gsub("name", "", number)) %>%
+           number = gsub("name", "", .data$number)) %>%
     select(.data$name, .data$number, .data$data.type)
 
   # alpha
@@ -259,8 +259,8 @@ summarize_samples <- function(samples,
   keep <- grep("A|C|D", out$param)
   obs.coef <- out %>%
                 slice(keep) %>%
-                mutate(number = substr(param, 2, nchar(param) - 1)) %>%
-                group_by(number) %>%
+                mutate(number = substr(.data$param, 2, nchar(.data$param) - 1)) %>%
+                group_by(.data$number) %>%
                 mutate(colnumber = row_number(), block.out = block.out) %>%
                 ungroup() %>%
                 left_join(datasets, by = "number") %>%
@@ -284,4 +284,5 @@ summarize_samples <- function(samples,
 
   # Return
   return(dat)
+
 }

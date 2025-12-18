@@ -27,14 +27,14 @@ PO_for_nimble <- function(POdata,
     stop("STOP! conus.grid.id in POdata and covariates need to be in the same order")
   }
 
-  cov.names <- dplyr::select(covariates, !conus.grid.id) %>% colnames()
+  cov.names <- select(covariates, !.data$conus.grid.id) %>% colnames()
 
   # set W covariates
-  Xw <- dplyr::select(covariates, !conus.grid.id)
+  Xw <- select(covariates, !.data$conus.grid.id)
 
-  W <- dplyr::pull(POdata, count)
+  W <- pull(POdata, .data$count)
 
-  Wcells <- dplyr::pull(POdata, conus.grid.id)
+  Wcells <- pull(POdata, .data$conus.grid.id)
 
   nCovW <- ncol(Xw)
 

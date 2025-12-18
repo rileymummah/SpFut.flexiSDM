@@ -12,9 +12,8 @@
 #' @returns A dataframe containing clean and summarized observation data from one dataset.
 #'
 #' @importFrom tidyselect any_of
-#'
-#' @examples
-
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr filter select group_by summarize distinct summarize_all full_join
 
 
 count_filter <- function(data,
@@ -28,45 +27,45 @@ count_filter <- function(data,
 
     cat("\nLoading count")
 
-    countstart <- dplyr::filter(data, age %in% age.use)
+    countstart <- filter(data, .data$age %in% age.use)
 
     if (nrow(countstart) > 0) {
       # get total count
       countcount <- countstart %>%
-                      dplyr::select(!tidyselect::any_of(c(covs.mean, covs.sum))) %>%
-                      dplyr::group_by(survey.id) %>%
-                      dplyr::summarize(count = sum(count), .groups = "drop")
+                      select(!any_of(c(covs.mean, covs.sum))) %>%
+                      group_by(.data$survey.id) %>%
+                      summarize(count = sum(.data$count), .groups = "drop")
 
       # get area if it exists
       if (length(offset.area) > 0) {
         count.area <- countstart %>%
-                        dplyr::select(survey.id, pass.id, tidyselect::any_of(offset.area)) %>%
-                        dplyr::distinct() %>%
-                        dplyr::select(!pass.id) %>%
+                        select(.data$survey.id, .data$pass.id, any_of(offset.area)) %>%
+                        distinct() %>%
+                        select(!.data$pass.id) %>%
 
                         # aggregate across passes
-                        dplyr::group_by(survey.id) %>%
-                        dplyr::summarize_all(mean, na.rm = T)
+                        group_by(.data$survey.id) %>%
+                        summarize_all(mean, na.rm = T)
       }
 
       # get mean covariates (e.g., temperature)
       if (length(covs.mean) > 0) {
         countcovs.mean <- countstart %>%
-          dplyr::select(survey.id, tidyselect::any_of(covs.mean)) %>%
-          dplyr::distinct() %>%
-          dplyr::group_by(survey.id) %>%
-          dplyr::summarize_all(mean, na.rm = T)
+          select(.data$survey.id, any_of(covs.mean)) %>%
+          distinct() %>%
+          group_by(.data$survey.id) %>%
+          summarize_all(mean, na.rm = T)
       }
 
 
       # get sum covariates (e.g., duration)
       if (length(covs.sum) > 0) {
         countcovs.sum <- countstart %>%
-                          dplyr::select(survey.id, tidyselect::any_of(covs.sum)) %>%
-                          dplyr::distinct() %>%
-                          dplyr::group_by(survey.id) %>%
-                          dplyr::summarize_all(sum, na.rm = T)
-        
+                          select(.data$survey.id, any_of(covs.sum)) %>%
+                          distinct() %>%
+                          group_by(.data$survey.id) %>%
+                          summarize_all(sum, na.rm = T)
+
         # if all values are NA, it becomes 0. Make it NA again.
         countcovs.sum[countcovs.sum == 0] <- NA
       }
@@ -74,24 +73,25 @@ count_filter <- function(data,
 
       # get other important columns
       countcols <- countstart %>%
-                    dplyr::select(conus.grid.id, site.id, survey.id,
-                                  lat, lon, day, month, year, survey.conducted) %>%
-                    dplyr::distinct()
+                    select(.data$conus.grid.id, .data$site.id, .data$survey.id,
+                           .data$lat, .data$lon, .data$day, .data$month,
+                           .data$year, .data$survey.conducted) %>%
+                    distinct()
 
       # put them together
-      countstart <- dplyr::inner_join(countcols, countcount, by = "survey.id")
+      countstart <- inner_join(countcols, countcount, by = "survey.id")
 
       if (length(covs.mean) > 0) {
-        countstart <- dplyr::full_join(countstart, countcovs.mean, by = "survey.id")
+        countstart <- full_join(countstart, countcovs.mean, by = "survey.id")
       }
       if (length(covs.sum) > 0) {
-        countstart <- dplyr::full_join(countstart, countcovs.sum, by = "survey.id")
+        countstart <- full_join(countstart, countcovs.sum, by = "survey.id")
       }
 
       if (length(offset.area) > 0) {
         colnames(count.area)[grep(offset.area, colnames(count.area))] <- "area"
 
-        countstart <- dplyr::full_join(countstart, count.area, by = "survey.id")
+        countstart <- full_join(countstart, count.area, by = "survey.id")
       }
 
     } else {

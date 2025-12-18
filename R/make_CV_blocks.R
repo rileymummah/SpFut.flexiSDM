@@ -10,11 +10,8 @@
 #'
 #' @importFrom rlang .data
 #' @importFrom sf st_make_grid st_as_sf st_intersects
-#' @importFrom dplyr mutate rename select
-#'
-#' @examples
-
-
+#' @importFrom dplyr mutate rename select n
+#' @importFrom magrittr "%>%"
 
 
 make_CV_blocks <- function(region,

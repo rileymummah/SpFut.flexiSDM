@@ -10,8 +10,7 @@
 #'
 #' @importFrom VGAM clogloglink
 #' @importFrom dplyr bind_cols
-#'
-#' @examples
+
 
 get_projections <- function(i, data, beta, spat, lambda0) {
   # For each projection, calculate XB, lambda, and psi
@@ -28,7 +27,7 @@ get_projections <- function(i, data, beta, spat, lambda0) {
 
   # Calculate projected psi
   psi <- lapply(lam, function(x)
-          VGAM::clogloglink(log(x), inverse = T)) %>%
+          clogloglink(log(x), inverse = T)) %>%
           data.frame()
   names(psi) <- gsub(paste0('lambda', i, '.'), paste0('psi', i, '['), names(psi))
   names(psi) <- gsub('[.]', ']', names(psi))
@@ -40,5 +39,5 @@ get_projections <- function(i, data, beta, spat, lambda0) {
   colnames(XB) <- gsub('lambda0', paste0('XB', i), colnames(XB))
 
 
-  return(dplyr::bind_cols(lam, psi, XB))
+  return(bind_cols(lam, psi, XB))
 }

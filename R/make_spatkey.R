@@ -11,6 +11,8 @@
 #' @export
 #'
 #' @importFrom spdep poly2nb nb2WB
+#' @importFrom magrittr "%>%"
+#' @importFrom rlang .data
 #' @importFrom sf st_centroid st_coordinates st_as_sf st_drop_geometry
 #' @importFrom dplyr mutate filter group_by summarize distinct ungroup n
 #'
@@ -80,8 +82,8 @@ make_spatkey <- function(grid) {
 
   a <- centXY1 %>%
           # Have to filter out missing (orphan) cells, otherwise NA will have more than 7 "neighbors"
-          filter(!is.na(cell)) %>%
-          group_by(cell) %>%
+          filter(!is.na(.data$cell)) %>%
+          group_by(.data$cell) %>%
           summarize(count = n())
 
   if(max(a$count)<=7){
@@ -105,15 +107,15 @@ make_spatkey <- function(grid) {
   # Isolate cells with NA and give them correct cell affiliations
   centXY %>%
     # Isolate centroids with missing cell assignments
-    filter(is.na(cell)) %>%
-    left_join(., grid, by = 'conus.grid.id') %>%
-    select(cell, conus.grid.id, geometry) %>%
+    filter(is.na(.data$cell)) %>%
+    left_join(grid, by = 'conus.grid.id') %>%
+    select(.data$cell, .data$conus.grid.id, .data$geometry) %>%
     st_as_sf() -> cellNA
 
   NAind <- which(is.na(centXY$cell))
 
-  NB <- spdep::poly2nb(cellNA)
-  NBinfo <- spdep::nb2WB(NB)
+  NB <- poly2nb(cellNA)
+  NBinfo <- nb2WB(NB)
 
   cellNA$neighbors <- NBinfo$num
   adj <- NBinfo$adj
@@ -139,30 +141,30 @@ make_spatkey <- function(grid) {
     }
   }
 
-  cellNA <- select(cellNA, -neighbors)
+  cellNA <- select(cellNA, -.data$neighbors)
 
   centXY %>%
     left_join(grid, centXY, by = 'conus.grid.id') %>%
-    select(conus.grid.id, cell, geometry) -> spatkey1
+    select(.data$conus.grid.id, .data$cell, .data$geometry) -> spatkey1
 
   spatkey1$cell[NAind] <- cellNA$cell
 
   spatkey1 %>%
-    group_by(cell) %>%
-    mutate(geometry = st_union(geometry)) %>%
+    group_by(.data$cell) %>%
+    mutate(geometry = st_union(.data$geometry)) %>%
     ungroup() %>%
-    select(cell, geometry) %>%
+    select(.data$cell, .data$geometry) %>%
     distinct() %>%
     mutate(spat.grid.id = 1:n()) %>%
     st_as_sf() -> tmp1
 
   tmp1 %>%
     st_drop_geometry() %>%
-    select(cell, spat.grid.id) %>%
-    full_join(spatkey1, ., by = 'cell') %>%
-    select(-geometry, -cell) -> spatkey
+    select(.data$cell, .data$spat.grid.id) %>%
+    full_join(spatkey1, .data, by = 'cell') %>%
+    select(-.data$geometry, -.data$cell) -> spatkey
 
-  select(tmp1, -cell) -> spat.grid
+  select(tmp1, -.data$cell) -> spat.grid
 
   return(spatModel = list(spatkey = spatkey,
                           spat.grid = spat.grid))

@@ -37,8 +37,6 @@ Makes maps of scaled covariate values.
 }
 \examples{
 \dontrun{
-
-
 plot_covar(covar,
            region,
            cov.names = c("cwd", "permwater"),

@@ -12,11 +12,11 @@
 #' @export
 #'
 #' @importFrom VGAM clogloglink
+#' @importFrom magrittr "%>%"
 #' @importFrom tidyselect all_of
 #' @importFrom dplyr select bind_cols
 #' @importFrom coda as.mcmc
-#'
-#' @examples
+
 
 get_derived <- function(samples,
                         data,
@@ -29,12 +29,11 @@ get_derived <- function(samples,
   # Pull out lambda
   keep <- grep("lambda0", colnames(samples))
 
-  as.data.frame(coda::as.mcmc(samples)) %>%
-    dplyr::select(tidyselect::all_of(keep)) -> lambda0
+  as.data.frame(as.mcmc(samples)) %>% select(all_of(keep)) -> lambda0
 
 
   # Convert lambda to psi for all samples
-  psi0 <- lapply(lambda0, function(x) VGAM::clogloglink(log(x), inverse = T)) %>%
+  psi0 <- lapply(lambda0, function(x) clogloglink(log(x), inverse = T)) %>%
     data.frame()
   names(psi0) <- gsub('lambda0.', 'psi0[', names(psi0))
   names(psi0) <- gsub('[.]', ']', names(psi0))
@@ -46,22 +45,18 @@ get_derived <- function(samples,
   if (sp.auto == T & project > 0) {
     source(pathToProj)
 
-
-
     # Pull beta from output file
     keep <- grep('^B', colnames(samples))
 
-    as.data.frame(coda::as.mcmc(samples)) %>%
-      dplyr::select(tidyselect::all_of(keep)) %>%
+    as.data.frame(as.mcmc(samples)) %>%
+      select(all_of(keep)) %>%
       as.matrix() -> beta
-
-
 
     # Pull spat from output file
     keep <- grep("spat", colnames(samples))
 
-    as.data.frame(coda::as.mcmc(samples)) %>%
-      dplyr::select(tidyselect::all_of(keep)) %>%
+    as.data.frame(as.mcmc(samples)) %>%
+      select(all_of(keep)) %>%
       as.matrix() -> spat
 
     # Realign the spatial grid to the species grid if coarse.grid
@@ -72,7 +67,7 @@ get_derived <- function(samples,
       tmp <- c()
       suppressMessages(for (i in 1:length(cells)) {
         index <- which(colnames(spat) == paste0('spat[', cells[i], ']'))
-        tmp <- dplyr::bind_cols(tmp, spat[, index])
+        tmp <- bind_cols(tmp, spat[, index])
       })
 
       colnames(tmp) <- paste0('spat[', 1:length(cells), ']')
@@ -88,10 +83,10 @@ get_derived <- function(samples,
 
     proj <- do.call(cbind, proj)
 
-    derived <- dplyr::bind_cols(samples, psi0, proj)
+    derived <- bind_cols(samples, psi0, proj)
 
   } else {
-    derived <- dplyr::bind_cols(samples, psi0)
+    derived <- bind_cols(samples, psi0)
   }
 
   return(derived)
