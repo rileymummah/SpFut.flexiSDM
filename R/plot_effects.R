@@ -3,7 +3,7 @@
 #' @param data (list) output from data_for_nimble()
 #' @param out (list) output from summarize_chains()
 #' @param breaks (numeric) distance between covariate values to simulate
-#' @param unscale_covar (data.frame) data.frame containing unscaled covariates, or FALSE
+#' @param unscale_covar (data.frame) data.frame containing unscaled covariates; default is NULL
 #'
 #' @returns plot of marginal effects
 #' @export
@@ -18,7 +18,7 @@
 plot_effects <- function(data,
                          out,
                          breaks = 0.01,
-                         unscale_covar = F) {
+                         unscale_covar = NULL) {
 
   # Start with process covariates
   ball <- out$process.coef
@@ -77,8 +77,8 @@ plot_effects <- function(data,
 
       if (class(unscale_covar) == "data.frame") {
         # now get unscaled values
-        mn <- mean(covar_unscaled[,cov])
-        sd <- sd(covar_unscaled[,cov])
+        mn <- mean(unscale_covar[,cov])
+        sd <- sd(unscale_covar[,cov])
 
         use$x_unscaled <- (use$x * sd) + mn
 
@@ -128,8 +128,8 @@ plot_effects <- function(data,
 
       if (class(unscale_covar) == "data.frame") {
         # now get unscaled values
-        mn <- mean(covar_unscaled[,cov])
-        sd <- sd(covar_unscaled[,cov])
+        mn <- mean(unscale_covar[,cov])
+        sd <- sd(unscale_covar[,cov])
 
         use$x_unscaled <- (use$x * sd) + mn
 
@@ -165,8 +165,8 @@ plot_effects <- function(data,
 
       if (class(unscale_covar) == "data.frame") {
         # now get unscaled values
-        mn <- mean(covar_unscaled[,cov])
-        sd <- sd(covar_unscaled[,cov])
+        mn <- mean(unscale_covar[,cov])
+        sd <- sd(unscale_covar[,cov])
 
         use$x_unscaled <- (use$x * sd) + mn
 
@@ -238,8 +238,8 @@ plot_effects <- function(data,
 
       if (class(unscale_covar) == "data.frame") {
         # now get unscaled values
-        mn <- mean(covar_unscaled[,cov])
-        sd <- sd(covar_unscaled[,cov])
+        mn <- mean(unscale_covar[,cov])
+        sd <- sd(unscale_covar[,cov])
 
         use$x_unscaled <- (use$x * sd) + mn
 
