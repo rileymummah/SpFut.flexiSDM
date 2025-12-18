@@ -2,6 +2,7 @@
 #'
 #' @param samples (list) output from nimble
 #' @param data (list) list containing data that was input into nimble
+#' @param constants (list) list containing constants that were input into nimble
 #' @param cov.labs (data.frame) dataframe containing covariate column names ("covariate") and labels ("Label")
 #' @param cutoff (numeric) where to cut off chains for plotting; defaults to 0
 #' @param plot (character) which parameter to plot; defaults to "B"; options are "B" and "alpha"
@@ -18,6 +19,7 @@
 
 plot_chains <- function(samples,
                         data,
+                        constants,
                         cov.labs,
                         cutoff = 0,
                         plot = "B",
