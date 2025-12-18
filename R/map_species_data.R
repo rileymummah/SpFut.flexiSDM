@@ -18,6 +18,7 @@
 #' @param plot.log (logical) whether to plot the log of the value (T) or not (F); defaults to F; only required if plot != "samples"
 #' @param plot.exp (logical) whether to plot the exponent of the value (T) or not (F); defaults to F; only required if plot != "samples"
 #' @param plot.change (logical) whether to plot the projected value (F) or the projected change from current (T); defaults to F; only required if plot.current == F
+#' @param proj.n (numeric) number of projection scenarios to plot
 #' @param proj.names (character vector) names for each projection; only required if plot.current == F
 #' @param threshold (numeric) value between 0 and 1 to use as occupancy probability threshold for drawing range boundary; defaults to 0.5; only required if plot == "boundary"
 #' @param coarse.grid (logical) whether to use coarse grid (T) or not (F)
@@ -62,6 +63,7 @@ map_species_data <- function(title,
                              plot.log = F,
                              plot.exp = F,
                              plot.change = F,
+                             proj.n = 0,
                              proj.names = "",
                              threshold = 0.5,
 
@@ -264,12 +266,12 @@ map_species_data <- function(title,
 
         if (length(proj.names) == 1) {
           if (proj.names == "") {
-            proj.names <- paste0("Scenario ", 1:project)
+            proj.names <- paste0("Scenario ", 1:proj.n)
           }
         }
 
         labs <- proj.names
-        names(labs) <- paste0(1:project)
+        names(labs) <- paste0(1:proj.n)
 
 
         if (plot.change == F) { # Plot estimated values
