@@ -7,6 +7,7 @@
 plot_chains(
   samples,
   data,
+  constants,
   cov.labs,
   cutoff = 0,
   plot = "B",
@@ -17,6 +18,8 @@ plot_chains(
 \item{samples}{(list) output from nimble}
 
 \item{data}{(list) list containing data that was input into nimble}
+
+\item{constants}{(list) list containing constants that were input into nimble}
 
 \item{cov.labs}{(data.frame) dataframe containing covariate column names ("covariate") and labels ("Label")}
 
