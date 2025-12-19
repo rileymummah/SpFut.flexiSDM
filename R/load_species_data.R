@@ -195,7 +195,7 @@ load_species_data <- function(sp.code,
 
       # make grid
       grid <- st_make_grid(region$region, cellsize = c(2000, 2000)) %>% st_as_sf()
-      grid <- mutate(grid, grid.id = 1:nrow(.data$grid))
+      grid <- mutate(grid, grid.id = 1:nrow(grid))
 
 
       file1 <- file %>%
