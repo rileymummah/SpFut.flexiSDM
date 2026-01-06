@@ -34,8 +34,8 @@ make_CV_blocks <- function(region,
 
   blocks <- blocks %>%
     mutate(block_id = 1:nrow(blocks)) %>%
-    rename(geometry = .data$x) %>%
-    select(.data$id, .data$geometry, .data$block_id, .data$folds)
+    rename(geometry = "x") %>%
+    select("id", "geometry", "block_id", "folds")
 
   return(blocks)
 
