@@ -11,7 +11,7 @@
 #' @returns (list) list of species data partially formatted for nimble, needs to be input into data_for_nimble before use in nimble
 #' @export
 #'
-#' @importFrom utils data
+#' @importFrom usethis use_data
 #' @importFrom magrittr "%>%"
 #' @importFrom rlang .data
 #' @importFrom dplyr filter left_join mutate pull case_when
@@ -25,7 +25,8 @@ add_state_ind <- function(species.data,
                           obsc.state = NA,
                           keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]) {
 
-  utils::data("stategrid")
+  # usethis::use_data("stategrid", internal = TRUE)
+  stategrid <- get("stategrid", envir = asNamespace('SpFut.flexiSDM'))
 
   gridkey1 <- filter(gridkey, .data$conus.grid.id %in% keep.conus.grid.id)
 

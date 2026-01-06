@@ -49,10 +49,7 @@
 load_species_data <- function(sp.code,
                               sp.code.all,
                               file.info,
-                              # file.name,
-                              # file.label,
                               file.path,
-                              # keep.cols,
                               region,
                               filter.region,
                               year.start,
@@ -72,7 +69,6 @@ load_species_data <- function(sp.code,
   for (i in 1:nrow(file.info)) {
     covs.mean <- unlist(strsplit(file.info$covar.mean[i], split = ", "))
     covs.sum <- unlist(strsplit(file.info$covar.sum[i], split = ", "))
-    #area <- unlist(strsplit(covs$Area[i], split = ","))
     covs1 <- c(covs.mean, covs.sum)
     covs1 <- covs1[which(is.na(covs1) == F)]
     covariates[[file.info$file.name[i]]] <- covs1

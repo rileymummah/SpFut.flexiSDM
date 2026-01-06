@@ -73,7 +73,7 @@ plot_posteriors <- function(samples,
 
     # If there's only one, need to rename it
     if (length(bind) == 1) {
-      call$name <- paste0(d, "[", 1, "]")
+      call$name <- bnames$param[1]
     }
 
     call <- full_join(call, bnames, by = c("name" = "param"))
@@ -125,9 +125,11 @@ plot_posteriors <- function(samples,
               mutate(prior = case_when(prior < min | prior > max ~ NA, T ~ prior))
 
 
-      pl <- pl + geom_density(data = call, aes(x = .data$prior), fill = "gray", alpha = 0.5) +
+      pl <- pl + geom_density(data = call, aes(x = .data$prior),
+                              fill = "gray", alpha = 0.5) +
             labs(y = "Density", x = "Parameter value", color = "Chain",
-                 fill = "Chain", subtitle = "Posterior distribution after burnin; black indicates prior distribution")
+                 fill = "Chain",
+                 subtitle = "Posterior distribution after burnin; black indicates prior distribution")
     }
 
 

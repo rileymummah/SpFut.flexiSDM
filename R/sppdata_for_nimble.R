@@ -249,7 +249,8 @@ sppdata_for_nimble <- function(species.data,
         if (length(states) >= 2) {
           # all.states <- readr::read_rds("data/USA/grid-states.rds") %>%
           #                 filter(conus.grid.id %in% region$sp.grid$conus.grid.id)
-          utils::data("stategrid")
+          stategrid <- get("stategrid", envir = asNamespace('SpFut.flexiSDM'))
+
           all.states <- stategrid %>%
             pivot_wider(names_from = name, values_from = .data$value, values_fill = 0) %>%
             filter(.data$conus.grid.id %in% region$sp.grid$conus.grid.id)
