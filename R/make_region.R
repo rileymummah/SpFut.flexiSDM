@@ -3,10 +3,9 @@
 #' @description Define the region for inference using a buffer around external range boundaries.
 #'
 #' @param rangelist (list) list of ranges generated from get_range()
-#' @param buffer (numeric) buffer size, unit depends on CRS
+#' @param buffer (numeric) buffer size in meters
 #' @param boundary (sf object) A that says where to cut off the region
 #' @param grid (sf object) grid overlay
-#' @param crs (numeric) default is 3857 so that buffer size can be meters
 #' @param sub (logical) whether to buffer around centroid (sub = T) or around full range (sub = F)
 #' @param lat.lo (numeric) lower boundary of latitude (degrees)
 #' @param lat.hi (numeric) upper boundary of latitude (degrees)
@@ -21,7 +20,7 @@
 #' @export
 #'
 #' @importFrom sf sf_use_s2 st_buffer st_centroid st_bbox st_as_sfc st_crop st_area st_intersection st_transform st_cast st_union st_as_sf st_touches
-#' @importFrom dplyr bind_rows summarize filter mutate select pull ungroup
+#' @importFrom dplyr bind_rows summarize filter mutate select pull ungroup reframe
 #' @importFrom magrittr "%>%"
 #'
 #' @examples
@@ -54,7 +53,7 @@ make_region <- function(rangelist,
                         buffer,
                         boundary, # where to cut off region, CONUS in our case
                         grid, # what grid to use, conus.grid in our case
-                        crs = 3857, # use 3857 so buffer can be meters
+                        #crs = 3857, # hard code 3857 so buffer can be meters
                         sub = F,
                         lat.lo = NA, # these should all be in degrees
                         lat.hi = NA,
@@ -62,11 +61,15 @@ make_region <- function(rangelist,
                         lon.hi = NA,
                         continuous = F,
                         rm.clumps = F,
-                        clump.size = 20,
-                        cell.size = 24999998) {
+                        clump.size = 20 ){
+                        #cell.size = 24999998) {
 
   sf_use_s2(FALSE)
 
+  crs <- 3857
+  grid <- st_transform(grid, crs = crs)
+  grid.og <- grid %>% mutate(area = st_area(x))
+  
   # Put ranges into correct CRS
   for (r in 1:length(rangelist)) {
     rangelist[[r]] <- st_transform(rangelist[[r]], crs = crs)
@@ -118,29 +121,29 @@ make_region <- function(rangelist,
     # Overlay with grid
 
     # this gets grid cells but edge cells are cut off
-    suppressWarnings(grid <- st_intersection(region, st_transform(grid, crs = crs)))
+    suppressWarnings(grid <- st_intersection(region, grid))
     
-    # this gets the whole grid cells
-    grida <- st_transform(grid, crs = crs) %>%
-      filter(.data$conus.grid.id %in% grid$conus.grid.id)
-
     # find cells that are too small and remove (these are along the edges of the boundary)
-    gridb <- grida %>%
-      mutate(area = as.numeric(st_area(.data$geometry))) %>%
-      filter(.data$area >= cell.size) %>%
-      select(!.data$area)
-
-    # Find which grid cells are split into multiple pieces (eg by water) and remove
-    grid1 <- gridb %>%
-      st_cast("MULTIPOLYGON") %>%
-      st_cast("POLYGON")
-    mult <- as.data.frame(table(grid1$conus.grid.id)) %>%
-      filter(.data$Freq > 1) %>%
-      pull(.data$Var1)
-
-    if (length(mult) > 0) {
-      gridb <- gridb[-which(gridb$conus.grid.id %in% mult),]
-    }
+    gridb <- grid %>%
+      mutate(area = st_area(.data$geometry)) %>%
+      inner_join(st_drop_geometry(grid.og), by = "conus.grid.id") %>%
+      filter(area.x == area.y)
+    if (nrow(gridb) == 0) stop("No remaining grid cells")
+    
+    # # Find which grid cells are split into multiple pieces (eg by water) and remove
+    # suppressWarnings(
+    #   grid1 <- gridb %>%
+    #     st_cast("MULTIPOLYGON") %>%
+    #     st_cast("POLYGON")
+    # )
+    # 
+    # mult <- as.data.frame(table(grid1$conus.grid.id)) %>%
+    #   filter(.data$Freq > 1) %>%
+    #   pull(.data$Var1)
+    # 
+    # if (length(mult) > 0) {
+    #   gridb <- gridb[-which(gridb$conus.grid.id %in% mult),]
+    # }
 
     # Find cells that are not continuous and remove
     if (continuous == T) {
@@ -154,7 +157,8 @@ make_region <- function(rangelist,
     } else if (continuous == F) {
       gridc <- gridb
     }
-
+    if (nrow(gridc) == 0) stop("No remaining grid cells")
+    
 
     if (rm.clumps == T) {
       # Find and remove cells that are in clumps of less than 20 cells
@@ -167,12 +171,11 @@ make_region <- function(rangelist,
         mutate(area = as.numeric(st_area(.data$geometry))) %>%
         filter(.data$area >= cell.size * clump.size)
       suppressWarnings(gridd <- st_intersection(gridc, grid1) %>% ungroup())
-
-
-
     } else {
       gridd <- gridc
     }
+    if (nrow(gridd) == 0) stop("No remaining grid cells")
+    
 
 
 
@@ -192,7 +195,8 @@ make_region <- function(rangelist,
       tmp1 <- unlist(lapply(tmp, length))
       orphans <- which(tmp1 <= 1)
     }
-
+    if (nrow(gridd) == 0) stop("No remaining grid cells")
+    
 
     # Save output
     dat <- list(range = fullrangeout,
