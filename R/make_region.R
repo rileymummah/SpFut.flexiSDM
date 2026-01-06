@@ -108,7 +108,7 @@ make_region <- function(rangelist,
 
 
   # Crop to boundary
-  region <- st_intersection(region, st_transform(boundary, crs))
+  suppressWarnings(region <- st_intersection(region, st_transform(boundary, crs)))
 
 
   # if no part of range is within the boundary, return NA
@@ -118,8 +118,8 @@ make_region <- function(rangelist,
     # Overlay with grid
 
     # this gets grid cells but edge cells are cut off
-    grid <- st_intersection(region, st_transform(grid, crs = crs))
-
+    suppressWarnings(grid <- st_intersection(region, st_transform(grid, crs = crs)))
+    
     # this gets the whole grid cells
     grida <- st_transform(grid, crs = crs) %>%
       filter(.data$conus.grid.id %in% grid$conus.grid.id)
@@ -150,7 +150,7 @@ make_region <- function(rangelist,
         st_cast("POLYGON") %>%
         mutate(area = st_area(.data$x)) %>%
         filter(.data$area == max(.data$area))
-      gridc <- st_intersection(gridb, grid2)
+      suppressWarnings(gridc <- st_intersection(gridb, grid2))
     } else if (continuous == F) {
       gridc <- gridb
     }
@@ -166,7 +166,7 @@ make_region <- function(rangelist,
         # remove cells in group of < 20 (area < 500000000)
         mutate(area = as.numeric(st_area(.data$geometry))) %>%
         filter(.data$area >= cell.size * clump.size)
-      gridd <- st_intersection(gridc, grid1) %>% ungroup()
+      suppressWarnings(gridd <- st_intersection(gridc, grid1) %>% ungroup())
 
 
 
