@@ -59,6 +59,9 @@ load_species_data <- function(sp.code,
                               spat.thin = F,
                               keep.conus.grid.id = region$sp.grid$conus.grid.id) {
 
+  
+  if (year.end < year.start) stop("'year.end' must be after 'year.start'")
+  if (length(sp.code.all) > 1) sp.code.all <- paste0(sp.code.all, collapse = "|")
 
 
   # Pull info from file.info
@@ -163,7 +166,7 @@ load_species_data <- function(sp.code,
 
       file <- file %>%
         filter(.data$rm == "keep") %>%
-        select(!.data$rm)
+        select(!"rm")
     }
 
     if(nrow(file) == 0) {
@@ -235,10 +238,10 @@ load_species_data <- function(sp.code,
 
 
     # locs for continuous space
-    locs.c <- select(.data$locs, .data$unique.id, .data$site.id, .data$survey.id,
-                     .data$pass.id, .data$survey.conducted, .data$lat, .data$lon,
-                     .data$day, .data$month, .data$year, .data$geometry,
-                     .data$data.type, .data$source)
+    locs.c <- select(locs, "unique.id", "site.id", "survey.id",
+                     "pass.id", "survey.conducted", "lat", "lon",
+                     "day", "month", "year", "geometry",
+                     "data.type", "source")
 
 
     # locs for discrete space
@@ -246,8 +249,8 @@ load_species_data <- function(sp.code,
       st_join(region$sp.grid, join = st_within) %>%
       st_drop_geometry() %>%
       as.data.frame() %>%
-      select(.data$unique.id, .data$site.id, .data$survey.id, .data$pass.id,
-             .data$conus.grid.id, .data$year, .data$source, .data$data.type)
+      select("unique.id", "site.id", "survey.id", "pass.id",
+             "conus.grid.id", "year", "source", "data.type")
 
     # remove rows that are not in keep.conus.grid.id
     #if (keep.conus.grid.id[1] != "all") {
@@ -303,13 +306,13 @@ load_species_data <- function(sp.code,
     keepcols <- covariates[[f]]
     if (length(keepcols) > 0) cat("Using ", keepcols, " as covariate(s)\n")
     file1 <- inner_join(file,
-                        select(locs.d, .data$unique.id, .data$conus.grid.id),
+                        select(locs.d, "unique.id", "conus.grid.id"),
                         by = "unique.id") %>%
-              select(.data$source, .data$data.type, .data$site.id, .data$lat,
-                     .data$lon, .data$conus.grid.id, .data$unique.id,
-                     .data$survey.id, .data$pass.id, .data$day, .data$month,
-                     .data$year, .data$survey.conducted, .data$species, .data$age,
-                     .data$time.to.detect, .data$individual.id, .data$count,
+              select("source", "data.type", "site.id", "lat",
+                     "lon", "conus.grid.id", "unique.id",
+                     "survey.id", "pass.id", "day", "month",
+                     "year", "survey.conducted", "species", "age",
+                     "time.to.detect", "individual.id", "count",
                      any_of(keepcols))
 
 
