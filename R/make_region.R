@@ -61,13 +61,22 @@ make_region <- function(rangelist,
                         lon.hi = NA,
                         continuous = F,
                         rm.clumps = F,
-                        clump.size = 20,
-                        cell.area.cutoff) {
+                        clump.size = 20) {
 
   sf_use_s2(FALSE)
 
-  crs <- 3857
-  grid <- st_transform(grid, crs = crs)
+
+  # check crs of grid
+  tmp <- st_crs(grid)
+  tmp$input
+  if (tmp$input != "EPSG:3857") {stop("grid must have crs = 3857")}
+
+  # check grid cell sizes
+  cellsize <- grid %>% mutate(area = as.numeric(st_area(.))) %>%
+    pull(area) %>% unique()
+  if (length(cellsize) > 1) {stop("all grid cells must have equal sizes")}
+  
+  
   grid.og <- grid %>% mutate(area = st_area(grid))
   
   # Put ranges into correct CRS
@@ -126,7 +135,7 @@ make_region <- function(rangelist,
     # find cells that are too small and remove (these are along the edges of the boundary)
     gridb <- grida %>%
       mutate(area = as.numeric(st_area(.data$geometry))) %>%
-      filter(area >= cell.area.cutoff)
+      filter(area >= cellsize)
       # inner_join(st_drop_geometry(grid.og), by = "conus.grid.id")# %>%
       # filter(area.x == area.y)
     cat("Removing small cells\n")
