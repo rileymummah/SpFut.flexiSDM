@@ -1,7 +1,3 @@
-# test_that("multiplication works", {
-#   expect_equal(2 * 2, 4)
-# })
-# 
 # 
 # test_that("make_CV_blocks() works", {
 # 
@@ -10,7 +6,7 @@
 #                          range.name = c("GAP", "IUCN"), crs = 4326)
 # 
 #   boundary <- rangelist[[1]]
-#   grid <- st_make_grid(boundary) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+#   grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
 # 
 #   region <- make_region(rangelist,
 #                         buffer = 50,
@@ -24,31 +20,8 @@
 # 
 #   expect_s3_class(make_CV_blocks(region, 5, 5, 3), "sf")
 # 
-# 
-# })
-# 
-# 
-# 
-# test_that("different parameters work", {
-# 
-#   rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
-#                                         paste0("../../../species-futures/data/species/GPOR/IUCN/")),
-#                          range.name = c("GAP", "IUCN"), crs = 4326)
-# 
-#   boundary <- rangelist[[1]]
-#   grid <- st_make_grid(boundary) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
-# 
-#   region <- make_region(rangelist,
-#                         buffer = 50,
-#                         sub = F,
-#                         boundary = boundary,
-#                         grid = grid,
-#                         rm.clumps = T,
-#                         clump.size = 50,
-#                         continuous = F)
-# 
-# 
 #   expect_s3_class(make_CV_blocks(region, 3, 5, 2), "sf")
-# 
-# 
+#   
 # })
+# 
+# 
