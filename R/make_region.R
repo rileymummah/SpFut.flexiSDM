@@ -61,7 +61,7 @@ make_region <- function(rangelist,
                         lon.hi = NA,
                         continuous = F,
                         rm.clumps = F,
-                        clump.size = 20 ){
+                        clump.size = 20,
                         cell.area.cutoff = 2.49e+07) {
 
   sf_use_s2(FALSE)
