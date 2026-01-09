@@ -68,7 +68,7 @@ make_region <- function(rangelist,
 
   crs <- 3857
   grid <- st_transform(grid, crs = crs)
-  grid.og <- grid %>% mutate(area = st_area(x))
+  grid.og <- grid %>% mutate(area = st_area(grid))
   
   # Put ranges into correct CRS
   for (r in 1:length(rangelist)) {
