@@ -53,7 +53,6 @@ make_region <- function(rangelist,
                         buffer,
                         boundary, # where to cut off region, CONUS in our case
                         grid, # what grid to use, conus.grid in our case
-                        #crs = 3857, # hard code 3857 so buffer can be meters
                         sub = F,
                         lat.lo = NA, # these should all be in degrees
                         lat.hi = NA,
@@ -76,13 +75,17 @@ make_region <- function(rangelist,
     pull(area) %>% unique()
   if (length(cellsize) > 1) {stop("all grid cells must have equal sizes")}
   
+  # make input objects correct crs
+  for (r in 1:length(rangelist)) {
+    rangelist[[r]] <- st_transform(rangelist[[r]], crs = 3857)
+  }
+  boundary <- st_transform(boundary, crs = 3857)
+  
+  
   
   grid.og <- grid %>% mutate(area = st_area(grid))
   
-  # Put ranges into correct CRS
-  for (r in 1:length(rangelist)) {
-    rangelist[[r]] <- st_transform(rangelist[[r]], crs = crs)
-  }
+
 
   # Combine ranges
   fullrangeout <- bind_rows(rangelist)
@@ -114,13 +117,13 @@ make_region <- function(rangelist,
     bb[2] <- lat.lo
   }
   # now have to change back to desired crs
-  bb <- st_as_sfc(bb) %>% st_transform(crs) %>% st_bbox()
+  bb <- st_as_sfc(bb) %>% st_transform(3857) %>% st_bbox()
 
   region <- st_crop(region, bb)
 
 
   # Crop to boundary
-  suppressWarnings(region <- st_intersection(region, st_transform(boundary, crs)))
+  suppressWarnings(region <- st_intersection(region, boundary))
 
 
   # if no part of range is within the boundary, return NA
