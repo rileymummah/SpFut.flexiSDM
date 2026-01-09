@@ -62,7 +62,7 @@ make_region <- function(rangelist,
                         continuous = F,
                         rm.clumps = F,
                         clump.size = 20,
-                        cell.area.cutoff = 2.49e+07) {
+                        cell.area.cutoff) {
 
   sf_use_s2(FALSE)
 
@@ -126,9 +126,10 @@ make_region <- function(rangelist,
     # find cells that are too small and remove (these are along the edges of the boundary)
     gridb <- grida %>%
       mutate(area = as.numeric(st_area(.data$geometry))) %>%
-      filter(area > cell.area.cutoff)
+      filter(area >= cell.area.cutoff)
       # inner_join(st_drop_geometry(grid.og), by = "conus.grid.id")# %>%
       # filter(area.x == area.y)
+    cat("Removing small cells\n")
     if (nrow(gridb) == 0) stop("No remaining grid cells")
     
     # # Find which grid cells are split into multiple pieces (eg by water) and remove
@@ -158,6 +159,7 @@ make_region <- function(rangelist,
     } else if (continuous == F) {
       gridc <- gridb
     }
+    cat("Making continuous range\n")
     if (nrow(gridc) == 0) stop("No remaining grid cells")
     
 
@@ -172,7 +174,7 @@ make_region <- function(rangelist,
       # see how many cells are in each group
       suppressWarnings(tmp <- st_intersection(gridc, grid1))
       tmp <- tmp %>%
-        mutate(type = st_geometry_type(.)) %>%
+        mutate(type = sf::st_geometry_type(.)) %>%
         filter(type == "POLYGON") %>%
         group_by(group.id) %>%
         summarize(n = n())
@@ -183,12 +185,13 @@ make_region <- function(rangelist,
         # filter(.data$area >= cell.size * clump.size)
       suppressWarnings(gridd <- st_intersection(gridc, grid1) %>% ungroup())
       gridd <- gridd %>%
-        mutate(type = st_geometry_type(.)) %>%
+        mutate(type = sf::st_geometry_type(.)) %>%
         filter(type == "POLYGON",
                group.id %in% rm.group$group.id == F)
     } else {
       gridd <- gridc
     }
+    cat("Removing clumps of cells\n")
     if (nrow(gridd) == 0) stop("No remaining grid cells")
     
 
@@ -210,6 +213,7 @@ make_region <- function(rangelist,
       tmp1 <- unlist(lapply(tmp, length))
       orphans <- which(tmp1 <= 1)
     }
+    cat("Removing orphans\n")
     if (nrow(gridd) == 0) stop("No remaining grid cells")
     
     
