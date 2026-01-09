@@ -4,7 +4,7 @@
 #'
 #' @param rangelist (list) list of ranges generated from get_range()
 #' @param buffer (numeric) buffer size in meters
-#' @param boundary (sf object) A that says where to cut off the region
+#' @param boundary (sf object) A polygon that says where to cut off the region (e.g., political borders)
 #' @param grid (sf object) grid overlay
 #' @param sub (logical) whether to buffer around centroid (sub = T) or around full range (sub = F)
 #' @param lat.lo (numeric) lower boundary of latitude (degrees)
@@ -51,7 +51,7 @@
 
 make_region <- function(rangelist,
                         buffer,
-                        boundary, # where to cut off region, CONUS in our case
+                        boundary = NULL, # where to cut off region, CONUS in our case
                         grid, # what grid to use, conus.grid in our case
                         sub = F,
                         lat.lo = NA, # these should all be in degrees
@@ -67,11 +67,10 @@ make_region <- function(rangelist,
 
   # check crs of grid
   tmp <- st_crs(grid)
-  tmp$input
   if (tmp$input != "EPSG:3857") {stop("grid must have crs = 3857")}
 
   # check grid cell sizes
-  cellsize <- grid %>% mutate(area = as.numeric(st_area(.))) %>%
+  cellsize <- grid %>% mutate(area = round(as.numeric(st_area(.))), 0) %>%
     pull(area) %>% unique()
   if (length(cellsize) > 1) {stop("all grid cells must have equal sizes")}
   
@@ -79,7 +78,8 @@ make_region <- function(rangelist,
   for (r in 1:length(rangelist)) {
     rangelist[[r]] <- st_transform(rangelist[[r]], crs = 3857)
   }
-  boundary <- st_transform(boundary, crs = 3857)
+  if (!is.null(boundary)) boundary <- st_transform(boundary, crs = 3857)
+  
   
   
   
@@ -123,7 +123,7 @@ make_region <- function(rangelist,
 
 
   # Crop to boundary
-  suppressWarnings(region <- st_intersection(region, boundary))
+  if (!is.null(boundary))   suppressWarnings(region <- st_intersection(region, boundary))
 
 
   # if no part of range is within the boundary, return NA
@@ -137,7 +137,7 @@ make_region <- function(rangelist,
     
     # find cells that are too small and remove (these are along the edges of the boundary)
     gridb <- grida %>%
-      mutate(area = as.numeric(st_area(.data$geometry))) %>%
+      mutate(area = round(as.numeric(st_area(.data$geometry))), 0) %>%
       filter(area >= cellsize)
       # inner_join(st_drop_geometry(grid.og), by = "conus.grid.id")# %>%
       # filter(area.x == area.y)
@@ -168,10 +168,10 @@ make_region <- function(rangelist,
         mutate(area = st_area(.data$x)) %>%
         filter(.data$area == max(.data$area))
       suppressWarnings(gridc <- st_intersection(gridb, grid2))
+      cat("Making continuous range\n")
     } else if (continuous == F) {
       gridc <- gridb
     }
-    cat("Making continuous range\n")
     if (nrow(gridc) == 0) stop("No remaining grid cells")
     
 
@@ -200,10 +200,10 @@ make_region <- function(rangelist,
         mutate(type = sf::st_geometry_type(.)) %>%
         filter(type == "POLYGON",
                group.id %in% rm.group$group.id == F)
+      cat("Removing clumps of cells\n")
     } else {
       gridd <- gridc
     }
-    cat("Removing clumps of cells\n")
     if (nrow(gridd) == 0) stop("No remaining grid cells")
     
 
@@ -218,14 +218,13 @@ make_region <- function(rangelist,
 
     while (length(orphans) > 0) {
 
-      cat(paste0((length(orphans)), " remaining ", "\n"))
+      cat(paste0("   ", (length(orphans)), " remaining ", "\n"))
       gridd <- gridd[-orphans,]
 
       tmp <- st_touches(gridd)
       tmp1 <- unlist(lapply(tmp, length))
       orphans <- which(tmp1 <= 1)
     }
-    cat("Removing orphans\n")
     if (nrow(gridd) == 0) stop("No remaining grid cells")
     
     
