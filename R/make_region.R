@@ -62,7 +62,7 @@ make_region <- function(rangelist,
                         continuous = F,
                         rm.clumps = F,
                         clump.size = 20 ){
-                        #cell.size = 24999998) {
+                        cell.area.cutoff = 2.49e+07) {
 
   sf_use_s2(FALSE)
 
@@ -120,14 +120,15 @@ make_region <- function(rangelist,
   } else {
     # Overlay with grid
 
-    # this gets grid cells but edge cells are cut off
-    suppressWarnings(grid <- st_intersection(region, grid))
+    # this gets grid cells in region
+    suppressWarnings(grida <- st_intersection(region, grid))
     
     # find cells that are too small and remove (these are along the edges of the boundary)
-    gridb <- grid %>%
-      mutate(area = st_area(.data$geometry)) %>%
-      inner_join(st_drop_geometry(grid.og), by = "conus.grid.id") %>%
-      filter(area.x == area.y)
+    gridb <- grida %>%
+      mutate(area = as.numeric(st_area(.data$geometry))) %>%
+      filter(area > cell.area.cutoff)
+      # inner_join(st_drop_geometry(grid.og), by = "conus.grid.id")# %>%
+      # filter(area.x == area.y)
     if (nrow(gridb) == 0) stop("No remaining grid cells")
     
     # # Find which grid cells are split into multiple pieces (eg by water) and remove
