@@ -41,7 +41,7 @@ test_that("load_species_data() works with iNat format data", {
                                       spat.thin = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
-    # plot samples only ----
+    # plot samples only, with details ----
     out <- map_species_data(region = region,
                            species.data = species.data,
                            year.start = 1800,
@@ -61,6 +61,26 @@ test_that("load_species_data() works with iNat format data", {
     expect_equal(nrow(out$dat), 35)
     expect_equal(ncol(out$dat), 15)
     
+    
+    # plot samples only, without details ----
+    out <- map_species_data(region = region,
+                            species.data = species.data,
+                            year.start = 1800,
+                            year.end = 2025,
+                            plot = "samples",
+                            plot.region = T,
+                            details = F,
+                            title = "TEST MAP")
+    
+    # output format
+    expect_type(out, "list")
+    expect_equal(length(out), 2)
+    expect_true(is_ggplot(out$plot))
+    expect_s3_class(out$dat, "sf")
+    
+    # output content
+    expect_equal(nrow(out$dat), 35)
+    expect_equal(ncol(out$dat), 12)
     
     
     
