@@ -6,7 +6,6 @@
 #' @param cov.names (character vector) column names from covar to plot
 #' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
 #' @param cov.levels (character vector) column names in order they should appear on plot
-#' @param covs.int.factor (character vector) name of columns in covar that has an interaction
 #' @param out.path (character) path to save figure
 #' @param out.name (character) file name to save figure
 #' @param color.threshold (numeric) threshold above which to add color to plot; default is 0.25
@@ -36,7 +35,6 @@ cor_covar <- function(covar,
                       cov.names,
                       cov.labels = cov.names,
                       cov.levels = cov.labels,
-                      covs.int.factor = NA,
                       out.path = "",
                       out.name = "covariate-cor",
                       color.threshold = 0.25) {
@@ -47,17 +45,17 @@ cor_covar <- function(covar,
 
   cors <- as.data.frame(covar[,cov.names])
 
-  if (length(covs.int.factor) == 1 & is.na(covs.int.factor) == F) {
-    # convert factors to numbers
-    tmp <- cors %>%
-            group_by_at(covs.int.factor) %>%
-            mutate(factor = cur_group_id())
-    cors[[covs.int.factor]] <- tmp$factor
-  }
+  # if (length(covs.int.factor) == 1 & is.na(covs.int.factor) == F) {
+  #   # convert factors to numbers
+  #   tmp <- cors %>%
+  #           group_by_at(covs.int.factor) %>%
+  #           mutate(factor = cur_group_id())
+  #   cors[[covs.int.factor]] <- tmp$factor
+  # }
 
   cors <- as.data.frame(cor(cors)) %>%
-            mutate(cov1 = row.names()) %>%
-            pivot_longer(!.data$cov1) %>%
+            rownames_to_column(., var = "cov1") %>%
+            pivot_longer(!"cov1") %>%
             filter(.data$value != 1) %>%
 
             # add labels
@@ -65,7 +63,7 @@ cor_covar <- function(covar,
             rename(cov2 = "label") %>%
 
             left_join(cov.labs, by = c("cov1" = "name")) %>%
-            select(!c(.data$cov1, .data$name)) %>%
+            select(!c("cov1", "name")) %>%
             rename(cov1 = "label")
 
 
@@ -82,7 +80,7 @@ cor_covar <- function(covar,
                         aes(x = .data$cov1, y = .data$cov2, label = round(.data$value, 2))) +
               scale_fill_gradient2(limits = c(-1, 1)) +
               scale_color_gradient2(limits = c(-1, 1)) +
-              labs(x = "", y = "", fill = "Correlation \ncoefficient", color = "Correlation \ncoefficient",
+              labs(x = "", y = "", fill = "Correlation \ncoefficient",
                    title = paste0("Correlations between covariates (colored if >", color.threshold, ")")) +
               theme_bw() +
               theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
@@ -93,5 +91,8 @@ cor_covar <- function(covar,
   ggsave(corspl,
          filename = paste0(out.path, out.name, ".jpg"),
          height = 5, width = 9)
+  
+  return(list(dat = cors,
+              plot = corspl))
 }
 
