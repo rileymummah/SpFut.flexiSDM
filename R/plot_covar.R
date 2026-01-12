@@ -6,7 +6,6 @@
 #' @param region (list) region output from make_region()
 #' @param cov.names (character vector) column names from covar to plot
 #' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
-#' @param covs.int.factor (character) name of columns in covar that has an interaction
 #' @param out.path (character) path to save figure
 #' @param out.name (character) file name to save figure
 #'
@@ -38,7 +37,6 @@ plot_covar <- function(covar,
                        region,
                        cov.names,
                        cov.labels = cov.names,
-                       covs.int.factor = NA,
                        out.path = "",
                        out.name = "covariate-map") {
 
@@ -58,13 +56,7 @@ plot_covar <- function(covar,
               full_join(covar, by = c("conus.grid.id")) %>%
               select(all_of(c("conus.grid.id", cov.names)))
 
-  if (length(covs.int.factor) == 1 & is.na(covs.int.factor) == F) {
-    # convert factors to numbers
-    tmp <- sp.grid %>%
-            group_by_at(covs.int.factor) %>%
-            mutate(factor = cur_group_id())
-    sp.grid[[covs.int.factor]] <- tmp$factor
-  }
+  
 
   sp.grid <- sp.grid %>% pivot_longer(!c("conus.grid.id", "geometry")) %>%
 
