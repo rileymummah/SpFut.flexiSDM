@@ -56,3 +56,6 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 inst/doc
+
+# Don't push _snaps folder
+tests/testthat/_snaps/
