@@ -46,18 +46,19 @@
 #                            plot.region = T,
 #                            details = T,
 #                            title = "TEST MAP")
-#     
+# 
 #     # output format
 #     expect_type(out, "list")
 #     expect_equal(length(out), 2)
 #     expect_true(is_ggplot(out$plot))
 #     expect_s3_class(out$dat, "sf")
-#     
+# 
 #     # output content
 #     expect_equal(nrow(out$dat), 35)
 #     expect_equal(ncol(out$dat), 15)
+#     expect_doppelganger("samples with details", out$plot)
 #     
-#     
+# 
 #     # plot samples only, without details ----
 #     out <- map_species_data(region = region,
 #                             species.data = species.data,
@@ -67,19 +68,20 @@
 #                             plot.region = T,
 #                             details = F,
 #                             title = "TEST MAP")
-#     
+# 
 #     # output format
 #     expect_type(out, "list")
 #     expect_equal(length(out), 2)
 #     expect_true(is_ggplot(out$plot))
 #     expect_s3_class(out$dat, "sf")
-#     
+# 
 #     # output content
 #     expect_equal(nrow(out$dat), 35)
 #     expect_equal(ncol(out$dat), 12)
+#     expect_doppelganger("samples without details", out$plot)
 #     
-#     
-#     
-#     
+# 
+# 
+# 
 # })
 # 
