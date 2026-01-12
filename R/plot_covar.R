@@ -48,10 +48,10 @@ plot_covar <- function(covar,
   st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
                   returnclass = "sf") %>%
           st_transform(crs = 3857) %>%
-          select(!.data$name)
+          select(!"name")
 
-  bb <- region$sp.grid %>%
-          st_buffer(.data$buffer) %>%
+  bb <- region$region %>%
+          #st_buffer(.data$buffer) %>%
           st_bbox()
 
   sp.grid <- region$sp.grid %>%
@@ -66,7 +66,7 @@ plot_covar <- function(covar,
     sp.grid[[covs.int.factor]] <- tmp$factor
   }
 
-  sp.grid <- sp.grid %>% pivot_longer(!c(.data$conus.grid.id, .data$geometry)) %>%
+  sp.grid <- sp.grid %>% pivot_longer(!c("conus.grid.id", "geometry")) %>%
 
               # remove covariates that are squares
               mutate(square = substr(.data$name, nchar(.data$name), nchar(.data$name))) %>%
@@ -105,5 +105,7 @@ plot_covar <- function(covar,
 
   ggsave(pl, filename = paste0(out.path, out.name, ".jpg"), height = 15, width = 15)
 
+  return(list(dat = sp.grid,
+              plot = pl))
 }
 
