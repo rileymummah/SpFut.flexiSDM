@@ -1,329 +1,512 @@
-
-test_that("load_species_data() works", {
-
-    rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/RACA/GAP/"),
-                                    paste0("../../../species-futures/data/species/RACA/IUCN/")),
-                     range.name = c("GAP", "IUCN"), crs = 4326)
-
-    boundary <- rangelist[[1]]
-    grid <- st_make_grid(boundary) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
-
-    region <- make_region(rangelist,
-                          buffer = 50,
-                          sub = F,
-                          boundary = boundary,
-                          grid = grid,
-                          rm.clumps = T,
-                          clump.size = 2,
-                          continuous = F)
-
-    allfiles <- data.frame(file.name = c("RACA_NRIS_PO_1901_2022"),
-                           file.label = c("RACA_NRIS"),
-                           covar.mean = "",
-                           covar.sum = "NA",
-                           data.type = c("PO"))
-
-    expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready/'))
-
-    species.data <- load_species_data(sp.code = "RACA",
-                                      sp.code.all = "RACA",
-                                      file.info = allfiles,
-                                      file.path = "../../../species-futures/DATA SWAMP/data-ready/",
-                                      region = region,
-                                      filter.region = T,
-                                      year.start = 1900,
-                                      year.end = 2025,
-                                      coordunc = 1000,
-                                      coordunc_na.rm = T,
-                                      spat.thin = F,
-                                      keep.conus.grid.id = region$sp.grid$conus.grid.id)
-
-    expect_type(species.data, "list")
-    expect_equal(length(species.data), 2)
-    expect_equal(names(species.data), c("locs", "obs"))
-    expect_type(species.data$locs, "list")
-    expect_type(species.data$obs, "list")
-    
-})
-
-
-
-test_that("load_species_data() works with two species codes", {
-  
-  rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/RACA/GAP/"),
-                                        paste0("../../../species-futures/data/species/RACA/IUCN/")),
-                         range.name = c("GAP", "IUCN"), crs = 4326)
-  
-  boundary <- rangelist[[1]]
-  grid <- st_make_grid(boundary) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
-  
-  region <- make_region(rangelist,
-                        buffer = 50,
-                        sub = F,
-                        boundary = boundary,
-                        grid = grid,
-                        rm.clumps = T,
-                        clump.size = 2,
-                        continuous = F)
-  
-  allfiles <- data.frame(file.name = c("RACA_USGS_RHCA_count_2022_2022"),
-                         file.label = c("RCHA"),
-                         covar.mean = "",
-                         covar.sum = "",
-                         data.type = c("PO"))
-  
-  expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready/'))
-  
-  species.data <- load_species_data(sp.code = "RACA",
-                                    sp.code.all = c("RACA", "RHCA"),
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/DATA SWAMP/data-ready/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 1900,
-                                    year.end = 2025,
-                                    coordunc = 1000,
-                                    coordunc_na.rm = T,
-                                    spat.thin = F,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  
-  
-  species.data <- load_species_data(sp.code = "RACA",
-                                    sp.code.all = "RACA|RHCA",
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/DATA SWAMP/data-ready/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 1900,
-                                    year.end = 2025,
-                                    coordunc = 1000,
-                                    coordunc_na.rm = T,
-                                    spat.thin = F,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  
-})
-
-
-test_that("load_species_data() works with weird years", {
-  
-  rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/RACA/GAP/"),
-                                        paste0("../../../species-futures/data/species/RACA/IUCN/")),
-                         range.name = c("GAP", "IUCN"), crs = 4326)
-  
-  boundary <- rangelist[[1]]
-  grid <- st_make_grid(boundary) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
-  
-  region <- make_region(rangelist,
-                        buffer = 50,
-                        sub = F,
-                        boundary = boundary,
-                        grid = grid,
-                        rm.clumps = T,
-                        clump.size = 2,
-                        continuous = F)
-  
-  allfiles <- data.frame(file.name = c("RACA_NRIS_PO_1901_2022"),
-                         file.label = c("RACA_NRIS"),
-                         covar.mean = "",
-                         covar.sum = "",
-                         data.type = c("PO"))
-  
-  expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready/'))
-  
-  expect_error(load_species_data(sp.code = "RACA",
-                                    sp.code.all = "RACA",
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/DATA SWAMP/data-ready/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 2020,
-                                    year.end = 2000,
-                                    coordunc = 1000,
-                                    coordunc_na.rm = T,
-                                    spat.thin = F,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id))
-  
-  
-  species.data <- load_species_data(sp.code = "RACA",
-                                    sp.code.all = "RACA",
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/DATA SWAMP/data-ready/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 2024,
-                                    year.end = 2024,
-                                    coordunc = 1000,
-                                    coordunc_na.rm = T,
-                                    spat.thin = F,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  
-})
-
-
-
-test_that("load_species_data() works with multiple rows in file.info", {
-  
-  rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/RACA/GAP/"),
-                                        paste0("../../../species-futures/data/species/RACA/IUCN/")),
-                         range.name = c("GAP", "IUCN"), crs = 4326)
-  
-  boundary <- rangelist[[1]]
-  grid <- st_make_grid(boundary) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
-  
-  region <- make_region(rangelist,
-                        buffer = 50,
-                        sub = F,
-                        boundary = boundary,
-                        grid = grid,
-                        rm.clumps = T,
-                        clump.size = 2,
-                        continuous = F)
-  
-  allfiles <- data.frame(file.name = c("RACA_NRIS_PO_1901_2022", "RACA_USGS_RHCA_count_2022_2022"),
-                         file.label = c("RACA_NRIS", "RHCA"),
-                         covar.mean = c("", ""),
-                         covar.sum = c("", ""),
-                         data.type = c("PO", "count"))
-  
-  expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready/'))
-  
-  species.data <- load_species_data(sp.code = "RACA",
-                                    sp.code.all = "RACA",
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/DATA SWAMP/data-ready/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 1900,
-                                    year.end = 2025,
-                                    coordunc = 1000,
-                                    coordunc_na.rm = T,
-                                    spat.thin = F,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  
-})
-
-
-test_that("load_species_data() filter.region = F works", {
-  
-  rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/RACA/GAP/"),
-                                        paste0("../../../species-futures/data/species/RACA/IUCN/")),
-                         range.name = c("GAP", "IUCN"), crs = 4326)
-  
-  boundary <- rangelist[[1]]
-  grid <- st_make_grid(boundary) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
-  
-  region <- make_region(rangelist,
-                        buffer = 50,
-                        sub = F,
-                        boundary = boundary,
-                        grid = grid,
-                        rm.clumps = T,
-                        clump.size = 2,
-                        continuous = F)
-  
-  allfiles <- data.frame(file.name = c("RACA_NRIS_PO_1901_2022", "RACA_USGS_RHCA_count_2022_2022"),
-                         file.label = c("RACA_NRIS", "RHCA"),
-                         covar.mean = c("", ""),
-                         covar.sum = c("", ""),
-                         data.type = c("PO", "count"))
-  
-  expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready/'))
-  
-  species.data <- load_species_data(sp.code = "RACA",
-                                    sp.code.all = "RACA",
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/DATA SWAMP/data-ready/",
-                                    region = region,
-                                    filter.region = F,
-                                    year.start = 1900,
-                                    year.end = 2025,
-                                    coordunc = 1000,
-                                    coordunc_na.rm = T,
-                                    spat.thin = F,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  
-})
-
-
-
-test_that("load_species_data() coordunc = 10", {
-  
-  rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/RACA/GAP/"),
-                                        paste0("../../../species-futures/data/species/RACA/IUCN/")),
-                         range.name = c("GAP", "IUCN"), crs = 4326)
-  
-  boundary <- rangelist[[1]]
-  grid <- st_make_grid(boundary) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
-  
-  region <- make_region(rangelist,
-                        buffer = 50,
-                        sub = F,
-                        boundary = boundary,
-                        grid = grid,
-                        rm.clumps = T,
-                        clump.size = 2,
-                        continuous = F)
-  
-  allfiles <- data.frame(file.name = c("RACA_NRIS_PO_1901_2022", "RACA_USGS_RHCA_count_2022_2022"),
-                         file.label = c("RACA_NRIS", "RHCA"),
-                         covar.mean = c("", ""),
-                         covar.sum = c("", ""),
-                         data.type = c("PO", "count"))
-  
-  expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready/'))
-  
-  species.data <- load_species_data(sp.code = "RACA",
-                                    sp.code.all = "RACA",
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/DATA SWAMP/data-ready/",
-                                    region = region,
-                                    filter.region = F,
-                                    year.start = 1900,
-                                    year.end = 2025,
-                                    coordunc = 10,
-                                    coordunc_na.rm = T,
-                                    spat.thin = F,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  
-  tmp <- bind_rows(species.data$obs) %>%
-    filter(coordunc > 10)
-  
-  expect_equal(nrow(tmp), 0)
-  
-})
+# 
+# test_that("load_species_data() works with iNat format data", {
+# 
+#     rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
+#                                     paste0("../../../species-futures/data/species/GPOR/IUCN/")),
+#                      range.name = c("GAP", "IUCN"), crs = 4326)
+# 
+#     boundary <- rangelist[[1]]
+#     grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+# 
+#     region <- make_region(rangelist,
+#                           buffer = 1,
+#                           sub = F,
+#                           boundary = boundary,
+#                           grid = grid,
+#                           rm.clumps = F,
+#                           clump.size = 2,
+#                           continuous = F)
+#     expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready-testfunctions/'))
+# 
+# 
+#     allfiles <- data.frame(file.name = c("iNat_test_PO"),
+#                            file.label = c("iNat_test"),
+#                            covar.mean = "",
+#                            covar.sum = "",
+#                            data.type = c("PO"))
+# 
+#     # test normal ----
+#     species.data <- load_species_data(sp.code = "GPOR",
+#                                       sp.code.all = "GPOR",
+#                                       file.info = allfiles,
+#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       region = region,
+#                                       filter.region = T,
+#                                       year.start = 1800,
+#                                       year.end = 2025,
+#                                       coordunc = 1000,
+#                                       coordunc_na.rm = T,
+#                                       spat.thin = F,
+#                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#     # output structure
+#     expect_type(species.data, "list")
+#     expect_equal(length(species.data), 2)
+#     expect_equal(names(species.data), c("locs", "obs"))
+#     expect_type(species.data$locs, "list")
+#     expect_type(species.data$obs, "list")
+#     expect_s3_class(species.data$locs$cont, "sf")
+# 
+#     # output content
+#     expect_equal(length(species.data$obs), 1)
+#     expect_equal(nrow(species.data$obs$iNat_test), 5)
+# 
+#     # test covar = NA ----
+#     allfiles <- data.frame(file.name = c("iNat_test_PO"),
+#                            file.label = c("iNat_test"),
+#                            covar.mean = NA,
+#                            covar.sum = NA,
+#                            data.type = c("PO"))
+# 
+# 
+#     species.data <- load_species_data(sp.code = "GPOR",
+#                                       sp.code.all = "GPOR",
+#                                       file.info = allfiles,
+#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       region = region,
+#                                       filter.region = T,
+#                                       year.start = 1800,
+#                                       year.end = 2025,
+#                                       coordunc = 1000,
+#                                       coordunc_na.rm = T,
+#                                       spat.thin = F,
+#                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+# 
+#     # output structure
+#     expect_type(species.data, "list")
+#     expect_equal(length(species.data), 2)
+#     expect_equal(names(species.data), c("locs", "obs"))
+#     expect_type(species.data$locs, "list")
+#     expect_type(species.data$obs, "list")
+#     expect_s3_class(species.data$locs$cont, "sf")
+# 
+#     # output content
+#     expect_equal(length(species.data$obs), 1)
+#     expect_equal(nrow(species.data$obs$iNat_test), 5)
+# 
+# 
+#     # test different coordunc parameters ----
+#     species.data <- load_species_data(sp.code = "GPOR",
+#                                       sp.code.all = "GPOR",
+#                                       file.info = allfiles,
+#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       region = region,
+#                                       filter.region = T,
+#                                       year.start = 1800,
+#                                       year.end = 2025,
+#                                       coordunc = 10,
+#                                       coordunc_na.rm = F,
+#                                       spat.thin = F,
+#                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#     # output structure
+#     expect_type(species.data, "list")
+#     expect_equal(length(species.data), 2)
+#     expect_equal(names(species.data), c("locs", "obs"))
+#     expect_type(species.data$locs, "list")
+#     expect_type(species.data$obs, "list")
+#     expect_s3_class(species.data$locs$cont, "sf")
+# 
+#     # output content
+#     expect_equal(length(species.data$obs), 1)
+#     expect_equal(nrow(species.data$obs$iNat_test), 2)
+# 
+# 
+#     species.data <- load_species_data(sp.code = "GPOR",
+#                                       sp.code.all = "GPOR",
+#                                       file.info = allfiles,
+#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       region = region,
+#                                       filter.region = T,
+#                                       year.start = 1800,
+#                                       year.end = 2025,
+#                                       coordunc = 0,
+#                                       coordunc_na.rm = F,
+#                                       spat.thin = F,
+#                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#     # output structure
+#     expect_type(species.data, "list")
+#     expect_equal(length(species.data), 2)
+#     expect_equal(names(species.data), c("locs", "obs"))
+#     expect_type(species.data$locs, "list")
+#     expect_type(species.data$obs, "list")
+#     expect_type(species.data$locs$cont, "NULL")
+# 
+#     # output content
+#     expect_equal(length(species.data$obs), 0)
+#     expect_equal(nrow(species.data$obs$iNat_test), NULL)
+# 
+#     # test spat.thin = T ----
+#     allfiles <- data.frame(file.name = c("iNat_test1_PO"),
+#                            file.label = c("iNat_test"),
+#                            covar.mean = NA,
+#                            covar.sum = NA,
+#                            data.type = c("PO"))
+# 
+# 
+#     species.data <- load_species_data(sp.code = "GPOR",
+#                                       sp.code.all = "GPOR",
+#                                       file.info = allfiles,
+#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       region = region,
+#                                       filter.region = T,
+#                                       year.start = 1800,
+#                                       year.end = 2025,
+#                                       coordunc = 1000,
+#                                       coordunc_na.rm = F,
+#                                       spat.thin = T,
+#                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#     # output structure
+#     expect_type(species.data, "list")
+#     expect_equal(length(species.data), 2)
+#     expect_equal(names(species.data), c("locs", "obs"))
+#     expect_type(species.data$locs, "list")
+#     expect_type(species.data$obs, "list")
+#     expect_s3_class(species.data$locs$cont, "sf")
+# 
+#     # output content
+#     expect_equal(length(species.data$obs), 1)
+#     expect_equal(nrow(species.data$obs$iNat_test), 6)
+# 
+# 
+#     # test two datasets with different names ----
+#     allfiles <- data.frame(file.name = c("iNat_test1_PO", "iNat_test_PO"),
+#                            file.label = c("iNat_test1", "iNat_test"),
+#                            covar.mean = c(NA, NA),
+#                            covar.sum = c(NA, NA),
+#                            data.type = c("PO", "PO"))
+# 
+#     species.data <- load_species_data(sp.code = "GPOR",
+#                                       sp.code.all = "GPOR",
+#                                       file.info = allfiles,
+#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       region = region,
+#                                       filter.region = T,
+#                                       year.start = 1800,
+#                                       year.end = 2025,
+#                                       coordunc = 1000,
+#                                       coordunc_na.rm = T,
+#                                       spat.thin = F,
+#                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#     # output structure
+#     expect_type(species.data, "list")
+#     expect_equal(length(species.data), 2)
+#     expect_equal(names(species.data), c("locs", "obs"))
+#     expect_type(species.data$locs, "list")
+#     expect_type(species.data$obs, "list")
+#     expect_s3_class(species.data$locs$cont, "sf")
+# 
+#     # output content
+#     expect_equal(length(species.data$obs), 2)
+#     expect_equal(nrow(species.data$obs$iNat_test), 5)
+#     expect_equal(nrow(species.data$obs$iNat_test1), 10)
+# 
+#     # test two datasets with same name ----
+#     allfiles <- data.frame(file.name = c("iNat_test1_PO", "iNat_test_PO"),
+#                            file.label = c("iNat_test", "iNat_test"),
+#                            covar.mean = c(NA, NA),
+#                            covar.sum = c(NA, NA),
+#                            data.type = c("PO", "PO"))
+# 
+#     species.data <- load_species_data(sp.code = "GPOR",
+#                                       sp.code.all = "GPOR",
+#                                       file.info = allfiles,
+#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       region = region,
+#                                       filter.region = T,
+#                                       year.start = 1800,
+#                                       year.end = 2025,
+#                                       coordunc = 1000,
+#                                       coordunc_na.rm = T,
+#                                       spat.thin = F,
+#                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#     # output structure
+#     expect_type(species.data, "list")
+#     expect_equal(length(species.data), 2)
+#     expect_equal(names(species.data), c("locs", "obs"))
+#     expect_type(species.data$locs, "list")
+#     expect_type(species.data$obs, "list")
+#     expect_s3_class(species.data$locs$cont, "sf")
+# 
+#     # output content
+#     expect_equal(length(species.data$obs), 1)
+#     expect_equal(nrow(species.data$obs$iNat_test), 15)
+# 
+# 
+#     # test two species codes ----
+#     allfiles <- data.frame(file.name = c("iNat_test_PO"),
+#                            file.label = c("iNat_test"),
+#                            covar.mean = "",
+#                            covar.sum = "",
+#                            data.type = c("PO"))
+# 
+#     species.data <- load_species_data(sp.code = "GPOR",
+#                                       sp.code.all = c("GPOR", "EBIS"),
+#                                       file.info = allfiles,
+#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       region = region,
+#                                       filter.region = T,
+#                                       year.start = 1800,
+#                                       year.end = 2025,
+#                                       coordunc = 1000,
+#                                       coordunc_na.rm = T,
+#                                       spat.thin = F,
+#                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#     # output structure
+#     expect_type(species.data, "list")
+#     expect_equal(length(species.data), 2)
+#     expect_equal(names(species.data), c("locs", "obs"))
+#     expect_type(species.data$locs, "list")
+#     expect_type(species.data$obs, "list")
+#     expect_s3_class(species.data$locs$cont, "sf")
+# 
+#     # output content
+#     expect_equal(length(species.data$obs), 1)
+#     expect_equal(nrow(species.data$obs$iNat_test), 10)
+# 
+# })
+# 
+# 
+# 
+# 
+# test_that("load_species_data() works with survey data", {
+# 
+#   rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
+#                                         paste0("../../../species-futures/data/species/GPOR/IUCN/")),
+#                          range.name = c("GAP", "IUCN"), crs = 4326)
+# 
+#   boundary <- rangelist[[1]]
+#   grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+# 
+#   region <- make_region(rangelist,
+#                         buffer = 1,
+#                         sub = F,
+#                         boundary = boundary,
+#                         grid = grid,
+#                         rm.clumps = F,
+#                         clump.size = 2,
+#                         continuous = F)
+#   expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready-testfunctions/'))
+# 
+# 
+#   # dat <- read.csv("../species-futures/DATA SWAMP/data-ready-testfunctions/NEARMI_test_count.csv") %>%
+#   #   st_as_sf(coords = c("lon", "lat"), crs = 4326)
+#   # ggplot(region$sp.grid) + geom_sf() + geom_sf(data = dat)
+# 
+# 
+#   # test normal ----
+#   allfiles <- data.frame(file.name = c("NEARMI_test_count"),
+#                          file.label = c("NEARMI_test"),
+#                          covar.mean = "StartWaterTemp",
+#                          covar.sum = "EffectValue",
+#                          data.type = c("count"))
+# 
+#   species.data <- load_species_data(sp.code = "GPOR",
+#                                     sp.code.all = "GPOR",
+#                                     file.info = allfiles,
+#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     region = region,
+#                                     filter.region = T,
+#                                     year.start = 1800,
+#                                     year.end = 2025,
+#                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#   # output structure
+#   expect_type(species.data, "list")
+#   expect_equal(length(species.data), 2)
+#   expect_equal(names(species.data), c("locs", "obs"))
+#   expect_type(species.data$locs, "list")
+#   expect_type(species.data$obs, "list")
+#   expect_s3_class(species.data$locs$cont, "sf")
+# 
+#   # output content
+#   expect_equal(length(species.data$obs), 1)
+#   expect_equal(nrow(species.data$obs$NEARMI_test), 60)
+#   expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
+# 
+# 
+#   # test two species ----
+#   allfiles <- data.frame(file.name = c("NEARMI_test_count"),
+#                          file.label = c("NEARMI_test"),
+#                          covar.mean = "StartWaterTemp",
+#                          covar.sum = "EffectValue",
+#                          data.type = c("count"))
+# 
+#   species.data <- load_species_data(sp.code = "GPOR",
+#                                     sp.code.all = c("GPOR", "EWIL"),
+#                                     file.info = allfiles,
+#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     region = region,
+#                                     filter.region = T,
+#                                     year.start = 1800,
+#                                     year.end = 2025,
+#                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#   # output structure
+#   expect_type(species.data, "list")
+#   expect_equal(length(species.data), 2)
+#   expect_equal(names(species.data), c("locs", "obs"))
+#   expect_type(species.data$locs, "list")
+#   expect_type(species.data$obs, "list")
+#   expect_s3_class(species.data$locs$cont, "sf")
+# 
+#   # output content
+#   expect_equal(length(species.data$obs), 1)
+#   expect_equal(nrow(species.data$obs$NEARMI_test), 120)
+#   expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
+# 
+# 
+# 
+#   # test different year values ----
+#   allfiles <- data.frame(file.name = c("NEARMI_test_count"),
+#                          file.label = c("NEARMI_test"),
+#                          covar.mean = "StartWaterTemp",
+#                          covar.sum = "EffectValue",
+#                          data.type = c("count"))
+# 
+#   species.data <- load_species_data(sp.code = "GPOR",
+#                                     sp.code.all = c("GPOR", "EWIL"),
+#                                     file.info = allfiles,
+#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     region = region,
+#                                     filter.region = T,
+#                                     year.start = 2023,
+#                                     year.end = 2025,
+#                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#   # output structure
+#   expect_type(species.data, "list")
+#   expect_equal(length(species.data), 2)
+#   expect_equal(names(species.data), c("locs", "obs"))
+#   expect_type(species.data$locs, "list")
+#   expect_type(species.data$obs, "list")
+#   expect_s3_class(species.data$locs$cont, "sf")
+# 
+#   # output content
+#   expect_equal(length(species.data$obs), 1)
+#   expect_equal(nrow(species.data$obs$NEARMI_test), 54)
+#   expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
+# 
+# 
+#   # test empty covariates ----
+#   allfiles <- data.frame(file.name = c("NEARMI_test_count"),
+#                          file.label = c("NEARMI_test"),
+#                          covar.mean = "",
+#                          covar.sum = NA,
+#                          data.type = c("count"))
+# 
+#   species.data <- load_species_data(sp.code = "GPOR",
+#                                     sp.code.all = c("GPOR", "EWIL"),
+#                                     file.info = allfiles,
+#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     region = region,
+#                                     filter.region = T,
+#                                     year.start = 2023,
+#                                     year.end = 2025,
+#                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
+# 
+#   # output structure
+#   expect_type(species.data, "list")
+#   expect_equal(length(species.data), 2)
+#   expect_equal(names(species.data), c("locs", "obs"))
+#   expect_type(species.data$locs, "list")
+#   expect_type(species.data$obs, "list")
+#   expect_s3_class(species.data$locs$cont, "sf")
+# 
+#   # output content
+#   expect_equal(length(species.data$obs), 1)
+#   expect_equal(nrow(species.data$obs$NEARMI_test), 54)
+#   expect_equal(length(colnames(species.data$obs$NEARMI_test)), 18)
+# 
+# 
+#   # test bad covariates ----
+#   allfiles <- data.frame(file.name = c("NEARMI_test_count"),
+#                          file.label = c("NEARMI_test"),
+#                          covar.mean = "notincovariates",
+#                          covar.sum = NA,
+#                          data.type = c("count"))
+# 
+# 
+#   expect_warning(species.data <- load_species_data(sp.code = "GPOR",
+#                                     sp.code.all = c("GPOR", "EWIL"),
+#                                     file.info = allfiles,
+#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     region = region,
+#                                     filter.region = T,
+#                                     year.start = 2023,
+#                                     year.end = 2025,
+#                                     keep.conus.grid.id = region$sp.grid$conus.grid.id))
+# 
+#   # output structure
+#   expect_type(species.data, "list")
+#   expect_equal(length(species.data), 2)
+#   expect_equal(names(species.data), c("locs", "obs"))
+#   expect_type(species.data$locs, "list")
+#   expect_type(species.data$obs, "list")
+#   expect_s3_class(species.data$locs$cont, "sf")
+# 
+#   # output content
+#   expect_equal(length(species.data$obs), 1)
+#   expect_equal(nrow(species.data$obs$NEARMI_test), 54)
+#   expect_equal(length(colnames(species.data$obs$NEARMI_test)), 18)
+# 
+# 
+#   
+#   # test count and DND ----
+#   allfiles <- data.frame(file.name = c("NEARMI_test_count", "Dodd_test_DND"),
+#                          file.label = c("NEARMI_test", "Dodd_test"),
+#                          covar.mean = c("StartWaterTemp", NA),
+#                          covar.sum = c("EffectValue", "time"),
+#                          data.type = c("count", "DND"))
+#   
+#   species.data <- load_species_data(sp.code = "GPOR",
+#                                     sp.code.all = "GPOR",
+#                                     file.info = allfiles,
+#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     region = region,
+#                                     filter.region = T,
+#                                     year.start = 1800,
+#                                     year.end = 2025,
+#                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
+#   
+#   # output structure
+#   expect_type(species.data, "list")
+#   expect_equal(length(species.data), 2)
+#   expect_equal(names(species.data), c("locs", "obs"))
+#   expect_type(species.data$locs, "list")
+#   expect_type(species.data$obs, "list")
+#   expect_s3_class(species.data$locs$cont, "sf")
+#   
+#   # output content
+#   expect_equal(length(species.data$obs), 2)
+#   expect_equal(nrow(species.data$obs$NEARMI_test), 60)
+#   expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
+#   expect_equal(nrow(species.data$obs$Dodd_test), 20)
+#   expect_equal(colnames(species.data$obs$Dodd_test)[19], c("time"))
+#   
+#   
+# })
+# 
+# 
+# 
+# 

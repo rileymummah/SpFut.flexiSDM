@@ -70,13 +70,15 @@ load_species_data <- function(sp.code,
 
   covariates <- list()
   for (i in 1:nrow(file.info)) {
+    if (is.na(file.info$covar.mean[i])) file.info$covar.mean[i] <- ""
+    if (is.na(file.info$covar.sum[i])) file.info$covar.sum[i] <- ""
+    
     covs.mean <- unlist(strsplit(file.info$covar.mean[i], split = ", "))
     covs.sum <- unlist(strsplit(file.info$covar.sum[i], split = ", "))
     covs1 <- c(covs.mean, covs.sum)
     covs1 <- covs1[which(is.na(covs1) == F)]
     covariates[[file.info$file.name[i]]] <- covs1
   }
-
 
 
   # Get locations
@@ -105,18 +107,11 @@ load_species_data <- function(sp.code,
     file <- mutate(file, source = file.label[f])
 
     # filter to get the correct species
-    # if (keep.subsp == T) {
-    #   file <- file %>%
-    #     mutate(species1 = substr(species, 1, 4)) %>%
-    #     filter(species1 == sp.code)
-    # } else {
-    #   file <- filter(file, species == sp.code)
-    # }
-    #file <- filter(file, species == sp.code)
     tmp1 <- gsub("[|]", "$|^", sp.code.all)
     tmp2 <- paste0("^", tmp1, "$")
     file <- file[grep(tmp2, file$species),]
-
+    cat("Starting with", nrow(file), "observations of", sp.code, "\n")
+    
 
     # filter to get only survey.conducted == 1
     file <- filter(file, .data$survey.conducted == 1)
@@ -304,7 +299,9 @@ load_species_data <- function(sp.code,
     # observations
     # add grid.id from locs.d and save
     keepcols <- covariates[[f]]
-    if (length(keepcols) > 0) cat("Using ", keepcols, " as covariate(s)\n")
+    keepcols1 <- keepcols[which(keepcols %in% colnames(file))]
+    missingcovs <- setdiff(keepcols, keepcols1)
+    if (length(keepcols1) > 0) cat("Using ", keepcols1, " as covariate(s)\n")
     file1 <- inner_join(file,
                         select(locs.d, "unique.id", "conus.grid.id"),
                         by = "unique.id") %>%
@@ -313,8 +310,11 @@ load_species_data <- function(sp.code,
                      "survey.id", "pass.id", "day", "month",
                      "year", "survey.conducted", "species", "age",
                      "time.to.detect", "individual.id", "count",
-                     any_of(keepcols))
-
+                     any_of(keepcols1))
+    # cat(missingcovs, length(missingcovs), "\n")
+    # cat(keepcols, length(keepcols), "\n")
+    # cat(keepcols1, length(keepcols1), "\n")
+    if (length(missingcovs) > 0)  warning(missingcovs, " column(s) missing from file")
 
     # If label already exists, just append dfs
     # This is useful for:
