@@ -336,7 +336,7 @@ map_species_data <- function(title,
             scens <- unique(intensity$scenario)
             scens <- scens[-which(scens == "0")]
             intensity0 <- intensity %>%
-                            select(.data$conus.grid.id, .data$scenario, .data$plot.val) %>%
+                            select("conus.grid.id", "scenario", "plot.val") %>%
                             pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
                             pivot_longer(cols = all_of(scens)) %>%
                             rename(current = "0",
@@ -362,7 +362,7 @@ map_species_data <- function(title,
             scens <- unique(intensity$scenario)
             scens <- scens[-which(scens == "0")]
             intensity0 <- intensity %>%
-                            select(.data$conus.grid.id, .data$scenario, .data$plot.val) %>%
+                            select("conus.grid.id", "scenario", "plot.val") %>%
                             pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
                             pivot_longer(cols = all_of(scens)) %>%
                             rename(current = "0",
@@ -393,7 +393,7 @@ map_species_data <- function(title,
           scens <- unique(intensity$scenario)
           scens <- scens[-which(scens == "0")]
           intensity0 <- intensity %>%
-                          select(.data$conus.grid.id, .data$scenario, .data$plot.val) %>%
+                          select("conus.grid.id", "scenario", "plot.val") %>%
                           pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
                           pivot_longer(cols = all_of(scens)) %>%
                           rename(current = "0",
@@ -478,7 +478,7 @@ map_species_data <- function(title,
 
       locs <- species.data$locs$cont %>%
                 st_drop_geometry() %>%
-                select(.data$site.id, .data$source) %>%
+                select("site.id", "source") %>%
                 distinct()
 
       n.sites <- as.data.frame(table(locs$source))
@@ -486,7 +486,7 @@ map_species_data <- function(title,
 
       locs <- species.data$locs$cont %>%
                 st_drop_geometry() %>%
-                select(.data$site.id, .data$survey.id, .data$source)  %>%
+                select("site.id", "survey.id", "source")  %>%
                 distinct()
 
       n.surveys <- as.data.frame(table(locs$source, locs$site.id)) %>%
@@ -496,16 +496,20 @@ map_species_data <- function(title,
       colnames(n.surveys) <- c("source", "n.visits")
 
       tab <- full_join(n.sites, n.surveys, by = "source") %>%
-              select(.data$source, .data$n.sites, .data$n.visits)
+              select("source", "n.sites", "n.visits")
 
       plotpoints <- species.data$locs$cont %>%
                     full_join(tab, by = "source") %>%
-                    mutate(label = paste0(.data$source, " (", .data$data.type, ": ", .data$n.sites, ", ", .data$n.visits, ")"))
+                    mutate(label = paste0(.data$source, " (", .data$data.type, ": ", .data$n.sites, ", ", .data$n.visits, ")")) %>%
+        select(!"unique.id") %>%
+        distinct()
     } else {
       plotpoints <- species.data$locs$cont %>%
                     filter(.data$year >= year.start,
                            .data$year <= year.end,
-                           .data$survey.conducted == 1)
+                           .data$survey.conducted == 1) %>%
+        select(!"unique.id") %>%
+        distinct()
     }
 
 
@@ -572,8 +576,16 @@ map_species_data <- function(title,
 
   if (plot == "effort") base <- base + facet_wrap(~ PO.dataset.name)
 
-  base
+  #base
 
-
+  
+  # output ----
+  
+  if (plot == "samples") {
+    dat <- plotpoints
+  }
+  
+  return(list(dat = dat, 
+              plot = base))
 
 }
