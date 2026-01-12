@@ -1,9 +1,5 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
-})
 
-
-test_that("load_species_data() works with iNat format data", {
+test_that("map_species_data() works", {
 
     rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
                                     paste0("../../../species-futures/data/species/GPOR/IUCN/")),
