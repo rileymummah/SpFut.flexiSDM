@@ -8,14 +8,14 @@
 #' @param DND.maybe (numeric) what to categorize "maybe" detections as (1 = detection; 0 = nondetection)
 #' @param offset.area (character) name of column to use for area offset
 #' @param age.use (character vector) vector of age categories to use; defaults to c("adult", "metamorph", "juvenile", "egg mass", "NR", NA)
-#' @param req.cols (character vector) which columns are required in the output dataframe; defaults to c("unique.id", "site.id", "lat", "lon", "day", "month", "year", "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")
 #'
 #' @returns A dataframe containing clean and summarized observation data from one dataset.
 #'
 #' @importFrom rlang .data
-#' @importFrom magrittr "%>%"
 #' @importFrom tidyselect any_of
+#' @importFrom magrittr "%>%"
 #' @importFrom dplyr filter select mutate case_when group_by summarize distinct summarize_all rename full_join
+#' @importFrom hablar sum_
 
 
 DND_filter <- function(data,
@@ -23,14 +23,14 @@ DND_filter <- function(data,
                        covs.sum,
                        DND.maybe,
                        offset.area,
-                       age.use = c("adult", "metamorph", "juvenile", "egg mass", "NR", NA),
-                       req.cols = c("unique.id", "site.id", "lat", "lon",
-                                    "day", "month", "year", "survey.conducted", "survey.id", "data.type",
-                                    "species", "time.to.detect", "count")) {
+                       age.use = c("adult", "metamorph", "juvenile", "egg mass", "NR", NA)) {
 
 
 
   cat("\nLoading DND")
+  
+  if (is.na(covs.mean)) covs.mean <- ""
+  if (is.na(covs.sum)) covs.sum <- ""
 
   dndstart <- filter(data, .data$age %in% age.use)
 
@@ -38,7 +38,7 @@ DND_filter <- function(data,
 
     # get max count (0 or 1)
     dndcount <- dndstart %>%
-      select(.data$survey.id, .data$pass.id, .data$age, .data$count) %>%
+      select("survey.id", "pass.id", "age", "count") %>%
       mutate(count = case_when(count == 0 ~ 0,
                                count == 1 ~ 1,
                                count == 2 ~ DND.maybe)) %>%
@@ -51,9 +51,9 @@ DND_filter <- function(data,
     # get area if it exists
     if (length(offset.area) > 0) {
       dnd.area <- dndstart %>%
-        select(.data$survey.id, .data$pass.id, any_of(offset.area)) %>%
+        select("survey.id", "pass.id", any_of(offset.area)) %>%
         distinct() %>%
-        select(!.data$pass.id) %>%
+        select(!"pass.id") %>%
 
         # aggregate across passes
         group_by(.data$survey.id) %>%
@@ -64,9 +64,9 @@ DND_filter <- function(data,
     # get mean covariates (temperature, moon visibility, etc.)
     if (length(covs.mean) > 0) {
       dndcovs.mean <- dndstart %>%
-        select(.data$survey.id, .data$pass.id, any_of(covs.mean)) %>%
+        select("survey.id", "pass.id", any_of(covs.mean)) %>%
         distinct() %>%
-        select(!.data$pass.id) %>%
+        select(!"pass.id") %>%
 
         # aggregate across passes
         group_by(.data$survey.id) %>%
@@ -76,21 +76,31 @@ DND_filter <- function(data,
     # get sum covariates (duration, water volume)
     if (length(covs.sum) > 0) {
       dndcovs.sum <- dndstart %>%
-        select(.data$survey.id, .data$pass.id, any_of(covs.sum)) %>%
+        select("survey.id", "pass.id", any_of(covs.sum)) %>%
         distinct() %>%
-
+        
         # aggregate across passes
         group_by(.data$survey.id) %>%
-        summarize_all(sum, na.rm = T) %>%
-        rename(npass = .data$pass.id)
+        summarize_all(hablar::sum_, ignore_na = T) %>%
+        select(!"pass.id")
+      
+      dndcovs.npass <- dndstart %>%
+        select("survey.id", "pass.id", any_of(covs.sum)) %>%
+        distinct() %>%
+        
+        # aggregate across passes
+        group_by(.data$survey.id) %>%
+        summarize(npass = length(unique(pass.id))) 
+      
+      dndcovs.sum <- full_join(dndcovs.sum, dndcovs.npass, by = "survey.id")
     }
 
 
     # get other important columns
     dndcols <- dndstart %>%
-      select(.data$conus.grid.id, .data$site.id, .data$survey.id, .data$lat,
-             .data$lon, .data$day, .data$month, .data$year,
-             .data$survey.conducted) %>%
+      select("conus.grid.id", "site.id", "survey.id", "lat",
+             "lon", "day", "month", "year",
+             "survey.conducted") %>%
       distinct()
 
     # put them together
@@ -112,7 +122,7 @@ DND_filter <- function(data,
 
 
   } else {
-    cat("No data of appropriate species, year, and age in this dataset")
+    cat("\nNo data of appropriate species, year, and age in this dataset")
     dndstart <- dndstart
   }
 
