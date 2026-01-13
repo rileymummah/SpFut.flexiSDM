@@ -20,17 +20,21 @@ PO_for_nimble <- function(POdata,
   if (length(grep("conus.grid.id", colnames(POdata))) != 1) {stop("There must be exactly one column named 'conus.grid.id' in POdata")}
   if (length(grep("conus.grid.id", colnames(covariates))) != 1) {stop("There must be exactly one column named 'conus.grid.id' in covariates")}
 
-  if (nrow(POdata) != nrow(covariates)) {warning("POdata and covariates contain different number of rows. Unmatched grid.ids will be dropped")}
-
   # check that conus.grid.ids are in the same order
+  if (nrow(POdata) != nrow(covariates)) {stop("STOP! POdata and covariates must contain the same number of rows.")}
+  
+  
   if ("FALSE" %in% names(table(POdata$conus.grid.id == covariates$conus.grid.id))) {
     stop("STOP! conus.grid.id in POdata and covariates need to be in the same order")
   }
+  
 
-  cov.names <- select(covariates, !.data$conus.grid.id) %>% colnames()
+  
+
+  cov.names <- select(covariates, !"conus.grid.id") %>% colnames()
 
   # set W covariates
-  Xw <- select(covariates, !.data$conus.grid.id)
+  Xw <- select(covariates, !"conus.grid.id")
 
   W <- pull(POdata, .data$count)
 

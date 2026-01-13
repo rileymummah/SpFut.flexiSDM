@@ -31,7 +31,7 @@ survey_for_nimble <- function(data,
   data <- filter(data, .data$conus.grid.id %in% keep.conus.grid.id)
 
   surveydata <- select(data, !any_of(cov.names))
-  covariates <- select(data, .data$conus.grid.id, .data$site.id, .data$survey.id, any_of(cov.names))
+  covariates <- select(data, "conus.grid.id", "site.id", "survey.id", any_of(cov.names))
 
   Y <- data$count
   surveyCell <- data$conus.grid.id
