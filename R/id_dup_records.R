@@ -24,7 +24,7 @@ id_dup_records <- function(species.data) {
                 filter(.data$data.type == "PO") %>%
                 pull(.data$source)
 
-  inat.ind <- grep("iNat", POsources)
+  inat.ind <- grep("iNaturalist", POsources)
 
   # get locations of PO data
   locs <- bind_rows(species.data$locs$cont) %>%
