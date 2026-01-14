@@ -45,7 +45,9 @@ sppdata_for_nimble <- function(species.data,
   data.type <- file.info$data.type
   PO.extent <- file.info$PO.extent
   covs.mean <- file.info$covar.mean
+  covs.mean[is.na(covs.mean)] <- ""
   covs.sum <- file.info$covar.sum
+  covs.sum[is.na(covs.sum)] <- ""
   offset.area <- file.info$area
   PO.extent <- file.info$PO.extent
 

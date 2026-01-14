@@ -29,9 +29,6 @@ DND_filter <- function(data,
 
   cat("\nLoading DND")
   
-  if (is.na(covs.mean)) covs.mean <- ""
-  if (is.na(covs.sum)) covs.sum <- ""
-
   dndstart <- filter(data, .data$age %in% age.use)
 
   if (nrow(dndstart) > 0) {
