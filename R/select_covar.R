@@ -20,12 +20,14 @@ select_covar <- function(covs,
                          threshold = 0.4) {
 
   # selectively remove covariates until all high correlations are gone
-  cors <- cor(as.data.frame(.data$covar[,c(covs)])) %>%
-            as.data.frame() %>%
-            mutate(cov1 = row.names()) %>%
-            pivot_longer(!.data$cov1) %>%
+  # cors <- cor(as.data.frame(.data$covar[,c(covs)])) %>%
+  cors <- as.data.frame(cor(covs))
+  cors$cov1 <- rownames(cors)
+  cors <- cors %>%
+            # mutate(cov1 = row.names()) %>%
+            pivot_longer(!"cov1") %>%
             filter(.data$value != 1) %>%
-            rename(cov2 = .data$name)
+            rename(cov2 = "name")
 
 
   # get the max correlation
