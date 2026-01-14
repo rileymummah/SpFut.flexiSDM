@@ -268,6 +268,7 @@ sppdata_for_nimble <- function(species.data,
                           returnclass = "sf") %>%
             st_transform(st_crs(region$sp.grid))
           
+          cat("\nAssigning grid cells to states")
           suppressWarnings(stategrid <- st_intersection(region$sp.grid, st) %>%
             st_drop_geometry() %>%
               mutate(value = 1,
