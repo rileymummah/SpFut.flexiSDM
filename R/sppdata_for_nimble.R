@@ -362,6 +362,7 @@ sppdata_for_nimble <- function(species.data,
 
   # do DND ----
   DNDind <- which(data.type == "DND")
+  DNDlabs <- file.info$file.label[DNDind]
   if (length(DNDind) > 0) {
     for (d in 1:length(DNDind)) {
 
@@ -378,7 +379,8 @@ sppdata_for_nimble <- function(species.data,
       dnd.area <- dnd.area[which(is.na(dnd.area) == F)]
 
 
-      data <- species.data$obs[[DNDind[d]]]
+      # data <- species.data$obs[[DNDind[d]]]
+      data <- species.data$obs[[DNDlabs[d]]]
       name <- file.names[DNDind[d]]
 
       # Add yday column
@@ -387,6 +389,11 @@ sppdata_for_nimble <- function(species.data,
         data$yday <- yday(tmp)
       }
 
+      # warning about missing covariates
+      missing <- setdiff(cov.names, names(data))
+      missing <- missing[!missing == ""]
+      missing <- missing[!is.na(missing)]
+      if (length(missing) > 0) warning(name, " detection covariate(s) ", missing, " missing")
 
       # filter and aggregate DND observations
       dndstart <- DND_filter(data,
@@ -407,7 +414,7 @@ sppdata_for_nimble <- function(species.data,
         # clean up columns
         data <- dndstart %>%
           select("conus.grid.id", "site.id", "survey.id",
-                 any_of(cov.names), .data$count) %>%
+                 any_of(cov.names), "count") %>%
           group_by(.data$site.id) %>%
           mutate(site.id = cur_group_id()) %>%
           ungroup() %>%
@@ -462,7 +469,8 @@ sppdata_for_nimble <- function(species.data,
 
 
   # do count ----
-  countind <- which(data.type == "Count")
+  countind <- which(data.type %in% c("Count", "count"))
+  countlabs <- file.info$file.label[countind]
   if (length(countind) > 0) {
 
     for (d in 1:length(countind)) {
@@ -481,7 +489,8 @@ sppdata_for_nimble <- function(species.data,
       count.area <- count.area[which(is.na(count.area) == F)]
 
 
-      data <- species.data$obs[[countind[d]]]
+      # data <- species.data$obs[[countind[d]]]
+      data <- species.data$obs[[countlabs[d]]]
       name <- data$source[1]
 
       # Add yday
@@ -490,6 +499,11 @@ sppdata_for_nimble <- function(species.data,
         data$yday <- yday(tmp)
       }
 
+      # warning about missing covariates
+      missing <- setdiff(count.covs, names(data))
+      missing <- missing[!missing == ""]
+      missing <- missing[!is.na(missing)]
+      if (length(missing) > 0) warning(name, " detection covariate(s) ", missing, " missing")
 
       # Filter data
       count.start <- count_filter(data,
