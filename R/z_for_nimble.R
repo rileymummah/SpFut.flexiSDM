@@ -12,10 +12,13 @@
 
 z_for_nimble <- function(covariates) {
 
-  if (is.na(sum(covariates[,3:ncol(covariates)]))) {stop("Remove NA's from covariates")}
+  # if (is.na(sum(covariates[,3:ncol(covariates)]))) {stop("Remove NA's from covariates")}
+  tmp <- table(is.na(covariates))
+  if ("TRUE" %in% names(tmp)) {stop("Remove NA's from covariates")}
+  
   if (length(grep("conus.grid.id", colnames(covariates))) != 1) {stop("There must be exactly one column named 'conus.grid.id' in covariates")}
 
-  Xz <- select(covariates, !.data$conus.grid.id)
+  Xz <- select(covariates, !"conus.grid.id")
   nCovZ <- ncol(Xz)
   nCell <- nrow(covariates)
 
