@@ -19,7 +19,7 @@ id_dup_records <- function(species.data) {
 
   POsources <- species.data$locs$cont %>%
                 st_drop_geometry() %>%
-                select(.data$source, .data$data.type) %>%
+                select("source", "data.type") %>%
                 distinct() %>%
                 filter(.data$data.type == "PO") %>%
                 pull(.data$source)
@@ -36,9 +36,9 @@ id_dup_records <- function(species.data) {
   for (s in 1:length(species.data$obs)) {
     if (names(species.data$obs)[s] %in% POsources) {
       dat <- species.data$obs[[s]] %>%
-        select(.data$site.id, .data$day, .data$month, .data$year, .data$lat,
-               .data$lon, .data$survey.id, .data$survey.conducted, .data$count,
-               .data$conus.grid.id, .data$source, .data$unique.id) %>%
+        select("site.id", "day", "month", "year", "lat",
+               "lon", "survey.id", "survey.conducted", "count",
+               "conus.grid.id", "source", "unique.id") %>%
         mutate(site.survey.id = paste0(.data$site.id, "-", .data$survey.id))
 
       dates <- bind_rows(dates, dat)
