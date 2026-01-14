@@ -57,7 +57,7 @@ id_dup_records <- function(species.data) {
   tmp2 <- filter(locs, .data$source != POsources[inat.ind])
 
   # find points that overlap
-  inter <- st_intersection(tmp1, tmp2)
+  suppressWarnings(inter <- st_intersection(tmp1, tmp2))
 
   # find points that overlap on the same date
   inter1 <- filter(inter,
