@@ -5,9 +5,7 @@
 #' @param cov.labs (data.frame) dataframe containing covariate column names ("covariate") and labels ("Label")
 #' @param cutoff (numeric) where to cut off chains for plotting; defaults to 0
 #' @param plot (character) which parameter to plot; defaults to "B"; options are "B" and "alpha"
-#' @param Bpriordist (character) distribution for beta priors; defaults to "dnorm"; options are "dnorm" or "dunif"
-#' @param Bpriorvar1 (numeric) first parameter for beta priors; defaults to 0
-#' @param Bpriorvar2 (numeric) second parameter for beta priors; defaults to 1
+#' @param Bprior (character) distribution for beta priors; defaults to "dnorm(0,1)"
 #' @param chaincols (vector) colors to use for chains; defaults to pink, green, and blue
 #'
 #' @returns ggplot object with plotted posterior distributions
@@ -24,12 +22,17 @@ plot_posteriors <- function(samples,
                             data,
                             cov.labs,
                             cutoff = 0,
+                            Bprior = "dnorm(0,1)",
                             plot = "B",
-                            Bpriordist = "dnorm",
-                            Bpriorvar1 = 0,
-                            Bpriorvar2 = 1,
+                            # Bpriordist = "dnorm",
+                            # Bpriorvar1 = 0,
+                            # Bpriorvar2 = 1,
                             chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
 
+  
+  if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
+  if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
+  
 
     if (plot == "B") {
       bnames <- data.frame(name = colnames(data$Xz),
@@ -40,7 +43,7 @@ plot_posteriors <- function(samples,
 
     } else if (plot == "alpha") {
       bind <- grep("alpha", colnames(samples[[1]]))
-      bnames <- data.frame(name = unlist(.data$constants[grep("name", names(.data$constants))]),
+      bnames <- data.frame(name = unlist(constants[grep("name", names(constants))]),
                            param = paste0("alpha[", 1:length(bind), "]"))
     }
 
@@ -85,13 +88,13 @@ plot_posteriors <- function(samples,
                      quad = case_when(substr(tmp, nchar(tmp), nchar(tmp)) == 2 ~ "^2", T ~ "")) %>%
               left_join(cov.labs, by = c("cov1" = "covariate")) %>%
               mutate(name.y = paste0(.data$Label, .data$quad)) %>%
-              select(!.data$tmp)
+              select(!"tmp")
     }
 
 
     call <- mutate(call, lab = paste0(.data$name.y, "\nRhat = ", rhat))
 
-    pl <- ggplot(data = filter(.data$call, n > cutoff)) +
+    pl <- ggplot(data = filter(call, n > cutoff)) +
             geom_density(aes(x = .data$value, color = as.factor(.data$chain),
                              fill = as.factor(.data$chain)), alpha = 0.1) +
             facet_wrap(~lab, scales = "free") +
@@ -104,6 +107,13 @@ plot_posteriors <- function(samples,
     if (plot %in% c("B", "alpha")) {
 
       if (plot == "B") {
+        
+        Bprior1 <- gsub(" ", "", Bprior)
+        Bpriordist <- substr(Bprior1, 1, 5)
+        Bpriorvar1 <- as.numeric(substr(Bprior, 7, 7))
+        Bpriorvar2 <- as.numeric(substr(Bprior, 9, 9))
+        
+        
         if (Bpriordist == "dnorm") {
           prior <- rnorm(nrow(call), Bpriorvar1, Bpriorvar2)
         } else if (Bpriordist == "dunif") {
@@ -122,7 +132,9 @@ plot_posteriors <- function(samples,
               mutate(value1 = case_when(n > cutoff ~ value, T ~ NA),
                      min = min(.data$value1, na.rm = T) - 0.1,
                      max = max(.data$value1, na.rm = T) + 0.1) %>%
-              mutate(prior = case_when(prior < min | prior > max ~ NA, T ~ prior))
+              mutate(prior = case_when(prior < min | prior > max ~ NA, 
+                                       T ~ prior)) %>%
+        filter(is.na(prior) == F)
 
 
       pl <- pl + geom_density(data = call, aes(x = .data$prior),
