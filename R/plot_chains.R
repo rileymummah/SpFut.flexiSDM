@@ -25,6 +25,10 @@ plot_chains <- function(samples,
                         plot = "B",
                         chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
 
+  
+  if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
+  if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
+
     if (plot == "B") {
       bnames <- data.frame(name = colnames(data$Xz),
                            param = paste0("B[", 1:ncol(data$Xz), "]"))
@@ -87,7 +91,7 @@ plot_chains <- function(samples,
                                                T ~ "")) %>%
                 left_join(cov.labs, by = c("cov1" = "covariate")) %>%
                 mutate(name.y = paste0(.data$Label, .data$quad)) %>%
-                select(!.data$tmp)
+                select(!"tmp")
     }
 
     call <- mutate(call, lab = paste0(.data$name.y, "\nRhat = ", rhat))
