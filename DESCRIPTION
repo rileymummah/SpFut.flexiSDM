@@ -24,6 +24,7 @@ Imports:
     coda,
     dplyr,
     ggplot2,
+    hablar,
     lubridate,
     magrittr,
     nimble,
