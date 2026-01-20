@@ -89,11 +89,12 @@ map_species_data <- function(title,
                      scale = 10) %>%
           st_transform(crs = st_crs(region$range))
 
-  wa <- ne_download(type = "lakes",
-                    category = "physical", load = T,
-                    returnclass = "sf",
-                    scale = 10) %>%
-          st_transform(crs = st_crs(region$range))
+  suppressMessages(wa <- ne_download(type = "lakes",
+                                     category = "physical", load = T,
+                                     returnclass = "sf",
+                                     scale = 10) %>%
+                     st_transform(crs = st_crs(region$range)))
+  
 
   st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
                   returnclass = "sf") %>%
