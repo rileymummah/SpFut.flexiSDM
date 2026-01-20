@@ -229,7 +229,8 @@ make_region <- function(rangelist,
     
     
     # get correct columns
-    gridd <- select(gridd, "conus.grid.id")
+    gridd <- select(gridd, "conus.grid.id") %>%
+      mutate(conus.grid.id = as.character(conus.grid.id))
     
 
     # Save output
