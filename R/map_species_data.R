@@ -454,7 +454,7 @@ map_species_data <- function(title,
   # __e. blocks ----
   if (plot.blocks == T) {
 
-    blocks <- st_intersection(blocks, region$region)
+    suppressWarnings(blocks <- st_intersection(blocks, region$region))
 
     if (length(unique(blocks$folds)) == 1) {
       base <- base +
@@ -549,7 +549,7 @@ map_species_data <- function(title,
     xlim <- c(bb[1], bb[3])
     ylim <- c(bb[2], bb[4])
   } else {
-    bb <- st_bbox(st_union(region$region, blocks))
+    suppressWarnings(bb <- st_bbox(st_union(region$region, blocks)))
     xlim <- c(bb[1], bb[3])
     ylim <- c(bb[2], bb[4])
   }
