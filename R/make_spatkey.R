@@ -66,15 +66,14 @@ make_spatkey <- function(grid) {
     newcentXY2 <- rbind(newcentXY2,xy)
   }
 
-  # plot(centXY$X, centXY$Y)
-  # points(newcentXY1[,1], newcentXY1[,2], col = "red", pch = 19)
-  # points(newcentXY2[,1], newcentXY2[,2], col = "blue", pch = 19)
-
   newcentXY1 <- data.frame(cbind(1:nrow(newcentXY1),newcentXY1))
   colnames(newcentXY1) <- c("cell","X","Y")
 
   centXY1 <- data.frame(cbind(rep(NA,nrow(centXY)),centXY))
   colnames(centXY1) <- c("cell","X","Y","conus.grid.id")
+
+  # radius <- 8000 # species-futures
+  radius <-
 
   for (a in 1:nrow(newcentXY1)){
     centXY1$cell[which(sqrt((centXY1$X-newcentXY1$X[a])^2 + (centXY1$Y-newcentXY1$Y[a])^2)<8000)] = newcentXY1$cell[a]
@@ -109,7 +108,7 @@ make_spatkey <- function(grid) {
     # Isolate centroids with missing cell assignments
     filter(is.na(.data$cell)) %>%
     left_join(grid, by = 'conus.grid.id') %>%
-    select(.data$cell, .data$conus.grid.id, .data$geometry) %>%
+    select("cell", "conus.grid.id", "geometry") %>%
     st_as_sf() -> cellNA
 
   NAind <- which(is.na(centXY$cell))
@@ -145,7 +144,7 @@ make_spatkey <- function(grid) {
 
   centXY %>%
     left_join(grid, centXY, by = 'conus.grid.id') %>%
-    select(.data$conus.grid.id, .data$cell, .data$geometry) -> spatkey1
+    select("conus.grid.id", "cell", "geometry") -> spatkey1
 
   spatkey1$cell[NAind] <- cellNA$cell
 
@@ -153,18 +152,18 @@ make_spatkey <- function(grid) {
     group_by(.data$cell) %>%
     mutate(geometry = st_union(.data$geometry)) %>%
     ungroup() %>%
-    select(.data$cell, .data$geometry) %>%
+    select("cell", "geometry") %>%
     distinct() %>%
     mutate(spat.grid.id = 1:n()) %>%
     st_as_sf() -> tmp1
 
   tmp1 %>%
     st_drop_geometry() %>%
-    select(.data$cell, .data$spat.grid.id) %>%
+    select("cell", "spat.grid.id") %>%
     full_join(spatkey1, .data, by = 'cell') %>%
-    select(-.data$geometry, -.data$cell) -> spatkey
+    select(-"geometry", -"cell") -> spatkey
 
-  select(tmp1, -.data$cell) -> spat.grid
+  select(tmp1, -"cell") -> spat.grid
 
   return(spatModel = list(spatkey = spatkey,
                           spat.grid = spat.grid))

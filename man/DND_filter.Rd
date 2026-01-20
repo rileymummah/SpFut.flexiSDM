@@ -10,9 +10,7 @@ DND_filter(
   covs.sum,
   DND.maybe,
   offset.area,
-  age.use = c("adult", "metamorph", "juvenile", "egg mass", "NR", NA),
-  req.cols = c("unique.id", "site.id", "lat", "lon", "day", "month", "year",
-    "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")
+  age.use = c("adult", "metamorph", "juvenile", "egg mass", "NR", NA)
 )
 }
 \arguments{
@@ -27,8 +25,6 @@ DND_filter(
 \item{offset.area}{(character) name of column to use for area offset}
 
 \item{age.use}{(character vector) vector of age categories to use; defaults to c("adult", "metamorph", "juvenile", "egg mass", "NR", NA)}
-
-\item{req.cols}{(character vector) which columns are required in the output dataframe; defaults to c("unique.id", "site.id", "lat", "lon", "day", "month", "year", "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")}
 }
 \value{
 A dataframe containing clean and summarized observation data from one dataset.

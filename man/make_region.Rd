@@ -7,9 +7,8 @@
 make_region(
   rangelist,
   buffer,
-  boundary,
+  boundary = NULL,
   grid,
-  crs = 3857,
   sub = F,
   lat.lo = NA,
   lat.hi = NA,
@@ -17,20 +16,17 @@ make_region(
   lon.hi = NA,
   continuous = F,
   rm.clumps = F,
-  clump.size = 20,
-  cell.size = 24999998
+  clump.size = 20
 )
 }
 \arguments{
 \item{rangelist}{(list) list of ranges generated from get_range()}
 
-\item{buffer}{(numeric) buffer size, unit depends on CRS}
+\item{buffer}{(numeric) buffer size in meters}
 
-\item{boundary}{(sf object) A that says where to cut off the region}
+\item{boundary}{(sf object) A polygon that says where to cut off the region (e.g., political borders)}
 
 \item{grid}{(sf object) grid overlay}
-
-\item{crs}{(numeric) default is 3857 so that buffer size can be meters}
 
 \item{sub}{(logical) whether to buffer around centroid (sub = T) or around full range (sub = F)}
 

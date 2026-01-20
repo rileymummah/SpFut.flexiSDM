@@ -9,10 +9,8 @@ plot_posteriors(
   data,
   cov.labs,
   cutoff = 0,
+  Bprior = "dnorm(0,1)",
   plot = "B",
-  Bpriordist = "dnorm",
-  Bpriorvar1 = 0,
-  Bpriorvar2 = 1,
   chaincols = c(`1` = "hotpink1", `2` = "olivedrab3", `3` = "deepskyblue3")
 )
 }
@@ -25,13 +23,9 @@ plot_posteriors(
 
 \item{cutoff}{(numeric) where to cut off chains for plotting; defaults to 0}
 
+\item{Bprior}{(character) distribution for beta priors; defaults to "dnorm(0,1)"}
+
 \item{plot}{(character) which parameter to plot; defaults to "B"; options are "B" and "alpha"}
-
-\item{Bpriordist}{(character) distribution for beta priors; defaults to "dnorm"; options are "dnorm" or "dunif"}
-
-\item{Bpriorvar1}{(numeric) first parameter for beta priors; defaults to 0}
-
-\item{Bpriorvar2}{(numeric) second parameter for beta priors; defaults to 1}
 
 \item{chaincols}{(vector) colors to use for chains; defaults to pink, green, and blue}
 }

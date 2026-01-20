@@ -9,9 +9,7 @@ count_filter(
   covs.mean,
   covs.sum,
   offset.area,
-  age.use = c("adult", "metamorph", "juvenile", "larva", "egg mass", "NR", NA),
-  req.cols = c("site.id", "lat", "lon", "day", "month", "year", "survey.conducted",
-    "survey.id", "data.type", "species", "time.to.detect", "count")
+  age.use = c("adult", "metamorph", "juvenile", "larva", "egg mass", "NR", NA)
 )
 }
 \arguments{
@@ -24,8 +22,6 @@ count_filter(
 \item{offset.area}{(character) name of column to use for area offset}
 
 \item{age.use}{(character vector) vector of age categories to use; defaults to c("adult", "metamorph", "juvenile", "larva", "egg mass", "NR", NA)}
-
-\item{req.cols}{(character vector) which columns are required in the output dataframe; defaults to c("site.id", "lat", "lon", "day", "month", "year", "survey.conducted", "survey.id", "data.type", "species", "time.to.detect", "count")}
 }
 \value{
 A dataframe containing clean and summarized observation data from one dataset.

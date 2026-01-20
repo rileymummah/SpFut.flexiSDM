@@ -9,7 +9,6 @@ cor_covar(
   cov.names,
   cov.labels = cov.names,
   cov.levels = cov.labels,
-  covs.int.factor = NA,
   out.path = "",
   out.name = "covariate-cor",
   color.threshold = 0.25
@@ -23,8 +22,6 @@ cor_covar(
 \item{cov.labels}{(character vector) labels for covariate names, defaults to use column names as labels}
 
 \item{cov.levels}{(character vector) column names in order they should appear on plot}
-
-\item{covs.int.factor}{(character vector) name of columns in covar that has an interaction}
 
 \item{out.path}{(character) path to save figure}
 

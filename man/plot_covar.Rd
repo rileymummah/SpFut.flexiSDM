@@ -9,7 +9,6 @@ plot_covar(
   region,
   cov.names,
   cov.labels = cov.names,
-  covs.int.factor = NA,
   out.path = "",
   out.name = "covariate-map"
 )
@@ -22,8 +21,6 @@ plot_covar(
 \item{cov.names}{(character vector) column names from covar to plot}
 
 \item{cov.labels}{(character vector) labels for covariate names, defaults to use column names as labels}
-
-\item{covs.int.factor}{(character) name of columns in covar that has an interaction}
 
 \item{out.path}{(character) path to save figure}
 
