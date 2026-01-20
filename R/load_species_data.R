@@ -301,6 +301,8 @@ load_species_data <- function(sp.code,
     keepcols <- covariates[[f]]
     keepcols1 <- keepcols[which(keepcols %in% colnames(file))]
     missingcovs <- setdiff(keepcols, keepcols1)
+    missingcovs <- missingcovs[-which(missingcovs == "yday")] # because yday is generated later
+    
     if (length(keepcols1) > 0) cat("Using ", keepcols1, " as covariate(s)\n")
     file1 <- inner_join(file,
                         select(locs.d, "unique.id", "conus.grid.id"),
@@ -311,10 +313,8 @@ load_species_data <- function(sp.code,
                      "year", "survey.conducted", "species", "age",
                      "time.to.detect", "individual.id", "count",
                      any_of(keepcols1))
-    # cat(missingcovs, length(missingcovs), "\n")
-    # cat(keepcols, length(keepcols), "\n")
-    # cat(keepcols1, length(keepcols1), "\n")
-    if (length(missingcovs) > 0)  warning(missingcovs, " column(s) missing from file")
+    
+    if (length(missingcovs) > 0)  warning(missingcovs, " column(s) missing from ", file.label[f])
 
     # If label already exists, just append dfs
     # This is useful for:
