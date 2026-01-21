@@ -4,7 +4,7 @@
 \alias{make_spatkey}
 \title{Make coarse spatial grid}
 \usage{
-make_spatkey(grid)
+make_spatkey(grid, apothem)
 }
 \arguments{
 \item{grid}{(sf object) A grid in which one of the attributes is the conus.grid.id}

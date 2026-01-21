@@ -24,17 +24,17 @@
 #' }
 
 
-make_spatkey <- function(grid) {
+make_spatkey <- function(grid, apothem) {
 
   # Find the centroid of each grid cell
   cent <- st_centroid(grid$geometry)
 
   # Round the coordinates
   centXY <- round(st_coordinates(cent),-1) %>%
-              as.data.frame() %>%
-              mutate(conus.grid.id = grid$conus.grid.id)
+    as.data.frame() %>%
+    mutate(conus.grid.id = grid$conus.grid.id)
 
-  # Sort the coorindates
+  # Sort the coordinates
   X <- sort(unique(centXY[,1]))
   Y <- sort(unique(centXY[,2]))
 
@@ -46,25 +46,61 @@ make_spatkey <- function(grid) {
   key2 <- c(10,5,14,9,4,13,8,3,12,7,2,11,6,1)
 
 
+  # Define a sequence of centroids based on the location of coordinate Y
   newcentXY1 <- matrix(NA,0,2)
-
-  for (a in 1:14){
-    x <- seq(key1[a],NX,14)
-    y <- seq(a,NY,14)
-    xy <- expand.grid(x,y)
-    xy <- cbind(X[xy[,1]],Y[xy[,2]])
-    newcentXY1 <- rbind(newcentXY1,xy)
-  }
-
   newcentXY2 <- matrix(NA,0,2)
 
   for (a in 1:14){
-    x <- seq(key2[a],NX,14)
-    y <- seq(a,NY,14)
+    # Key 1
+    y <- seq(key1[a],NY,14)
+    x <- seq(a,NX,14)
+    xy <- expand.grid(x,y)
+    xy <- cbind(X[xy[,1]],Y[xy[,2]])
+    newcentXY1 <- rbind(newcentXY1,xy)
+
+    # Key 2
+    y <- seq(key2[a],NY,14)
+    x <- seq(a,NX,14)
     xy <- expand.grid(x,y)
     xy <- cbind(X[xy[,1]],Y[xy[,2]])
     newcentXY2 <- rbind(newcentXY2,xy)
   }
+
+  # Calculate distance between selected centroids
+  as.matrix(dist(newcentXY1)) -> tmp
+  # Change all 0s (same centroid) to NA
+  tmp[tmp==0] <- NA
+  # Find minimum distance of selected centroids
+  # If < 2*apothem then selected cells are too close, move to option 2
+
+
+  if (min(tmp, na.rm=T) < 2*apothem) {
+    # Define a sequence of centroids based on the location of coordinate X
+    newcentXY1 <- matrix(NA,0,2)
+    newcentXY2 <- matrix(NA,0,2)
+
+    for (a in 1:14){
+      # Key 1
+      x <- seq(key1[a],NX,14)
+      y <- seq(a,NY,14)
+      xy <- expand.grid(x,y)
+      xy <- cbind(X[xy[,1]],Y[xy[,2]])
+      newcentXY1 <- rbind(newcentXY1,xy)
+
+      # Key 2
+      x <- seq(key2[a],NX,14)
+      y <- seq(a,NY,14)
+      xy <- expand.grid(x,y)
+      xy <- cbind(X[xy[,1]],Y[xy[,2]])
+      newcentXY2 <- rbind(newcentXY2,xy)
+    }
+  }
+
+  # # Plotting check to ensure that centroids are selected correctly
+  # plot(centXY$X, centXY$Y)
+  # points(as.data.frame(newcentXY1)$V1, as.data.frame(newcentXY1)$V2, col = 'red', pch = 3)
+  # points(as.data.frame(newcentXY2)$V1, as.data.frame(newcentXY2)$V2, col = 'hotpink', pch = 11)
+
 
   newcentXY1 <- data.frame(cbind(1:nrow(newcentXY1),newcentXY1))
   colnames(newcentXY1) <- c("cell","X","Y")
@@ -72,20 +108,21 @@ make_spatkey <- function(grid) {
   centXY1 <- data.frame(cbind(rep(NA,nrow(centXY)),centXY))
   colnames(centXY1) <- c("cell","X","Y","conus.grid.id")
 
-  # radius <- 8000 # species-futures
-  radius <-
-
+  # Calculate distances from centroid cell
   for (a in 1:nrow(newcentXY1)){
-    centXY1$cell[which(sqrt((centXY1$X-newcentXY1$X[a])^2 + (centXY1$Y-newcentXY1$Y[a])^2)<8000)] = newcentXY1$cell[a]
+    centXY1$cell[which(sqrt((centXY1$X-newcentXY1$X[a])^2 + (centXY1$Y-newcentXY1$Y[a])^2)<apothem)] = newcentXY1$cell[a]
   }
 
-  a <- centXY1 %>%
-          # Have to filter out missing (orphan) cells, otherwise NA will have more than 7 "neighbors"
-          filter(!is.na(.data$cell)) %>%
-          group_by(.data$cell) %>%
-          summarize(count = n())
 
-  if(max(a$count)<=7){
+  a <- centXY1 %>%
+    # Filter out missing (orphan) cells, otherwise NA will have more than 7 "neighbors"
+    filter(!is.na(.data$cell)) %>%
+    group_by(.data$cell) %>%
+    summarize(count = n())
+
+  # If the max neighbor count is 7, then all set.
+  # If not, then use Key 2
+  if(max(a$count)==7){
     centXY <- centXY1
     newcentXY <- newcentXY1
   } else {
@@ -95,8 +132,9 @@ make_spatkey <- function(grid) {
     centXY2 <- data.frame(cbind(rep(NA,nrow(centXY)),centXY))
     colnames(centXY2) <- c("cell","X","Y","conus.grid.id")
 
+    # Calculate distances from centroid cell
     for (a in 1:nrow(newcentXY2)){
-      centXY2$cell[which(sqrt((centXY2$X-newcentXY2$X[a])^2 + (centXY2$Y-newcentXY2$Y[a])^2)<8000)] = newcentXY1$cell[a]
+      centXY2$cell[which(sqrt((centXY2$X-newcentXY2$X[a])^2 + (centXY2$Y-newcentXY2$Y[a])^2)<apothem)] = newcentXY1$cell[a]
     }
 
     centXY <- centXY2
@@ -113,7 +151,8 @@ make_spatkey <- function(grid) {
 
   NAind <- which(is.na(centXY$cell))
 
-  NB <- poly2nb(cellNA)
+  # Calculate adjacent neighbors
+  suppressWarnings(NB <- poly2nb(cellNA))
   NBinfo <- nb2WB(NB)
 
   cellNA$neighbors <- NBinfo$num
@@ -121,6 +160,7 @@ make_spatkey <- function(grid) {
 
   cellNA$cell[1] <- 1
 
+  # Use adjacency to group nearby cells
   for (i in 1:nrow(cellNA)) {
     if (cellNA$neighbors[i] == 0 & is.na(cellNA$cell[i])) {
       cellNA$cell[i] = max(cellNA$cell, na.rm=T) + 1
@@ -140,7 +180,7 @@ make_spatkey <- function(grid) {
     }
   }
 
-  cellNA <- select(cellNA, -.data$neighbors)
+  cellNA <- select(cellNA, -"neighbors")
 
   centXY %>%
     left_join(grid, centXY, by = 'conus.grid.id') %>%
@@ -156,6 +196,9 @@ make_spatkey <- function(grid) {
     distinct() %>%
     mutate(spat.grid.id = 1:n()) %>%
     st_as_sf() -> tmp1
+
+  # # Plotting check to ensure grouping is performed correctly
+  # ggplot(tmp1) + geom_sf()
 
   tmp1 %>%
     st_drop_geometry() %>%
