@@ -83,7 +83,7 @@ obs.mod <- "
 for (j in _LOOP) {
 
   # Make dataset-specific lambda (and N and Z if needed)
-  lambdaD_NUM[j] <- lambda0[_IND] * alpha[_NUM]
+  lambdaD_NUM[j] <- lambda0[_IND] * alpha[_NUM]_ND_ZD
 
   # Observation model
   _OBS
