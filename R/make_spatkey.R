@@ -3,7 +3,7 @@
 #' @description Group a fine hexbin grid into groups of 7 hexbins to form a coarse spatial grid
 #'
 #'
-#' @param grid (sf object) A grid in which one of the attributes is the conus.grid.id
+#' @param grid (sf object) A grid in which one of the columns is `conus.grid.id`
 #'
 #' @returns A list which contains:
 #' 1) spatkey - a dataframe which contains a column for the conus.grid.id (fine grid) and a column for the matching spat.grid.id (coarse grid)
@@ -24,15 +24,20 @@
 #' }
 
 
-make_spatkey <- function(grid, apothem) {
+make_spatkey <- function(grid) {
+
+  # Calculate area and apothem for hexagonal grid
+  area <- st_area(grid[1,])
+  # Add an extra 5% to allow for some error in plotting
+  apothem <- as.numeric(sqrt(2*area*tan(pi/6)) * 1.05)
 
   # Find the centroid of each grid cell
   cent <- st_centroid(grid$geometry)
 
   # Round the coordinates
   centXY <- round(st_coordinates(cent),-1) %>%
-    as.data.frame() %>%
-    mutate(conus.grid.id = grid$conus.grid.id)
+            as.data.frame() %>%
+            mutate(conus.grid.id = grid$conus.grid.id)
 
   # Sort the coordinates
   X <- sort(unique(centXY[,1]))
