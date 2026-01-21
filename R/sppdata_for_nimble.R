@@ -20,7 +20,7 @@
 #' @importFrom tidyr pivot_wider
 #' @importFrom rlang .data
 #' @importFrom magrittr "%>%"
-#' @importFrom dplyr mutate filter select group_by summarize full_join across
+#' @importFrom dplyr mutate filter select group_by summarize full_join across arrange
 #' @importFrom rnaturalearth ne_states
 
 
@@ -88,14 +88,14 @@ sppdata_for_nimble <- function(species.data,
       if (sum(file.info$data.type == "PO") > 1) {
         cat("Looking for duplicates in PO data\n")
         rm <- id_dup_records(species.data)
-        
+
         if (length(rm) > 0) {
           cat(paste0("    Removing ", length(rm), " records from iNaturalist that may be duplicated in other datasets\n"))
         }
       } else {
         rm <- c()
       }
-      
+
 
       # Filter PO data
       data <- species.data$obs[[inat.ind]]
@@ -124,7 +124,7 @@ sppdata_for_nimble <- function(species.data,
                .data$conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
 
       # Get the covariates to use for iNat
-      if (is.na(covs.inat)) covs.inat <- ""
+      covs.inat[which(is.na(covs.inat))] <- ""
       covariates <- select(covar, "conus.grid.id", any_of(covs.inat)) %>%
         filter(is.na(.data$conus.grid.id) == F,
                .data$conus.grid.id %in% keep.conus.grid.id)
@@ -132,12 +132,12 @@ sppdata_for_nimble <- function(species.data,
       missing <- missing[!missing == ""]
       missing <- missing[!is.na(missing)]
       if (length(missing) > 0) warning("iNat effort covariate(s) ", missing, " missing")
-      
+
       # make sure everything is in the right order
       POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
       covariates <- covariates %>%
             mutate(order_index = match(conus.grid.id, keep.conus.grid.id)) %>%
-            arrange(order_index) %>%
+            arrange(.data$order_index) %>%
             select(-"order_index")
 
       PO.inat <- PO_for_nimble(POdata, covariates,
@@ -160,8 +160,8 @@ sppdata_for_nimble <- function(species.data,
     }
 
     # __ Process other PO ----
-    if (is.na(covs.PO)) covs.PO <- ""
-    
+    covs.PO[which(is.na(covs.PO))] <- ""
+
     if (length(inat.ind) > 0) {
       other.ind <- POind[-which(POind == inat.ind)]
     } else {
@@ -199,18 +199,18 @@ sppdata_for_nimble <- function(species.data,
                                                    T ~ count)) %>%
             filter(is.na(.data$conus.grid.id) == F,
                    .data$conus.grid.id %in% keep.conus.grid.id) # get rid of cells that we're excluding
-          
+
           covariates <- select(covar, "conus.grid.id", any_of(covs.PO)) %>%
             filter(is.na(.data$conus.grid.id) == F,
                    .data$conus.grid.id %in% keep.conus.grid.id)
-          
+
           # make sure everything is in the right order
           POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
           covariates <- covariates %>%
             mutate(order_index = match(conus.grid.id, keep.conus.grid.id)) %>%
-            arrange(order_index) %>%
+            arrange(.data$order_index) %>%
             select(-"order_index")
-          
+
           PO.other <- PO_for_nimble(POdata, covariates,
                                     rename = counter)
 
@@ -269,7 +269,7 @@ sppdata_for_nimble <- function(species.data,
           st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
                           returnclass = "sf") %>%
             st_transform(st_crs(region$sp.grid))
-          
+
           cat("\nAssigning grid cells to states")
           suppressWarnings(stategrid <- st_intersection(region$sp.grid, st) %>%
             st_drop_geometry() %>%
@@ -277,7 +277,7 @@ sppdata_for_nimble <- function(species.data,
                      name = postal,
                      conus.grid.id = as.character(conus.grid.id)) %>%
             select("conus.grid.id", "name", "value"))
-          
+
           # stategrid <- get("stategrid", envir = asNamespace('SpFut.flexiSDM'))
 
           all.states <- stategrid %>%
@@ -332,10 +332,10 @@ sppdata_for_nimble <- function(species.data,
         POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
         covariates <- covariates %>%
           mutate(order_index = match(conus.grid.id, keep.conus.grid.id)) %>%
-          arrange(order_index) %>%
+          arrange(.data$order_index) %>%
           select(-"order_index")
-        
-        
+
+
         PO.other <- PO_for_nimble(POdata, covariates, rename = counter)
         PO.other$constants[[paste0("name", counter)]] <- name
         PO.other$constants[[paste0("states", counter)]] <- states
