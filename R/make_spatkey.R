@@ -26,7 +26,7 @@
 
 make_spatkey <- function(grid) {
 
-  cellsize <- mutate(grid, area = round(as.numeric(st_area(.))), 0) %>%
+  cellsize <- mutate(grid, area = round(as.numeric(st_area(.data$geometry))), 0) %>%
               pull(area) %>% unique()
 
   if (length(cellsize) > 1) {stop("All grid cells must have equal sizes.")}
