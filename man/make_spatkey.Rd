@@ -4,10 +4,10 @@
 \alias{make_spatkey}
 \title{Make coarse spatial grid}
 \usage{
-make_spatkey(grid, apothem)
+make_spatkey(grid)
 }
 \arguments{
-\item{grid}{(sf object) A grid in which one of the attributes is the conus.grid.id}
+\item{grid}{(sf object) A grid in which one of the columns is \code{conus.grid.id}}
 }
 \value{
 A list which contains:
