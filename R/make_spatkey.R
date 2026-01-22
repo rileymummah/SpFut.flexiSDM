@@ -26,6 +26,11 @@
 
 make_spatkey <- function(grid) {
 
+  cellsize <- mutate(grid, area = round(as.numeric(st_area(.))), 0) %>%
+              pull(area) %>% unique()
+
+  if (length(cellsize) > 1) {stop("All grid cells must have equal sizes.")}
+
   # Calculate area and apothem for hexagonal grid
   area <- st_area(grid[1,])
   # Add an extra 5% to allow for some error in plotting
