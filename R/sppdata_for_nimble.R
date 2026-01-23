@@ -4,6 +4,7 @@
 #' @param region (list) output from make_region()
 #' @param file.info ()
 #' @param covar (data.frame) dataframe containing covariates for PO data
+#' @param stategrid (data.frame) output from make_state_grid()
 #' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
 #' @param covs.PO (character vector) vector of column names (from covar) to use for effort covariates for non-iNat PO data
 #' @param DND.maybe (numeric) whether to treat maybe detections as detections (1) or non-detections(0); defaults to 1
@@ -28,6 +29,7 @@ sppdata_for_nimble <- function(species.data,
                                region,
                                file.info,
                                covar,
+                               stategrid,
                                covs.inat = c("traveltime", "density", "n.inat"),
                                covs.PO = c("traveltime", "density"),
                                DND.maybe = 1,
@@ -266,17 +268,18 @@ sppdata_for_nimble <- function(species.data,
         # Get covariates
         states <- unique(other.start$state)
         if (length(states) >= 2) {
-          st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
-                          returnclass = "sf") %>%
-            st_transform(st_crs(region$sp.grid))
-
-          cat("\nAssigning grid cells to states")
-          suppressWarnings(stategrid <- st_intersection(region$sp.grid, st) %>%
-            st_drop_geometry() %>%
-              mutate(value = 1,
-                     name = postal,
-                     conus.grid.id = as.character(conus.grid.id)) %>%
-            select("conus.grid.id", "name", "value"))
+          # st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
+          #                 returnclass = "sf") %>%
+          #   st_transform(st_crs(region$sp.grid))
+          # 
+          # cat("\nAssigning grid cells to states")
+          # suppressWarnings(stategrid <- st_intersection(region$sp.grid, st) %>%
+          #   st_drop_geometry() %>%
+          #     mutate(value = 1,
+          #            name = postal,
+          #            conus.grid.id = as.character(conus.grid.id)) %>%
+          #   select("conus.grid.id", "name", "value"))
+          # stategrid is now read in as an argument
 
           # stategrid <- get("stategrid", envir = asNamespace('SpFut.flexiSDM'))
 

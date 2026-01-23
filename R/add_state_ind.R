@@ -4,6 +4,7 @@
 #' @param region (list) output from make_region()
 #' @param gridkey (data.frame) links conus.grid.id and grid.id
 #' @param constants (list) output from data_for_nimble()
+#' @param stategrid (data.frame) output from get_state_grid()
 #' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
 #' @param obsc.state (character vector) abbreviations of states where species has taxon geoprivacy
 #' @param keep.conus.grid.id (character vector) vector of conus.grid.ids to keep; default comes from gridkey
@@ -11,7 +12,6 @@
 #' @returns (list) list of species data partially formatted for nimble, needs to be input into data_for_nimble before use in nimble
 #' @export
 #'
-#' @importFrom usethis use_data
 #' @importFrom magrittr "%>%"
 #' @importFrom rlang .data
 #' @importFrom dplyr filter left_join mutate pull case_when
@@ -21,13 +21,12 @@ add_state_ind <- function(species.data,
                           region,
                           gridkey,
                           constants,
+                          stategrid,
                           covs.inat = NA,
                           obsc.state = NA,
                           keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]) {
 
-  # usethis::use_data("stategrid", internal = TRUE)
-  stategrid <- get("stategrid", envir = asNamespace('SpFut.flexiSDM'))
-
+  
   gridkey1 <- filter(gridkey, .data$conus.grid.id %in% keep.conus.grid.id)
 
   # Add state indicator variable for iNat data to indicate which states have taxon geoprivacy
