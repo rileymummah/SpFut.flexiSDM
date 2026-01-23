@@ -10,12 +10,11 @@
 #' @importFrom rlang .data
 #' @importFrom dplyr filter left_join mutate pull case_when
 
-get_state_grid <- function() {
+get_state_grid <- function(region,
+                           states) {
   
-  st.map <- ne_states(country = c("Canada", "Mexico", "United States of America"),
-                      returnclass = "sf") %>%
-    st_transform(st_crs(region$sp.grid))
-  suppressWarnings(stategrid <- st_intersection(region$sp.grid, st.map) %>%
+  states <- st_transform(states, st_crs(region$sp.grid))
+  suppressWarnings(stategrid <- st_intersection(region$sp.grid, states) %>%
                      st_drop_geometry() %>%
                      mutate(value = 1,
                             name = postal,
