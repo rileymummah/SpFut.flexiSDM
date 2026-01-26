@@ -7,13 +7,11 @@
 #' @param sp.auto (logical) whether model should have spatial model (T) or not (F)
 #' @param coarse.grid (logical) whether model uses the coarse spatial grid (T) or not (F)
 #' @param path (character) where to save the nimble code
-#' @param min.visits.incl (numeric) minimum number of median visits per site (inclusive) to use occupancy or N-mixture model; default is 3
 #' @param Bprior (character) distribution for beta priors; defaults to "dnorm(0,1)"
 #' @param block.out (character or numeric) which block is excluded
 #' @param zero_mean (logical) whether spatial parameter should include zero_mean restriction (T) or not (F); defaults to T
 #' @param tau (character) the value of tau (precision) for the ICAR model
 #' @param rm.state (logical) whether to remove state-specific effort (T) or not (F); defaults to F
-#' @param occupancy (logical) whether to use occupancy models (T) or replace them with Bernoullis (F)
 #'
 #' @returns nimble code object
 #' @export
@@ -26,19 +24,20 @@ nimble_code <- function(data,
                         sp.auto,
                         coarse.grid,
                         path,
-                        min.visits.incl = 3,
                         Bprior = "dnorm(0,1)",
                         block.out,
                         zero_mean = T,
                         tau = tau,
-                        rm.state = F,
-                        occupancy = T) {
+                        rm.state = F) {
 
-  if (occupancy == F) min.visits.incl <- Inf
+  # For Version 1 of package, only use single-visit models
+  # Therefore, the minimum number of visits to use a multi-visit model
+  # should be Inf. The next version of the package will allow this value
+  # to be input as an argument.
+  min.visits.incl <- Inf
 
-# Set up main parts ----
 
-## Process model ----
+# Process model ----
   pro.mod <- "
 # Process Model
 
@@ -69,14 +68,12 @@ for (a in 1:nD) {
   w[a] ~ dnorm(0,1)
 }"
 
-# prior <- gsub("_DIST", Bpriordist, prior)
-# prior <- gsub("_PAR1", Bpriorvar1, prior)
-# prior <- gsub("_PAR2", Bpriorvar2, prior)
 prior <- gsub("BPRIOR", Bprior, prior)
 
 ## Observation models ----
 obs.all <- ""
 
+### Generic observation model ----
 obs.mod <- "
 # Observation Model _NUM: _TYPE, _NAME
 # _NOBS observations, _NVIS median visits per site
@@ -94,15 +91,13 @@ _DEout
   "
 
 
-# Now fill out each section for each dataset ----
+### Get info for each dataset ----
 for (d in 1:constants$nD) {
 
   name <- constants[[paste0("name", d)]]
 
   if (paste0("Wcells", d) %in% names(constants)) {
     type <- "PO"
-    #loop <- paste0("asRow(Wcells", d, ")")
-    #ind <- [j]
     loop <- "1:nW_NUM"
     ind <- "Wcells_NUM[j]"
     de <- "Effort"
@@ -184,7 +179,7 @@ for (d in 1:constants$nD) {
   }
 
 
-
+### Fill in info for each dataset ----
   obs.mod1 <- gsub("_TYPE", type, obs.mod1)
   obs.mod1 <- gsub("_NAME", name, obs.mod1)
   obs.mod1 <- gsub("_LOOP", loop, obs.mod1)
@@ -196,6 +191,8 @@ for (d in 1:constants$nD) {
 
 
   # Fill in ND and ZD if needed
+  # This will be used in the next version, when multi-visit models are
+  # allowed. For now, it will always be the 3rd case (ND and ZD are not estimated)
   if (mod == "binom") {
     obs.mod1 <- gsub("_ND", "\n  ND_NUM[j] ~ dpois(lambdaD_NUM[j])", obs.mod1)
     obs.mod1 <- gsub("_ZD", "", obs.mod1)
@@ -209,7 +206,17 @@ for (d in 1:constants$nD) {
 
 
 
-  # Fix detection/effort equation
+  ### Set up detection/effort equation ----
+  # Four options:
+  #   1. iNaturalist dataset
+  #   2. 0 covariates in observation model, link = log always
+  #   3. 1 covariate in observation model
+  #         a. logit
+  #         b. log
+  #   4. >1 covariate in observation model
+  #         a. state
+  #         b. no state
+  
   if (name == "iNaturalist") {
     # not fixed, goes on the inside
     obs.mod1 <- gsub("_DEout", "", obs.mod1)
@@ -231,7 +238,7 @@ for (b in 1:nCov_LETTER_NUM) {
     # fixed, goes on the outside
 
     # This will only ever happen when link == log, because if link == logit,
-    # there is an intercept so ncov >= 1
+    # there is an intercept so ncov >0 
 
     obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
     obs.mod1 <- gsub("_DEin", "", obs.mod1)
@@ -270,8 +277,7 @@ for (b in 1:nCov_LETTER_NUM) {
 
       obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
       obs.mod1 <- gsub("_DEin", "", obs.mod1)
-
-
+      
       eqn <- "logit(p_NUM) <- _PARAM_NUM[1] * 1"
 
       prior1 <- "
@@ -280,8 +286,6 @@ for (b in 1) {
   _PARAM_NUM[b] ~ dnorm(0,1)
 }"
       obs.mod1 <- gsub("p_NUM[j]", "p_NUM", obs.mod1, fixed = T)
-
-
     }
 
 
@@ -313,6 +317,8 @@ for (b in 1:nCov_LETTER_NUM) {
 }"
 
   }
+  
+  ### Fill in info for each dataset ----
   obs.mod1 <- gsub("_EQN", eqn, obs.mod1)
   obs.mod1 <- gsub("_LABDE", de, obs.mod1)
   obs.mod1 <- gsub("_LETTER", letter, obs.mod1)
