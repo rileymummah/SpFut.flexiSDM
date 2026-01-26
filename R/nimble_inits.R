@@ -29,9 +29,16 @@
 nimble_inits <- function(data,
                          constants,
                          sp.auto,
-                         min.visits.incl = 3,
                          seed = as.numeric(Sys.time())) {
 
+  
+  # For Version 1 of package, only use single-visit models
+  # Therefore, the minimum number of visits to use a multi-visit model
+  # should be Inf. The next version of the package will allow this value
+  # to be input as an argument.
+  min.visits.incl <- Inf
+  
+  
   set.seed(seed)
 
   # initialize betas and w (for alpha)
