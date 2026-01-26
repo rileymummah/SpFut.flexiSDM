@@ -1,7 +1,7 @@
 #' Get state intersections with grid
 #'
 #' @param region (list) output from make_region()
-#' @param states (data.frame) links conus.grid.id and grid.id
+#' @param states (sf) state polygons
 #'
 #' @returns (data.frame) list of conus.grid.ids and which states they intersect with; can have multiple rows for one conus.grid.id if it overlaps multiple states
 #' @export
