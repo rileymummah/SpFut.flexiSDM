@@ -5,7 +5,6 @@
 #' @param gridkey (data.frame) links conus.grid.id and grid.id
 #' @param constants (list) output from data_for_nimble()
 #' @param stategrid (data.frame) output from get_state_grid()
-#' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
 #' @param obsc.state (character vector) abbreviations of states where species has taxon geoprivacy
 #' @param keep.conus.grid.id (character vector) vector of conus.grid.ids to keep; default comes from gridkey
 #'
@@ -22,7 +21,6 @@ add_state_ind <- function(species.data,
                           gridkey,
                           constants,
                           stategrid,
-                          covs.inat = NA,
                           obsc.state = NA,
                           keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]) {
 
