@@ -108,10 +108,13 @@ for (d in 1:constants$nD) {
     letter <- "W"
     lowletter <- "w"
     param <- "A"
-    state <- ifelse(paste0("states", d) %in% names(constants) & rm.state == F, T, F)
-
+    #state <- ifelse(paste0("states", d) %in% names(constants) & rm.state == F, T, F)
+    state <- ifelse(paste0("S", d) %in% names(constants) & rm.state == F, T, F)
+    
+    
+    
     mod <- "poisPO"
-    obs <- "W_NUM[j] ~ dpois(lambdaD_NUM[j] * E_NUM[j]) # Poisson"
+    obs <- "W_NUM[j] ~ dpois(lambdaD_NUM[j] * _DORE_NUM[j]) # Poisson"
 
     if (name == "iNaturalist") {
       link <- "logit"
@@ -138,11 +141,11 @@ for (d in 1:constants$nD) {
 
     if (constants[[paste0("nVisitsV", d)]] < min.visits.incl) {
       mod <- "bern1"
-      obs <- "V_NUM[j] ~ dbern(1-exp(-lambdaD_NUM[j] * p_NUM[j])) # Bernoulli"
+      obs <- "V_NUM[j] ~ dbern(1-exp(-lambdaD_NUM[j] * _DORE_NUM[j])) # Bernoulli"
       link <- "log"
     } else {
       mod <- "bern2"
-      obs <- "V_NUM[j] ~ dbern(ZD_NUM[j] * p_NUM[j]) # Occupancy"
+      obs <- "V_NUM[j] ~ dbern(ZD_NUM[j] * _DORE_NUM[j]) # Occupancy"
       link <- "logit"
     }
 
@@ -164,11 +167,11 @@ for (d in 1:constants$nD) {
 
     if (constants[[paste0("nVisitsY", d)]] < min.visits.incl) {
       mod <- "poisC"
-      obs <- "Y_NUM[j] ~ dpois(lambdaD_NUM[j] * p_NUM[j]) # Poisson"
+      obs <- "Y_NUM[j] ~ dpois(lambdaD_NUM[j] * _DORE_NUM[j]) # Poisson"
       link <- "log"
     } else {
       mod <- "binom"
-      obs <- "Y_NUM[j] ~ dbinom(p_NUM[j], ND_NUM[j]) # N-mixture"
+      obs <- "Y_NUM[j] ~ dbinom(_DORE_NUM[j], ND_NUM[j]) # N-mixture"
       link <- "logit"
     }
 
@@ -217,39 +220,53 @@ for (d in 1:constants$nD) {
   #         a. state
   #         b. no state
   
-  if (name == "iNaturalist") {
-    # not fixed, goes on the inside
-    obs.mod1 <- gsub("_DEout", "", obs.mod1)
-    obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
+#   if (name == "iNaturalist") {
+#     # not fixed, goes on the inside
+#     obs.mod1 <- gsub("_DEout", "", obs.mod1)
+#     obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
+# 
+#     eqn <- "_LINK(eff_NUM[j]) <- inprod(_PARAM_NUM[1:nCovW_NUM], X_LOWLETTER_NUM[j,1:nCovW_NUM])
+#   E_NUM[j] <- eff_NUM[j] * S_NUM[j]
+# 
+#   # Prior for X imputation
+#   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
+# 
+#     prior1 <- "
+# # Observation priors, _TYPE _NUM: _NAME
+# for (b in 1:nCov_LETTER_NUM) {
+#   _PARAM_NUM[b] ~ dnorm(0,1)
+# }"
 
-    eqn <- "_LINK(eff_NUM[j]) <- inprod(_PARAM_NUM[1:nCovW_NUM], X_LOWLETTER_NUM[j,1:nCovW_NUM])
-  E_NUM[j] <- eff_NUM[j] * S_NUM[j]
-
-  # Prior for X imputation
-  X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
-
-    prior1 <- "
-# Observation priors, _TYPE _NUM: _NAME
-for (b in 1:nCov_LETTER_NUM) {
-  _PARAM_NUM[b] ~ dnorm(0,1)
-}"
-
-  } else if (constants[[ncov]] == 0) {
-    # fixed, goes on the outside
+  # } else if (constants[[ncov]] == 0) {
+  if (constants[[ncov]] == 0) {
 
     # This will only ever happen when link == log, because if link == logit,
     # there is an intercept so ncov >0 
 
-    obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
-    obs.mod1 <- gsub("_DEin", "", obs.mod1)
-
-    eqn <- "log(p_NUM) <- 0"
-
+    
+    if (state == T) {
+      # not fixed, goes on the inside
+      obs.mod1 <- gsub("_DEout", "", obs.mod1)
+      obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
+      
+      eqn <- "log(eff_NUM[j]) <- 0
+  _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]"
+    } else {
+      # fixed, goes on the outside
+      
+      obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
+      obs.mod1 <- gsub("_DEin", "", obs.mod1)
+      
+      eqn <- "log(_DORE_NUM) <- 0"
+      
+      obs.mod1 <- gsub("_DORE_NUM[j]", "_DORE_NUM", obs.mod1, fixed = T)
+      
+    }
+    
     prior1 <- ""
 
 
 
-    obs.mod1 <- gsub("p_NUM[j]", "p_NUM", obs.mod1, fixed = T)
 
 
 
@@ -260,11 +277,21 @@ for (b in 1:nCov_LETTER_NUM) {
       obs.mod1 <- gsub("_DEout", "", obs.mod1)
       obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
 
+      if (state == T) {
+        eqn <- "_LINK(eff_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
+  _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]
+      
+  # Prior for X imputation
+  X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
+        
+        
+      } else {
         eqn <- "_LINK(_DORE_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
 
   # Prior for X imputation
   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
-
+      }
+      
       prior1 <- "
 # Observation priors, _TYPE _NUM: _NAME
 for (b in 1:nCov_LETTER_NUM) {
@@ -275,17 +302,29 @@ for (b in 1:nCov_LETTER_NUM) {
       # if ncov = 1 and link = logit, the only covariate is an intercept
       # so it is fixed and goes on the outside
 
-      obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
-      obs.mod1 <- gsub("_DEin", "", obs.mod1)
       
-      eqn <- "logit(p_NUM) <- _PARAM_NUM[1] * 1"
+      if (state == T) {
+        obs.mod1 <- gsub("_DEout", "", obs.mod1)
+        obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
+        
+        eqn <- "logit(eff_NUM[j]) <- _PARAM_NUM[1] * 1
+  _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]"
+        
+        
+      } else {
+        obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
+        obs.mod1 <- gsub("_DEin", "", obs.mod1)
+        
+        eqn <- "logit(_DORE_NUM) <- _PARAM_NUM[1] * Xw_NUM[j]"
+      }
+      
 
       prior1 <- "
 # Observation priors, _TYPE _NUM: _NAME
 for (b in 1) {
   _PARAM_NUM[b] ~ dnorm(0,1)
 }"
-      obs.mod1 <- gsub("p_NUM[j]", "p_NUM", obs.mod1, fixed = T)
+      #obs.mod1 <- gsub("_DORE_NUM[j]", "_DORE_NUM[j]", obs.mod1, fixed = T)
     }
 
 
@@ -296,9 +335,14 @@ for (b in 1) {
     obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
 
     if (state == T) {
-      #eqn <- "_LINK(_DORE_NUM[j]) <- inprod(_PARAM_NUM[1:nCov_LETTER_NUM], X_LOWLETTER_NUM[j,1:nCov_LETTER_NUM]) * S_NUM[j]"
       eqn <- "_LINK(eff_NUM[j]) <- inprod(_PARAM_NUM[1:nCov_LETTER_NUM], X_LOWLETTER_NUM[j,1:nCov_LETTER_NUM])
-  _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]"
+  _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]
+      
+  # Prior for X imputation
+  for (c in 1:nCov_LETTER_NUM) {
+    X_LOWLETTER_NUM[j,c] ~ dnorm(0, 1)
+  }
+      "
 
 
     } else {
