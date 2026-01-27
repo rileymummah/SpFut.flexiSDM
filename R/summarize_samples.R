@@ -74,9 +74,8 @@ summarize_samples <- function(samples,
               mutate(grid.id = as.numeric(gsub("lambda0", "", .data$param)),
                      block.out = block.out) %>%
               inner_join(gridkey, by = "grid.id")  %>%
-              select(.data$conus.grid.id, .data$group, .data$block.out,
-                     .data$mean, .data$lo, .data$hi, .data$lotail, .data$hitail,
-                     .data$unc.range, .data$unc.rel, .data$rhat, .data$ESS)
+              select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
+                     "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
   dat$lambda0 <- lambda0
 
@@ -87,9 +86,8 @@ summarize_samples <- function(samples,
             mutate(grid.id = as.numeric(gsub("psi0", "", .data$param)),
                    block.out = block.out) %>%
             inner_join(gridkey, by = "grid.id") %>%
-            select(.data$conus.grid.id, .data$group, .data$block.out, .data$mean,
-                   .data$lo, .data$hi, .data$lotail, .data$hitail, .data$unc.range,
-                   .data$unc.rel, .data$rhat, .data$ESS)
+            select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
+                   "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
   dat$psi0 <- psi0
 
@@ -100,9 +98,8 @@ summarize_samples <- function(samples,
           mutate(grid.id = as.numeric(gsub("XB0", "", .data$param)),
                  block.out = block.out) %>%
           inner_join(gridkey, by = "grid.id") %>%
-          select(.data$conus.grid.id, .data$group, .data$block.out, .data$mean,
-                 .data$lo, .data$hi, .data$lotail, .data$hitail, .data$unc.range,
-                 .data$unc.rel, .data$rhat, .data$ESS)
+          select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
+                 "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
   dat$XB0 <- XB0
 
@@ -129,9 +126,8 @@ summarize_samples <- function(samples,
              block.out = block.out) %>%
       inner_join(gridkey, by = "grid.id") %>%
       inner_join(dnames, by = "PO.dataset") %>%
-      select(.data$conus.grid.id, .data$PO.dataset.name, .data$group,
-             .data$block.out, .data$mean, .data$lo, .data$hi, .data$lotail,
-             .data$hitail, .data$unc.range, .data$unc.rel, .data$rhat, .data$ESS)
+      select("conus.grid.id", "PO.dataset.name", "group", "block.out", "mean",
+             'lo', "hi", "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
     dat$effort <- E
   }
@@ -145,10 +141,9 @@ summarize_samples <- function(samples,
                   mutate(grid.id = as.numeric(gsub(paste0("lambda", z), "", .data$param)),
                          block.out = block.out) %>%
                   inner_join(gridkey, by = "grid.id") %>%
-                  select(.data$conus.grid.id, .data$group, .data$block.out,
-                         .data$mean, .data$lo, .data$hi, .data$lotail,
-                         .data$hitail, .data$unc.range, .data$unc.rel, .data$rhat,
-                         .data$ESS)
+                  select("conus.grid.id", "group", "block.out", "mean", "lo",
+                         "hi", "lotail", "hitail", "unc.range", "unc.rel", "rhat",
+                         "ESS")
 
       dat[[paste0("lambda", z)]] <- lambda0
 
@@ -159,10 +154,8 @@ summarize_samples <- function(samples,
                 mutate(grid.id = as.numeric(gsub(paste0("psi", z), "", .data$param)),
                        block.out = block.out) %>%
                 inner_join(gridkey, by = "grid.id") %>%
-                select(.data$conus.grid.id, .data$group, .data$block.out,
-                       .data$mean, .data$lo, .data$hi, .data$lotail,
-                       .data$hitail, .data$unc.range, .data$unc.rel, .data$rhat,
-                       .data$ESS)
+                select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
+                       "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
       dat[[paste0("psi", z)]] <- psi0
 
@@ -173,9 +166,8 @@ summarize_samples <- function(samples,
               mutate(grid.id = as.numeric(gsub(paste0("XB", z), "", .data$param)),
                      block.out = block.out) %>%
               inner_join(gridkey, by = "grid.id") %>%
-              select(.data$conus.grid.id, .data$group, .data$block.out,
-                     .data$mean, .data$lo, .data$hi, .data$lotail, .data$hitail,
-                     .data$unc.range, .data$unc.rel, .data$rhat, .data$ESS)
+              select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
+                     "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
       dat[[paste0("XB", z)]] <- XB0
     }
@@ -197,9 +189,8 @@ summarize_samples <- function(samples,
       # Changed following line from:
       # left_join(key, ., by = c("spat.grid.id" = "grid.id"))
               right_join(key, by = c("spat.grid.id" = "grid.id")) %>%
-              select(.data$conus.grid.id, .data$group, .data$block.out,
-                     .data$mean, .data$lo, .data$hi, .data$lotail, .data$hitail,
-                     .data$unc.range, .data$unc.rel, .data$rhat, .data$ESS)
+              select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
+                     "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
     dat$spat <- spat
   }
@@ -211,9 +202,8 @@ summarize_samples <- function(samples,
   process.coef <- out %>%
                   slice(keep) %>%
                   mutate(covariate = colnames(data$Xz), block.out = block.out) %>%
-                  select(.data$covariate, .data$block.out, .data$mean, .data$lo,
-                         .data$hi, .data$lotail, .data$hitail, .data$unc.range,
-                         .data$unc.rel, .data$rhat, .data$ESS)
+                  select("covariate", "block.out", "mean", "lo", "hi", "lotail",
+                         "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
   dat$process.coef <- process.coef
 
@@ -225,7 +215,7 @@ summarize_samples <- function(samples,
            data.type = case_when(type == "V" ~ "DND", type == "Y" ~ "Count",
                                  type == "W" ~ "PO"),
            number = gsub("name", "", .data$number)) %>%
-    select(.data$name, .data$number, .data$data.type)
+    select("name", "number", "data.type")
 
   # alpha
   keep <- grep("alpha", out$param)
@@ -233,9 +223,8 @@ summarize_samples <- function(samples,
             slice(keep) %>%
             mutate(number = gsub("alpha", "", .data$param), block.out = block.out) %>%
             left_join(datasets, by = "number") %>%
-            select(.data$name, .data$data.type, .data$block.out, .data$mean,
-                   .data$lo, .data$hi, .data$lotail, .data$hitail,
-                   .data$unc.range, .data$unc.rel, .data$rhat, .data$ESS)
+            select("name", "data.type", "block.out", "mean", "lo", "hi",
+                   "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
   dat$alpha <- alpha
 
@@ -265,10 +254,9 @@ summarize_samples <- function(samples,
                 ungroup() %>%
                 left_join(datasets, by = "number") %>%
                 left_join(obs.covs, by = c("number", "colnumber")) %>%
-                select(.data$name, .data$data.type, .data$covariate,
-                       .data$block.out, .data$mean, .data$lo, .data$hi,
-                       .data$lotail, .data$hitail, .data$unc.range, .data$unc.rel,
-                       .data$rhat, .data$ESS)
+                select("name", "data.type", "covariate", "block.out", "mean",
+                       "lo", "hi", "lotail", "hitail", "unc.range", "unc.rel",
+                       "rhat", "ESS")
 
   dat$obs.coef <- obs.coef
 
@@ -278,8 +266,8 @@ summarize_samples <- function(samples,
   tau <- out %>%
     slice(keep) %>%
     mutate(block.out = block.out) %>%
-    select(.data$block.out, .data$mean, .data$lo, .data$hi, .data$lotail,
-           .data$hitail, .data$unc.range, .data$unc.rel, .data$rhat, .data$ESS)
+    select("block.out", "mean", "lo", "hi", "lotail", "hitail", "unc.range",
+           "unc.rel", "rhat", "ESS")
   dat$tau <- tau
 
   # Return
