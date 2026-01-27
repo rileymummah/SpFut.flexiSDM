@@ -10,13 +10,11 @@ nimble_code(
   sp.auto,
   coarse.grid,
   path,
-  min.visits.incl = 3,
   Bprior = "dnorm(0,1)",
   block.out,
   zero_mean = T,
   tau = tau,
-  rm.state = F,
-  occupancy = T
+  rm.state = F
 )
 }
 \arguments{
@@ -30,8 +28,6 @@ nimble_code(
 
 \item{path}{(character) where to save the nimble code}
 
-\item{min.visits.incl}{(numeric) minimum number of median visits per site (inclusive) to use occupancy or N-mixture model; default is 3}
-
 \item{Bprior}{(character) distribution for beta priors; defaults to "dnorm(0,1)"}
 
 \item{block.out}{(character or numeric) which block is excluded}
@@ -41,8 +37,6 @@ nimble_code(
 \item{tau}{(character) the value of tau (precision) for the ICAR model}
 
 \item{rm.state}{(logical) whether to remove state-specific effort (T) or not (F); defaults to F}
-
-\item{occupancy}{(logical) whether to use occupancy models (T) or replace them with Bernoullis (F)}
 }
 \value{
 nimble code object

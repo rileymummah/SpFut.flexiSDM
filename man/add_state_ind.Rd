@@ -9,6 +9,7 @@ add_state_ind(
   region,
   gridkey,
   constants,
+  stategrid,
   covs.inat = NA,
   obsc.state = NA,
   keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]
@@ -22,6 +23,8 @@ add_state_ind(
 \item{gridkey}{(data.frame) links conus.grid.id and grid.id}
 
 \item{constants}{(list) output from data_for_nimble()}
+
+\item{stategrid}{(data.frame) output from get_state_grid()}
 
 \item{covs.inat}{(character vector) vector of column names (from covar) to use for effort covariates for iNat data}
 

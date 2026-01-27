@@ -9,6 +9,7 @@ sppdata_for_nimble(
   region,
   file.info,
   covar,
+  stategrid,
   covs.inat = c("traveltime", "density", "n.inat"),
   covs.PO = c("traveltime", "density"),
   DND.maybe = 1,
@@ -24,6 +25,8 @@ sppdata_for_nimble(
 \item{file.info}{()}
 
 \item{covar}{(data.frame) dataframe containing covariates for PO data}
+
+\item{stategrid}{(data.frame) output from make_state_grid()}
 
 \item{covs.inat}{(character vector) vector of column names (from covar) to use for effort covariates for iNat data}
 

@@ -4,13 +4,7 @@
 \alias{nimble_inits}
 \title{Sets up initial values for nimble}
 \usage{
-nimble_inits(
-  data,
-  constants,
-  sp.auto,
-  min.visits.incl = 3,
-  seed = as.numeric(Sys.time())
-)
+nimble_inits(data, constants, sp.auto, seed = as.numeric(Sys.time()))
 }
 \arguments{
 \item{data}{(list) data formatted for nimble}
@@ -19,9 +13,9 @@ nimble_inits(
 
 \item{sp.auto}{(logical) whether model should have spatial model (T) or not (F)}
 
-\item{min.visits.incl}{(numeric) minimum number of median visits per site (inclusive) to use occupancy or N-mixture model; default is 3}
-
 \item{seed}{(numeric) set seed to use for random number generation}
+
+\item{min.visits.incl}{(numeric) minimum number of median visits per site (inclusive) to use occupancy or N-mixture model; default is 3}
 }
 \value{
 Initial values to be used in nimble code
