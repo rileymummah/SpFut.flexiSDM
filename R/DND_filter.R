@@ -28,7 +28,7 @@ DND_filter <- function(data,
 
 
   cat("\nLoading DND")
-  
+
   dndstart <- filter(data, .data$age %in% age.use)
 
   if (nrow(dndstart) > 0) {
@@ -75,20 +75,20 @@ DND_filter <- function(data,
       dndcovs.sum <- dndstart %>%
         select("survey.id", "pass.id", any_of(covs.sum)) %>%
         distinct() %>%
-        
+
         # aggregate across passes
         group_by(.data$survey.id) %>%
         summarize_all(hablar::sum_, ignore_na = T) %>%
         select(!"pass.id")
-      
+
       dndcovs.npass <- dndstart %>%
         select("survey.id", "pass.id", any_of(covs.sum)) %>%
         distinct() %>%
-        
+
         # aggregate across passes
         group_by(.data$survey.id) %>%
-        summarize(npass = length(unique(pass.id))) 
-      
+        summarize(npass = length(unique(.data$pass.id)))
+
       dndcovs.sum <- full_join(dndcovs.sum, dndcovs.npass, by = "survey.id")
     }
 

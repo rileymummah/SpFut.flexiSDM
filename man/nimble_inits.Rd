@@ -14,8 +14,6 @@ nimble_inits(data, constants, sp.auto, seed = as.numeric(Sys.time()))
 \item{sp.auto}{(logical) whether model should have spatial model (T) or not (F)}
 
 \item{seed}{(numeric) set seed to use for random number generation}
-
-\item{min.visits.incl}{(numeric) minimum number of median visits per site (inclusive) to use occupancy or N-mixture model; default is 3}
 }
 \value{
 Initial values to be used in nimble code

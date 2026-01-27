@@ -10,7 +10,6 @@ add_state_ind(
   gridkey,
   constants,
   stategrid,
-  covs.inat = NA,
   obsc.state = NA,
   keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]
 )
@@ -25,8 +24,6 @@ add_state_ind(
 \item{constants}{(list) output from data_for_nimble()}
 
 \item{stategrid}{(data.frame) output from get_state_grid()}
-
-\item{covs.inat}{(character vector) vector of column names (from covar) to use for effort covariates for iNat data}
 
 \item{obsc.state}{(character vector) abbreviations of states where species has taxon geoprivacy}
 

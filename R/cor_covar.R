@@ -14,6 +14,7 @@
 #' @export
 #'
 #' @importFrom tidyr pivot_longer
+#' @importFrom tibble rownames_to_column
 #' @importFrom rlang .data
 #' @importFrom stats cor
 #' @importFrom magrittr "%>%"
@@ -54,7 +55,7 @@ cor_covar <- function(covar,
   # }
 
   cors <- as.data.frame(cor(cors)) %>%
-            rownames_to_column(., var = "cov1") %>%
+            rownames_to_column(var = "cov1") %>%
             pivot_longer(!"cov1") %>%
             filter(.data$value != 1) %>%
 
@@ -91,7 +92,7 @@ cor_covar <- function(covar,
   ggsave(corspl,
          filename = paste0(out.path, out.name, ".jpg"),
          height = 5, width = 9)
-  
+
   return(list(dat = cors,
               plot = corspl))
 }

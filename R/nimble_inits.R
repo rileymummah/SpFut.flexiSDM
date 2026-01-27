@@ -5,7 +5,6 @@
 #' @param data (list) data formatted for nimble
 #' @param constants (list) constants formatted for nimble
 #' @param sp.auto (logical) whether model should have spatial model (T) or not (F)
-#' @param min.visits.incl (numeric) minimum number of median visits per site (inclusive) to use occupancy or N-mixture model; default is 3
 #' @param seed (numeric) set seed to use for random number generation
 #'
 #' @returns Initial values to be used in nimble code
@@ -31,14 +30,14 @@ nimble_inits <- function(data,
                          sp.auto,
                          seed = as.numeric(Sys.time())) {
 
-  
+
   # For Version 1 of package, only use single-visit models
   # Therefore, the minimum number of visits to use a multi-visit model
   # should be Inf. The next version of the package will allow this value
   # to be input as an argument.
   min.visits.incl <- Inf
-  
-  
+
+
   set.seed(seed)
 
   # initialize betas and w (for alpha)

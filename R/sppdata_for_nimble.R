@@ -138,9 +138,9 @@ sppdata_for_nimble <- function(species.data,
       # make sure everything is in the right order
       POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
       covariates <- covariates %>%
-            mutate(order_index = match(conus.grid.id, keep.conus.grid.id)) %>%
-            arrange(.data$order_index) %>%
-            select(-"order_index")
+                    mutate(order_index = match(.data$conus.grid.id, keep.conus.grid.id)) %>%
+                    arrange(.data$order_index) %>%
+                    select(-"order_index")
 
       PO.inat <- PO_for_nimble(POdata, covariates,
                                rename = counter)
@@ -209,7 +209,7 @@ sppdata_for_nimble <- function(species.data,
           # make sure everything is in the right order
           POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
           covariates <- covariates %>%
-            mutate(order_index = match(conus.grid.id, keep.conus.grid.id)) %>%
+            mutate(order_index = match(.data$conus.grid.id, keep.conus.grid.id)) %>%
             arrange(.data$order_index) %>%
             select(-"order_index")
 
@@ -271,7 +271,7 @@ sppdata_for_nimble <- function(species.data,
           # st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
           #                 returnclass = "sf") %>%
           #   st_transform(st_crs(region$sp.grid))
-          # 
+          #
           # cat("\nAssigning grid cells to states")
           # suppressWarnings(stategrid <- st_intersection(region$sp.grid, st) %>%
           #   st_drop_geometry() %>%
@@ -291,7 +291,7 @@ sppdata_for_nimble <- function(species.data,
           statecols <- states[2:length(states)]
           stateints <- all.states[,c("conus.grid.id", statecols)]
           covariates <- covar %>%
-            mutate(conus.grid.id = as.character(conus.grid.id)) %>%
+            mutate(conus.grid.id = as.character(.data$conus.grid.id)) %>%
             inner_join(stateints, by = "conus.grid.id") %>%
             select("conus.grid.id", any_of(covs.PO), all_of(statecols)) %>%
             filter(is.na(.data$conus.grid.id) == F,
@@ -334,7 +334,7 @@ sppdata_for_nimble <- function(species.data,
         # make sure everything is in the right order
         POdata <- POdata[order(match(POdata$conus.grid.id, keep.conus.grid.id)),]
         covariates <- covariates %>%
-          mutate(order_index = match(conus.grid.id, keep.conus.grid.id)) %>%
+          mutate(order_index = match(.data$conus.grid.id, keep.conus.grid.id)) %>%
           arrange(.data$order_index) %>%
           select(-"order_index")
 

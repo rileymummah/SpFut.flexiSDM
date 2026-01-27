@@ -43,8 +43,6 @@ make_region(
 \item{rm.clumps}{(logical) whether to remove clumps of cells of size clump.size}
 
 \item{clump.size}{(numeric) number of cells in clumps to keep}
-
-\item{cell.size}{(numeric) cell area of grid}
 }
 \value{
 A list containing ranges, the full region, sp.grid, and the boundary

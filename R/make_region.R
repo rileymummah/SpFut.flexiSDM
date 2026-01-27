@@ -14,7 +14,6 @@
 #' @param continuous (logical) whether to keep only a continuous section of the range (T) or keep the whole range (F)
 #' @param rm.clumps (logical) whether to remove clumps of cells of size clump.size
 #' @param clump.size (numeric) number of cells in clumps to keep
-#' @param cell.size (numeric) cell area of grid
 #'
 #' @returns A list containing ranges, the full region, sp.grid, and the boundary
 #' @export
@@ -70,21 +69,23 @@ make_region <- function(rangelist,
   if (tmp$input != "EPSG:3857") {stop("grid must have crs = 3857")}
 
   # check grid cell sizes
-  cellsize <- grid %>% mutate(area = round(as.numeric(st_area(.))), 0) %>%
-    pull(area) %>% unique()
+  cellsize <- grid %>% mutate(area = round(as.numeric(st_area(.data$geometry))), 0) %>%
+              pull(.data$area) %>%
+              unique()
+
   if (length(cellsize) > 1) {stop("all grid cells must have equal sizes")}
-  
+
   # make input objects correct crs
   for (r in 1:length(rangelist)) {
     rangelist[[r]] <- st_transform(rangelist[[r]], crs = 3857)
   }
   if (!is.null(boundary)) boundary <- st_transform(boundary, crs = 3857)
-  
-  
-  
-  
+
+
+
+
   grid.og <- grid %>% mutate(area = st_area(grid))
-  
+
 
 
   # Combine ranges
@@ -134,27 +135,27 @@ make_region <- function(rangelist,
 
     # this gets grid cells in region
     suppressWarnings(grida <- st_intersection(region, grid))
-    
+
     # find cells that are too small and remove (these are along the edges of the boundary)
     gridb <- grida %>%
       mutate(area = round(as.numeric(st_area(.data$geometry))), 0) %>%
-      filter(area >= cellsize)
+      filter(.data$area >= cellsize)
       # inner_join(st_drop_geometry(grid.og), by = "conus.grid.id")# %>%
       # filter(area.x == area.y)
     cat("Removing small cells\n")
     if (nrow(gridb) == 0) stop("No remaining grid cells")
-    
+
     # # Find which grid cells are split into multiple pieces (eg by water) and remove
     # suppressWarnings(
     #   grid1 <- gridb %>%
     #     st_cast("MULTIPOLYGON") %>%
     #     st_cast("POLYGON")
     # )
-    # 
+    #
     # mult <- as.data.frame(table(grid1$conus.grid.id)) %>%
     #   filter(.data$Freq > 1) %>%
     #   pull(.data$Var1)
-    # 
+    #
     # if (length(mult) > 0) {
     #   gridb <- gridb[-which(gridb$conus.grid.id %in% mult),]
     # }
@@ -173,22 +174,22 @@ make_region <- function(rangelist,
       gridc <- gridb
     }
     if (nrow(gridc) == 0) stop("No remaining grid cells")
-    
+
 
     # Find and remove cells that are in clumps of less than X cells
     if (rm.clumps == T) {
       # group neighboring cells
       grid1 <- gridc %>%
-        summarize(geometry = st_union(.data$geometry, by_feature = F)) %>%
-        st_cast("POLYGON") %>%
-        mutate(group.id = 1:nrow(.))
-      
+                summarize(geometry = st_union(.data$geometry, by_feature = F)) %>%
+                st_cast("POLYGON") %>%
+                mutate(group.id = 1:nrow(.data))
+
       # see how many cells are in each group
       suppressWarnings(tmp <- st_intersection(gridc, grid1))
       tmp <- tmp %>%
-        mutate(type = sf::st_geometry_type(.)) %>%
-        filter(type == "POLYGON") %>%
-        group_by(group.id) %>%
+        mutate(type = sf::st_geometry_type(.data$geometry)) %>%
+        filter(.data$type == "POLYGON") %>%
+        group_by(.data$group.id) %>%
         summarize(n = n())
       rm.group <- filter(tmp, n < clump.size)
 
@@ -197,15 +198,15 @@ make_region <- function(rangelist,
         # filter(.data$area >= cell.size * clump.size)
       suppressWarnings(gridd <- st_intersection(gridc, grid1) %>% ungroup())
       gridd <- gridd %>%
-        mutate(type = sf::st_geometry_type(.)) %>%
-        filter(type == "POLYGON",
-               group.id %in% rm.group$group.id == F)
+                mutate(type = sf::st_geometry_type(.data$geometry)) %>%
+                filter(.data$type == "POLYGON",
+                       .data$group.id %in% rm.group$group.id == F)
       cat("Removing clumps of cells\n")
     } else {
       gridd <- gridc
     }
     if (nrow(gridd) == 0) stop("No remaining grid cells")
-    
+
 
 
 
@@ -226,12 +227,12 @@ make_region <- function(rangelist,
       orphans <- which(tmp1 <= 1)
     }
     if (nrow(gridd) == 0) stop("No remaining grid cells")
-    
-    
+
+
     # get correct columns
     gridd <- select(gridd, "conus.grid.id") %>%
-      mutate(conus.grid.id = as.character(conus.grid.id))
-    
+              mutate(conus.grid.id = as.character(.data$conus.grid.id))
+
 
     # Save output
     dat <- list(range = fullrangeout,
