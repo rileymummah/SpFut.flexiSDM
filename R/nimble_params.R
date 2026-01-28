@@ -69,7 +69,7 @@ nimble_params <- function(data,
       if (constants[[paste0("nCovW", d)]] > 0) {
         params <- c(params, paste0("A", d))
       } else {
-        params <- c(params, paste0("p", d))
+        #params <- c(params, paste0("p", d))
       }
 
       if (effort == T) {
