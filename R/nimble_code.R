@@ -110,9 +110,9 @@ for (d in 1:constants$nD) {
     param <- "A"
     #state <- ifelse(paste0("states", d) %in% names(constants) & rm.state == F, T, F)
     state <- ifelse(paste0("S", d) %in% names(constants) & rm.state == F, T, F)
-    
-    
-    
+
+
+
     mod <- "poisPO"
     obs <- "W_NUM[j] ~ dpois(lambdaD_NUM[j] * _DORE_NUM[j]) # Poisson"
 
@@ -219,18 +219,18 @@ for (d in 1:constants$nD) {
   #   4. >1 covariate in observation model
   #         a. state
   #         b. no state
-  
+
 #   if (name == "iNaturalist") {
 #     # not fixed, goes on the inside
 #     obs.mod1 <- gsub("_DEout", "", obs.mod1)
 #     obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
-# 
+#
 #     eqn <- "_LINK(eff_NUM[j]) <- inprod(_PARAM_NUM[1:nCovW_NUM], X_LOWLETTER_NUM[j,1:nCovW_NUM])
 #   E_NUM[j] <- eff_NUM[j] * S_NUM[j]
-# 
+#
 #   # Prior for X imputation
 #   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
-# 
+#
 #     prior1 <- "
 # # Observation priors, _TYPE _NUM: _NAME
 # for (b in 1:nCov_LETTER_NUM) {
@@ -241,28 +241,28 @@ for (d in 1:constants$nD) {
   if (constants[[ncov]] == 0) {
 
     # This will only ever happen when link == log, because if link == logit,
-    # there is an intercept so ncov >0 
+    # there is an intercept so ncov >0
 
-    
+
     if (state == T) {
       # not fixed, goes on the inside
       obs.mod1 <- gsub("_DEout", "", obs.mod1)
       obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
-      
+
       eqn <- "log(eff_NUM[j]) <- 0
   _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]"
     } else {
       # fixed, goes on the outside
-      
+
       obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
       obs.mod1 <- gsub("_DEin", "", obs.mod1)
-      
+
       eqn <- "log(_DORE_NUM) <- 0"
-      
+
       obs.mod1 <- gsub("_DORE_NUM[j]", "_DORE_NUM", obs.mod1, fixed = T)
-      
+
     }
-    
+
     prior1 <- ""
 
 
@@ -280,18 +280,18 @@ for (d in 1:constants$nD) {
       if (state == T) {
         eqn <- "_LINK(eff_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
   _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]
-      
+
   # Prior for X imputation
   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
-        
-        
+
+
       } else {
         eqn <- "_LINK(_DORE_NUM[j]) <- _PARAM_NUM[1] * X_LOWLETTER_NUM[j,1]
 
   # Prior for X imputation
   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
       }
-      
+
       prior1 <- "
 # Observation priors, _TYPE _NUM: _NAME
 for (b in 1:nCov_LETTER_NUM) {
@@ -302,22 +302,22 @@ for (b in 1:nCov_LETTER_NUM) {
       # if ncov = 1 and link = logit, the only covariate is an intercept
       # so it is fixed and goes on the outside
 
-      
+
       if (state == T) {
         obs.mod1 <- gsub("_DEout", "", obs.mod1)
         obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
-        
+
         eqn <- "logit(eff_NUM[j]) <- _PARAM_NUM[1] * Xw_NUM[j, 1]
   _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]"
-        
-        
+
+
       } else {
         obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
         obs.mod1 <- gsub("_DEin", "", obs.mod1)
-        
+
         eqn <- "logit(_DORE_NUM) <- _PARAM_NUM[1] * Xw_NUM[j, 1]"
       }
-      
+
 
       prior1 <- "
 # Observation priors, _TYPE _NUM: _NAME
@@ -337,7 +337,7 @@ for (b in 1) {
     if (state == T) {
       eqn <- "_LINK(eff_NUM[j]) <- inprod(_PARAM_NUM[1:nCov_LETTER_NUM], X_LOWLETTER_NUM[j,1:nCov_LETTER_NUM])
   _DORE_NUM[j] <- eff_NUM[j] * S_NUM[j]
-      
+
   # Prior for X imputation
   for (c in 1:nCov_LETTER_NUM) {
     X_LOWLETTER_NUM[j,c] ~ dnorm(0, 1)
@@ -361,7 +361,7 @@ for (b in 1:nCov_LETTER_NUM) {
 }"
 
   }
-  
+
   ### Fill in info for each dataset ----
   obs.mod1 <- gsub("_EQN", eqn, obs.mod1)
   obs.mod1 <- gsub("_LABDE", de, obs.mod1)
@@ -424,7 +424,7 @@ if (block.out == "none") {
 
 
 # write r script and save to wd
-code <- c("code <- nimbleCode({\n", full.mod, "})")
+code <- c("code <- nimble::nimbleCode({\n", full.mod, "})")
 writeLines(code, paste0(path, "model", blockname, ".R"))
 
 # source r script
