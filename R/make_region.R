@@ -64,6 +64,8 @@ make_region <- function(rangelist,
   sf_use_s2(FALSE)
 
 
+  if (!('geometry' %in% colnames(grid))) {stop("grid must have a column named 'geometry'")}
+
   # check crs of grid
   tmp <- st_crs(grid)
   if (tmp$input != "EPSG:3857") {stop("grid must have crs = 3857")}
