@@ -4,14 +4,14 @@
 \alias{nimble_inits}
 \title{Sets up initial values for nimble}
 \usage{
-nimble_inits(data, constants, sp.auto, seed = as.numeric(Sys.time()))
+nimble_inits(data, constants, sp.auto, tau = NA, seed = as.numeric(Sys.time()))
 }
 \arguments{
 \item{data}{(list) data formatted for nimble}
 
 \item{constants}{(list) constants formatted for nimble}
 
-\item{sp.auto}{(logical) whether model should have spatial model (T) or not (F)}
+\item{sp.auto}{(numeric) NA if tau is fixed, otherwise initial value for tau}
 
 \item{seed}{(numeric) set seed to use for random number generation}
 }
