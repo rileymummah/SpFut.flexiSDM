@@ -1,7 +1,8 @@
 #' Plot posterior distributions
 #'
 #' @param samples (list) output from nimble
-#' @param data (list) list containing data that was input into nimble
+#' @param data (list) list containing data that were input into nimble
+#' @param constants (list) list containing constants that were input into nimble
 #' @param cov.labs (data.frame) dataframe containing covariate column names ("covariate") and labels ("Label")
 #' @param cutoff (numeric) where to cut off chains for plotting; defaults to 0
 #' @param plot (character) which parameter to plot; defaults to "B"; options are "B" and "alpha"
@@ -20,6 +21,7 @@
 
 plot_posteriors <- function(samples,
                             data,
+                            constants,
                             cov.labs,
                             cutoff = 0,
                             Bprior = "dnorm(0,1)",
@@ -29,10 +31,10 @@ plot_posteriors <- function(samples,
                             # Bpriorvar2 = 1,
                             chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
 
-  
+
   if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
   if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
-  
+
 
     if (plot == "B") {
       bnames <- data.frame(name = colnames(data$Xz),
@@ -107,13 +109,13 @@ plot_posteriors <- function(samples,
     if (plot %in% c("B", "alpha")) {
 
       if (plot == "B") {
-        
+
         Bprior1 <- gsub(" ", "", Bprior)
         Bpriordist <- substr(Bprior1, 1, 5)
         Bpriorvar1 <- as.numeric(substr(Bprior, 7, 7))
         Bpriorvar2 <- as.numeric(substr(Bprior, 9, 9))
-        
-        
+
+
         if (Bpriordist == "dnorm") {
           prior <- rnorm(nrow(call), Bpriorvar1, Bpriorvar2)
         } else if (Bpriordist == "dunif") {
@@ -132,7 +134,7 @@ plot_posteriors <- function(samples,
               mutate(value1 = case_when(n > cutoff ~ value, T ~ NA),
                      min = min(.data$value1, na.rm = T) - 0.1,
                      max = max(.data$value1, na.rm = T) + 0.1) %>%
-              mutate(prior = case_when(prior < min | prior > max ~ NA, 
+              mutate(prior = case_when(prior < min | prior > max ~ NA,
                                        T ~ prior)) %>%
         filter(is.na(prior) == F)
 

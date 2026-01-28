@@ -75,7 +75,7 @@ plot_effects <- function(data,
                         lo = exp(blo * s),
                         factor = "none")
 
-      if (class(unscale_covar) == "data.frame") {
+      if (is.data.frame(unscale_covar)) {
         # now get unscaled values
         mn <- mean(unscale_covar[,cov])
         sd <- sd(unscale_covar[,cov])
@@ -126,7 +126,7 @@ plot_effects <- function(data,
 
       use$factor <- gsub(".*[.]", "", use$factor)
 
-      if (class(unscale_covar) == "data.frame") {
+      if (is.data.frame(unscale_covar)) {
         # now get unscaled values
         mn <- mean(unscale_covar[,cov])
         sd <- sd(unscale_covar[,cov])
@@ -163,7 +163,7 @@ plot_effects <- function(data,
                         lo = exp(blo1 * s + blo2 * s^2),
                         factor = "none")
 
-      if (class(unscale_covar) == "data.frame") {
+      if (is.data.frame(unscale_covar)) {
         # now get unscaled values
         mn <- mean(unscale_covar[,cov])
         sd <- sd(unscale_covar[,cov])
@@ -236,7 +236,7 @@ plot_effects <- function(data,
       use$factor2 <- NULL
 
 
-      if (class(unscale_covar) == "data.frame") {
+      if (is.data.frame(unscale_covar)) {
         # now get unscaled values
         mn <- mean(unscale_covar[,cov])
         sd <- sd(unscale_covar[,cov])
@@ -263,7 +263,7 @@ plot_effects <- function(data,
             mutate(cov = .data$Label)
 
 
-  if (class(unscale_covar) != "data.frame") {
+  if (!is.data.frame(unscale_covar)) {
     all1$xplot <- all1$x
     xlab <- "Scaled covariate value"
   } else {
