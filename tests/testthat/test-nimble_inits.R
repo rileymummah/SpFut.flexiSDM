@@ -94,9 +94,9 @@
 #   expect_equal(dim(inits$Xw2), dim(data$Xw2))
 #   expect_equal(dim(inits$Xv3), dim(data$Xv3))
 #   expect_equal(dim(inits$Xy4), dim(data$Xy4))
-#   
-#   
-#   
+# 
+# 
+# 
 #   # No covariates ----
 #   allfiles <- data.frame(file.name = c("iNat_test_PO", "iNat_test1_PO", "Dodd_test_DND", "NEARMI_test_count"),
 #                          file.label = c("iNaturalist", "iNat_test1", "Dodd_test", "NEARMI_test"),
@@ -104,7 +104,7 @@
 #                          covar.sum = c(NA, NA, NA, ""),
 #                          data.type = c("PO", "PO", "DND", "count"),
 #                          PO.extent = c("CONUS", "PA", NA, NA))
-#   
+# 
 #   species.data <- load_species_data(sp.code = "GPOR",
 #                                     sp.code.all = "GPOR",
 #                                     file.info = allfiles,
@@ -118,7 +118,7 @@
 #                                     coordunc_na.rm = T,
 #                                     spat.thin = F,
 #                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
-#   
+# 
 #   sp.data <- sppdata_for_nimble(species.data,
 #                                 region,
 #                                 file.info = allfiles,
@@ -127,12 +127,12 @@
 #                                 covs.PO = NA,
 #                                 DND.maybe = 1,
 #                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
-#   
+# 
 #   gridkey <- select(region$sp.grid, conus.grid.id) %>%
 #     st_drop_geometry() %>%
 #     mutate(grid.id = 1:nrow(.),
 #            group = "train")
-#   
+# 
 #   tmp <- data_for_nimble(sp.data,
 #                          covar = covariates,
 #                          covs.z = c("temp", "prec"),
@@ -142,12 +142,12 @@
 #                          process.intercept = F,
 #                          gridkey = gridkey,
 #                          spatRegion= spatRegion)
-#   
+# 
 #   data <- tmp$data
 #   constants <- tmp$constants
-#   
+# 
 #   inits <- nimble_inits(data, constants, sp.auto = T, seed = 1)
-#   
+# 
 #   code <- nimble_code(data,
 #                       constants,
 #                       path = "",
@@ -158,12 +158,12 @@
 #                       zero_mean = T,
 #                       rm.state = F,
 #                       tau = 1)
-#   
+# 
 #   # test structure
 #   expect_type(inits, "list")
 #   expect_equal(names(inits), c("B", "w", "spat", "A1"))
 #   expect_equal(length(inits$B), constants$nCovZ)
 #   expect_equal(length(inits$w), constants$nD)
 #   expect_equal(length(inits$spat), constants$nCell)
-#   
+# 
 # })
