@@ -528,6 +528,24 @@ test_that("load_species_data() works with CV", {
                         clump.size = 2,
                         continuous = F)
 
+  # make CV blocks
+  spatblocks <- make_CV_blocks(region, 5, 5, 3)
+  
+  block1 <- filter(spatblocks, folds == 2)
+  
+  # find grid.ids for test block, everything else is train
+  test.i <- st_intersection(region$sp.grid, block1) %>%
+    pull(conus.grid.id) %>%
+    unique()
+  train.i <- filter(region$sp.grid, conus.grid.id %in% test.i == F) %>%
+    pull(conus.grid.id)
+  
+  gridkey <- select(region$sp.grid, conus.grid.id) %>%
+    st_drop_geometry() %>%
+    mutate(grid.id = 1:nrow(.),
+           group = case_when(conus.grid.id %in% train.i ~ "train",
+                             conus.grid.id %in% test.i ~ "test"))
+  
   
   # test normal ----
   allfiles <- data.frame(file.name = c("NEARMI_test_count", "iNat_test_PO"),
@@ -545,185 +563,12 @@ test_that("load_species_data() works with CV", {
                                     filter.region = T,
                                     year.start = 1800,
                                     year.end = 2025,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
+                                    keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")])
   
-  # output structure
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  expect_s3_class(species.data$locs$cont, "sf")
+  tmp <- st_intersection(species.data$locs$cont, spatblocks) %>%
+    filter(folds == 2)
+  expect_equal(nrow(tmp), 0)
   
-  # output content
-  expect_equal(length(species.data$obs), 1)
-  expect_equal(nrow(species.data$obs$NEARMI_test), 60)
-  expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
-  
-  
-  # test two species ----
-  allfiles <- data.frame(file.name = c("NEARMI_test_count"),
-                         file.label = c("NEARMI_test"),
-                         covar.mean = "StartWaterTemp",
-                         covar.sum = "EffectValue",
-                         data.type = c("count"))
-  
-  species.data <- load_species_data(sp.code = "GPOR",
-                                    sp.code.all = c("GPOR", "EWIL"),
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 1800,
-                                    year.end = 2025,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  # output structure
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  expect_s3_class(species.data$locs$cont, "sf")
-  
-  # output content
-  expect_equal(length(species.data$obs), 1)
-  expect_equal(nrow(species.data$obs$NEARMI_test), 120)
-  expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
-  
-  
-  
-  # test different year values ----
-  allfiles <- data.frame(file.name = c("NEARMI_test_count"),
-                         file.label = c("NEARMI_test"),
-                         covar.mean = "StartWaterTemp",
-                         covar.sum = "EffectValue",
-                         data.type = c("count"))
-  
-  species.data <- load_species_data(sp.code = "GPOR",
-                                    sp.code.all = c("GPOR", "EWIL"),
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 2023,
-                                    year.end = 2025,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  # output structure
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  expect_s3_class(species.data$locs$cont, "sf")
-  
-  # output content
-  expect_equal(length(species.data$obs), 1)
-  expect_equal(nrow(species.data$obs$NEARMI_test), 54)
-  expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
-  
-  
-  # test empty covariates ----
-  allfiles <- data.frame(file.name = c("NEARMI_test_count"),
-                         file.label = c("NEARMI_test"),
-                         covar.mean = "",
-                         covar.sum = NA,
-                         data.type = c("count"))
-  
-  species.data <- load_species_data(sp.code = "GPOR",
-                                    sp.code.all = c("GPOR", "EWIL"),
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 2023,
-                                    year.end = 2025,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  # output structure
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  expect_s3_class(species.data$locs$cont, "sf")
-  
-  # output content
-  expect_equal(length(species.data$obs), 1)
-  expect_equal(nrow(species.data$obs$NEARMI_test), 54)
-  expect_equal(length(colnames(species.data$obs$NEARMI_test)), 18)
-  
-  
-  # test bad covariates ----
-  allfiles <- data.frame(file.name = c("NEARMI_test_count"),
-                         file.label = c("NEARMI_test"),
-                         covar.mean = "notincovariates",
-                         covar.sum = NA,
-                         data.type = c("count"))
-  
-  
-  expect_warning(species.data <- load_species_data(sp.code = "GPOR",
-                                                   sp.code.all = c("GPOR", "EWIL"),
-                                                   file.info = allfiles,
-                                                   file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
-                                                   #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
-                                                   region = region,
-                                                   filter.region = T,
-                                                   year.start = 2023,
-                                                   year.end = 2025,
-                                                   keep.conus.grid.id = region$sp.grid$conus.grid.id))
-  
-  # output structure
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  expect_s3_class(species.data$locs$cont, "sf")
-  
-  # output content
-  expect_equal(length(species.data$obs), 1)
-  expect_equal(nrow(species.data$obs$NEARMI_test), 54)
-  expect_equal(length(colnames(species.data$obs$NEARMI_test)), 18)
-  
-  
-  
-  # test count and DND ----
-  allfiles <- data.frame(file.name = c("NEARMI_test_count", "Dodd_test_DND"),
-                         file.label = c("NEARMI_test", "Dodd_test"),
-                         covar.mean = c("StartWaterTemp", NA),
-                         covar.sum = c("EffectValue", "time"),
-                         data.type = c("count", "DND"))
-  
-  species.data <- load_species_data(sp.code = "GPOR",
-                                    sp.code.all = "GPOR",
-                                    file.info = allfiles,
-                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
-                                    region = region,
-                                    filter.region = T,
-                                    year.start = 1800,
-                                    year.end = 2025,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
-  
-  # output structure
-  expect_type(species.data, "list")
-  expect_equal(length(species.data), 2)
-  expect_equal(names(species.data), c("locs", "obs"))
-  expect_type(species.data$locs, "list")
-  expect_type(species.data$obs, "list")
-  expect_s3_class(species.data$locs$cont, "sf")
-  
-  # output content
-  expect_equal(length(species.data$obs), 2)
-  expect_equal(nrow(species.data$obs$NEARMI_test), 60)
-  expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
-  expect_equal(nrow(species.data$obs$Dodd_test), 20)
-  expect_equal(colnames(species.data$obs$Dodd_test)[19], c("time"))
   
   
 })
