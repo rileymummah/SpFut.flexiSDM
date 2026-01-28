@@ -10,7 +10,8 @@ test_that("sppdata_for_nimble() works with PO data", {
                          range.name = c("GAP", "IUCN"), crs = 4326)
   
   boundary <- rangelist[[1]]
-  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+    rename(geometry = x)
   
   region <- make_region(rangelist,
                         buffer = 1,
@@ -304,7 +305,8 @@ test_that("sppdata_for_nimble() works with DND data", {
                          range.name = c("GAP", "IUCN"), crs = 4326)
   
   boundary <- rangelist[[1]]
-  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+    rename(geometry = x)
   
   region <- make_region(rangelist,
                         buffer = 1,
@@ -404,7 +406,7 @@ test_that("sppdata_for_nimble() works with DND data", {
                          covar.sum = c("time"),
                          data.type = c("DND"))
   
-  species.data <- load_species_data(sp.code = "GPOR",
+  expect_warning(species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
@@ -416,7 +418,7 @@ test_that("sppdata_for_nimble() works with DND data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
-                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
+                                    keep.conus.grid.id = region$sp.grid$conus.grid.id))
   
   expect_warning(sp.data <- sppdata_for_nimble(species.data,
                                                region,
@@ -445,7 +447,8 @@ test_that("sppdata_for_nimble() works with count data", {
                          range.name = c("GAP", "IUCN"), crs = 4326)
   
   boundary <- rangelist[[1]]
-  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+    rename(geometry = x)
   
   region <- make_region(rangelist,
                         buffer = 1,
@@ -474,8 +477,8 @@ test_that("sppdata_for_nimble() works with count data", {
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
-                                    file.path = "../../../species-futures//pkg-tests/data-ready-testfunctions/",
-                                    #file.path = "../species-futures//pkg-tests/data-ready-testfunctions/",
+                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
@@ -512,8 +515,8 @@ test_that("sppdata_for_nimble() works with count data", {
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
-                                    file.path = "../../../species-futures//pkg-tests/data-ready-testfunctions/",
-                                    #file.path = "../species-futures//pkg-tests/data-ready-testfunctions/",
+                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
@@ -553,7 +556,8 @@ test_that("sppdata_for_nimble() works with all data", {
                          range.name = c("GAP", "IUCN"), crs = 4326)
   
   boundary <- rangelist[[1]]
-  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+    rename(geometry = x)
   
   region <- make_region(rangelist,
                         buffer = 1,
@@ -582,8 +586,8 @@ test_that("sppdata_for_nimble() works with all data", {
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
-                                    file.path = "../../../species-futures//pkg-tests/data-ready-testfunctions/",
-                                    #file.path = "../species-futures//pkg-tests/data-ready-testfunctions/",
+                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
@@ -621,8 +625,8 @@ test_that("sppdata_for_nimble() works with all data", {
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
-                                    file.path = "../../../species-futures//pkg-tests/data-ready-testfunctions/",
-                                    #file.path = "../species-futures//pkg-tests/data-ready-testfunctions/",
+                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
@@ -663,7 +667,8 @@ test_that("sppdata_for_nimble() works with CV", {
                          range.name = c("GAP", "IUCN"), crs = 4326)
   
   boundary <- rangelist[[1]]
-  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+    rename(geometry = x)
   
   region <- make_region(rangelist,
                         buffer = 1,
@@ -714,8 +719,8 @@ test_that("sppdata_for_nimble() works with CV", {
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
-                                    #file.path = "../../../species-futures//pkg-tests/data-ready-testfunctions/",
-                                    file.path = "../species-futures//pkg-tests/data-ready-testfunctions/",
+                                    file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
@@ -733,15 +738,16 @@ test_that("sppdata_for_nimble() works with CV", {
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
-                                keep.conus.grid.id = region$sp.grid$conus.grid.id)
+                                keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")])
   
-  
-  expect_type(sp.data, "list")
-  expect_equal(length(sp.data), 4)
-  expect_equal(names(sp.data), c("PO1", "PO2", "DND3", "count4"))
-  expect_equal(names(sp.data$count4), c("data", "constants"))
-  expect_equal(ncol(sp.data$count4$data$Xy4), 0)
-  
+  tmp <- sp.data$PO1$constants$Wcells1[which(sp.data$PO1$constants$Wcells1 %in% gridkey$conus.grid.id[which(gridkey$group == "test")])]
+  expect_equal(length(tmp), 0)
+  tmp <- sp.data$PO2$constants$Wcells2[which(sp.data$PO2$constants$Wcells2 %in% gridkey$conus.grid.id[which(gridkey$group == "test")])]
+  expect_equal(length(tmp), 0)
+  tmp <- sp.data$DND3$constants$Vcells3[which(sp.data$PO2$constants$Vcells3 %in% gridkey$conus.grid.id[which(gridkey$group == "test")])]
+  expect_equal(length(tmp), 0)
+  tmp <- sp.data$count4$constants$Ycells4[which(sp.data$PO2$constants$Ycells4 %in% gridkey$conus.grid.id[which(gridkey$group == "test")])]
+  expect_equal(length(tmp), 0)
   
   
 })
