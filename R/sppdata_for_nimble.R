@@ -434,11 +434,11 @@ sppdata_for_nimble <- function(species.data,
         }
 
         # format for nimble
+        data <- filter(data, .data$conus.grid.id %in% keep.conus.grid.id)
         DND <- survey_for_nimble(data,
                                  cov.names,
                                  type = "DND",
-                                 rename = counter,
-                                 keep.conus.grid.id = keep.conus.grid.id)
+                                 rename = counter)
 
         # if this is going to have a logit link (ie nVisits >= min.visits.incl)
         # it needs an intercept
@@ -545,11 +545,11 @@ sppdata_for_nimble <- function(species.data,
         }
 
         # format for nimble
+        data <- filter(data, .data$conus.grid.id %in% keep.conus.grid.id)
         COUNT <- survey_for_nimble(data,
                                    count.covs,
                                    type = "count",
-                                   rename = counter,
-                                   keep.conus.grid.id = keep.conus.grid.id)
+                                   rename = counter)
 
         # if this is going to have a logit link (ie nVisits >= min.visits.incl)
         # it needs an intercept
