@@ -43,7 +43,12 @@ add_state_ind <- function(species.data,
     } else {
       S1 <- rep(1, length(keep.conus.grid.id))
     }
-    constants$S1 <- S1
+    
+    # find index for iNat and store S1 there
+    nms <- unlist(constants[grep("name", names(constants))])
+    inat <- names(nms[grep("iNaturalist", nms)])
+    d <- gsub("name", "", inat)
+    constants[[paste0("S", d)]] <- S1
   }
 
   # Add state indicator for multi-state PO to indicate which states have data
