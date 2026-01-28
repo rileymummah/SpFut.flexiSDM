@@ -5,6 +5,7 @@
 #' @param data (list) data formatted for nimble
 #' @param constants (list) constants formatted for nimble
 #' @param sp.auto (logical) whether model should have spatial model (T) or not (F)
+#' @param sp.auto (numeric) NA if tau is fixed, otherwise initial value for tau
 #' @param seed (numeric) set seed to use for random number generation
 #'
 #' @returns Initial values to be used in nimble code
@@ -28,6 +29,7 @@
 nimble_inits <- function(data,
                          constants,
                          sp.auto,
+                         tau = NA,
                          seed = as.numeric(Sys.time())) {
 
 
@@ -47,9 +49,13 @@ nimble_inits <- function(data,
 
   # initialize parameters for spatial model
   if (sp.auto == T) {
-    dat[["tau"]] <- 1
+    #dat[["tau"]] <- 1
     dat[["spat"]] <- rep(0, length(constants$num))
 
+    if (is.na(tau) == F) {
+      dat[["tau"]] <- tau
+    } 
+    
   }
 
 
@@ -61,7 +67,7 @@ nimble_inits <- function(data,
 
       if (constants[[paste0("nCovY", d)]] == 0) {
         # p is fixed
-        dat[[paste0("p", d)]] <- rbeta(1, 2, 2)
+        #dat[[paste0("p", d)]] <- rbeta(1, 2, 2)
 
       } else if (constants[[paste0("nCovY", d)]] > 0) {
         dat[[paste0("C", d)]] <- rnorm(constants[[paste0("nCovY", d)]])
@@ -80,10 +86,19 @@ nimble_inits <- function(data,
     } else if (paste0("Xw", d) %in% names(data)) { # If it's a PO dataset....
 
       if (constants[[paste0("nCovW", d)]] == 0) {
-        # p is fixed
-        dat[[paste0("E", d)]] <- rbeta(1, 2, 2)
+        # effort is fixed
+        #dat[[paste0("E", d)]] <- rbeta(1, 2, 2)
 
-      } else if (constants[[paste0("nCovW", d)]] > 0) {
+      } else if (constants[[paste0("nCovW", d)]] == 1) {
+        if (constants[[paste0("name", d)]] == "iNaturalist") {
+          dat[[paste0("A", d)]] <- rnorm(constants[[paste0("nCovW", d)]])
+        } else {
+          dat[[paste0("A", d)]] <- rnorm(constants[[paste0("nCovW", d)]])
+          dat[[paste0("Xw", d)]] <- matrix(nrow = nrow(data[[paste0("Xw", d)]]),
+                                           ncol = ncol(data[[paste0("Xw", d)]]),
+                                           0)
+        }
+      } else if (constants[[paste0("nCovW", d)]] > 1) {
         dat[[paste0("A", d)]] <- rnorm(constants[[paste0("nCovW", d)]])
         dat[[paste0("Xw", d)]] <- matrix(nrow = nrow(data[[paste0("Xw", d)]]),
                                          ncol = ncol(data[[paste0("Xw", d)]]),
@@ -95,7 +110,7 @@ nimble_inits <- function(data,
 
       if (constants[[paste0("nCovV", d)]] == 0) {
         # p is fixed
-        dat[[paste0("d", d)]] <- rbeta(1, 2, 2)
+        #dat[[paste0("p", d)]] <- rbeta(1, 2, 2)
 
       } else if (constants[[paste0("nCovV", d)]] > 0) {
         dat[[paste0("D", d)]] <- rnorm(constants[[paste0("nCovV", d)]])
