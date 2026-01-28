@@ -315,7 +315,10 @@ for (b in 1:nCov_LETTER_NUM) {
         obs.mod1 <- gsub("_DEout", "# _LABDE \n_EQN", obs.mod1)
         obs.mod1 <- gsub("_DEin", "", obs.mod1)
 
-        eqn <- "logit(_DORE_NUM) <- _PARAM_NUM[1] * Xw_NUM[j, 1]"
+        eqn <- "logit(_DORE_NUM) <- _PARAM_NUM[1] * 1"
+        
+        obs.mod1 <- gsub("_DORE_NUM[j]", "_DORE_NUM", obs.mod1, fixed = T)
+        
       }
 
 
