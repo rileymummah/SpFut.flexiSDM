@@ -2,7 +2,7 @@
 #'
 #' @param species.data (list) output from load_species_data()
 #' @param region (list) output from make_region()
-#' @param file.info ()
+#' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species
 #' @param covar (data.frame) dataframe containing covariates for PO data
 #' @param stategrid (data.frame) output from make_state_grid()
 #' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
