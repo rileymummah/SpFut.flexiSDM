@@ -42,8 +42,9 @@ get_derived <- function(samples,
   # Projections
 
   # Load projections
-  if (sp.auto == T & project > 0) {
-    source(pathToProj)
+  if (project > 0) {
+    # Source projection file
+    sys.source(pathToProj, envir = environment())
 
     # Pull beta from output file
     keep <- grep('^B', colnames(samples))
@@ -52,30 +53,33 @@ get_derived <- function(samples,
       select(all_of(keep)) %>%
       as.matrix() -> beta
 
-    # Pull spat from output file
-    keep <- grep("spat", colnames(samples))
+    if (sp.auto == T) {
+      # Pull spat from output file
+      keep <- grep("spat", colnames(samples))
 
-    as.data.frame(as.mcmc(samples)) %>%
-      select(all_of(keep)) %>%
-      as.matrix() -> spat
+      as.data.frame(as.mcmc(samples)) %>%
+        select(all_of(keep)) %>%
+        as.matrix() -> spat
 
-    # Realign the spatial grid to the species grid if coarse.grid
-    # This loop could probably be sped up if it was vectorized.
-    if (coarse.grid == T) {
-      cells <- spatRegion$spatkey$spat.grid.id
+      # Realign the spatial grid to the species grid if coarse.grid
+      # This loop could probably be sped up if it was vectorized.
+      if (coarse.grid == T) {
+        cells <- spatRegion$spatkey$spat.grid.id
 
-      tmp <- c()
-      suppressMessages(for (i in 1:length(cells)) {
-        index <- which(colnames(spat) == paste0('spat[', cells[i], ']'))
-        tmp <- bind_cols(tmp, spat[, index])
-      })
+        tmp <- c()
+        suppressMessages(for (i in 1:length(cells)) {
+          index <- which(colnames(spat) == paste0('spat[', cells[i], ']'))
+          tmp <- bind_cols(tmp, spat[, index])
+        })
 
-      colnames(tmp) <- paste0('spat[', 1:length(cells), ']')
-      spat <- tmp
-      rm(tmp)
+        colnames(tmp) <- paste0('spat[', 1:length(cells), ']')
+        spat <- tmp
+        rm(tmp)
 
-    }
-
+      } # coarse.grid
+    } else { # sp.auto
+        spat <- NULL
+      }
 
     # Get projections
     proj <- lapply(1:project, get_projections, data = data,

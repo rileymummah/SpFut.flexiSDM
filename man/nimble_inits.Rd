@@ -11,7 +11,9 @@ nimble_inits(data, constants, sp.auto, tau = NA, seed = as.numeric(Sys.time()))
 
 \item{constants}{(list) constants formatted for nimble}
 
-\item{sp.auto}{(numeric) NA if tau is fixed, otherwise initial value for tau}
+\item{sp.auto}{(logical) whether model should have spatial model (T) or not (F)}
+
+\item{tau}{(numeric) NA if tau is fixed, otherwise initial value for tau}
 
 \item{seed}{(numeric) set seed to use for random number generation}
 }

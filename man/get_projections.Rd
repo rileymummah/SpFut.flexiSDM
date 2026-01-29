@@ -4,7 +4,7 @@
 \alias{get_projections}
 \title{Extract and calculate derived quantities for projections}
 \usage{
-get_projections(i, data, beta, spat, lambda0)
+get_projections(i, data, beta, spat = NULL, lambda0)
 }
 \arguments{
 \item{i}{(numeric) projection number}

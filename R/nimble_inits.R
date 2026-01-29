@@ -5,7 +5,7 @@
 #' @param data (list) data formatted for nimble
 #' @param constants (list) constants formatted for nimble
 #' @param sp.auto (logical) whether model should have spatial model (T) or not (F)
-#' @param sp.auto (numeric) NA if tau is fixed, otherwise initial value for tau
+#' @param tau (numeric) NA if tau is fixed, otherwise initial value for tau
 #' @param seed (numeric) set seed to use for random number generation
 #'
 #' @returns Initial values to be used in nimble code
@@ -54,8 +54,8 @@ nimble_inits <- function(data,
 
     if (is.na(tau) == F) {
       dat[["tau"]] <- tau
-    } 
-    
+    }
+
   }
 
 

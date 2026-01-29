@@ -1,11 +1,11 @@
-#' Summarize a single chain from NIMBLE output
+#' Summarize a single parameter from NIMBLE output
 #'
 #' @param i (numeric) index of parameter to summarize
-#' @param samples (list) output from NIMBLE
+#' @param samples (list) MCMC output from NIMBLE
 #' @param chains (numeric vector) sequence of the number of chains; Default is 1:3
 #' @param cutoff (numeric) where to cutoff chains in addition to the burnin; Default is 0
 #'
-#' @returns
+#' @returns A data.frame summarizing the mean, low, high, low tail, high tail, uncertainty, Rhat, and effective sample size (ESS) of a single parameter across all chains from nimble MCMC output.
 #' @export
 #'
 #' @importFrom dplyr mutate slice summarize filter bind_rows
@@ -89,7 +89,7 @@ chain_summary <- function(i,
   }
 
   tmp <- tmp %>%
-          select(.data$param, everything()) %>%
+          select("param", everything()) %>%
           mutate(rhat = rhat, ESS = ESS)
 
   return(tmp)
