@@ -4,13 +4,7 @@
 \alias{survey_for_nimble}
 \title{Format survey data for nimble}
 \usage{
-survey_for_nimble(
-  data,
-  cov.names,
-  rename = "",
-  type = "count",
-  keep.conus.grid.id
-)
+survey_for_nimble(data, cov.names, rename = "", type = "count")
 }
 \arguments{
 \item{data}{(data.frame) dataframe containing DND or count data and detection covariates}
@@ -20,8 +14,6 @@ survey_for_nimble(
 \item{rename}{(character) suffix to add to data and constants object names; defaults to empty string}
 
 \item{type}{(character) indicates type of survey: 'count' or 'DND'}
-
-\item{keep.conus.grid.id}{(character vector) vector of conus.grid.ids to keep; default comes from gridkey}
 }
 \value{
 A list containing data and constants for nimble code

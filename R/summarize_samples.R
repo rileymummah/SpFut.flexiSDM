@@ -12,7 +12,7 @@
 #' @param effort (logical) whether to trace effort parameters (T) or not (F)
 #' @param SLURM (logical) whether a SLURM-based high-performance computing cluster is being used
 #'
-#' @returns
+#' @returns A list; Each element is a summarized traced or projected parameter
 #' @export
 #'
 #' @importFrom rlang .data
@@ -174,9 +174,12 @@ summarize_samples <- function(samples,
   }
 
   if (coarse.grid == T) {
-    key <- left_join(gridkey, spatkey, by = 'conus.grid.id')
+    key <- left_join(gridkey, spatkey, by = 'conus.grid.id') %>%
+            select(-"grid.id") %>% rename("grid.id" = "spat.grid.id")
   } else {
-    key <- mutate(gridkey, spat.grid.id = .data$grid.id)
+    key <- gridkey
+    # mutate(gridkey, spat.grid.id = .data$grid.id) %>%
+    #         select(-"grid.id")
   }
 
   # spat
@@ -187,8 +190,7 @@ summarize_samples <- function(samples,
               mutate(grid.id = as.numeric(gsub("spat", "", .data$param)),
                      block.out = block.out) %>%
       # Changed following line from:
-      # left_join(key, ., by = c("spat.grid.id" = "grid.id"))
-              right_join(key, by = c("spat.grid.id" = "grid.id")) %>%
+              left_join(key, .data, by = "grid.id") %>%
               select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
                      "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
@@ -264,10 +266,10 @@ summarize_samples <- function(samples,
   # Tau
   keep <- grep("tau", out$param)
   tau <- out %>%
-    slice(keep) %>%
-    mutate(block.out = block.out) %>%
-    select("block.out", "mean", "lo", "hi", "lotail", "hitail", "unc.range",
-           "unc.rel", "rhat", "ESS")
+          slice(keep) %>%
+          mutate(block.out = block.out) %>%
+          select("block.out", "mean", "lo", "hi", "lotail", "hitail", "unc.range",
+                 "unc.rel", "rhat", "ESS")
   dat$tau <- tau
 
   # Return

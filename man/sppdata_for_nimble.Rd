@@ -22,7 +22,7 @@ sppdata_for_nimble(
 
 \item{region}{(list) output from make_region()}
 
-\item{file.info}{()}
+\item{file.info}{(data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species}
 
 \item{covar}{(data.frame) dataframe containing covariates for PO data}
 

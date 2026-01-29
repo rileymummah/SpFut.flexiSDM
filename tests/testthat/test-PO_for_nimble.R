@@ -25,7 +25,7 @@
 #   species.data <- load_species_data(sp.code = "GPOR",
 #                                     sp.code.all = "GPOR",
 #                                     file.info = allfiles,
-#                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     file.path = "~/GitHub/species-futures/pkg-tests/",
 #                                     #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                     region = region,
 #                                     filter.region = T,

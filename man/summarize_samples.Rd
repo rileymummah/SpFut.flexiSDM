@@ -41,6 +41,9 @@ summarize_samples(
 
 \item{SLURM}{(logical) whether a SLURM-based high-performance computing cluster is being used}
 }
+\value{
+A list; Each element is a summarized traced or projected parameter
+}
 \description{
 Summarize chain output from NIMBLE
 }
