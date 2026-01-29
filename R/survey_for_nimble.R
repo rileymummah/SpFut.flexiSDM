@@ -6,7 +6,6 @@
 #' @param cov.names (character vector) names of columns to be used as detection covariates
 #' @param rename (character) suffix to add to data and constants object names; defaults to empty string
 #' @param type (character) indicates type of survey: 'count' or 'DND'
-#' @param keep.conus.grid.id (character vector) vector of conus.grid.ids to keep; default comes from gridkey
 #'
 #' @returns A list containing data and constants for nimble code
 #'
@@ -18,8 +17,7 @@
 survey_for_nimble <- function(data,
                               cov.names,
                               rename = "",
-                              type = "count",
-                              keep.conus.grid.id) {
+                              type = "count") {
 
 
   if ("count" %in% colnames(data) == F) {stop("There must be exactly one column named 'count' in survey")}
@@ -28,7 +26,7 @@ survey_for_nimble <- function(data,
   if (length(grep("site.id", colnames(data))) != 1) {stop("There must be exactly one column named 'site.id' in survey")}
 
 
-  data <- filter(data, .data$conus.grid.id %in% keep.conus.grid.id)
+  # data <- filter(data, .data$conus.grid.id %in% keep.conus.grid.id)
 
   surveydata <- select(data, !any_of(cov.names))
   covariates <- select(data, "conus.grid.id", "site.id", "survey.id", any_of(cov.names))

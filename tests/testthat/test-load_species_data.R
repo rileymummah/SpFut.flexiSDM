@@ -6,7 +6,8 @@
 #                      range.name = c("GAP", "IUCN"), crs = 4326)
 # 
 #     boundary <- rangelist[[1]]
-#     grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+#     grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+#       rename(geometry = x)
 # 
 #     region <- make_region(rangelist,
 #                           buffer = 1,
@@ -16,7 +17,7 @@
 #                           rm.clumps = F,
 #                           clump.size = 2,
 #                           continuous = F)
-#     expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready-testfunctions/'))
+#     expect_true(file.exists('../../../species-futures/pkg-tests/data-ready-testfunctions/'))
 # 
 # 
 #     allfiles <- data.frame(file.name = c("iNat_test_PO"),
@@ -29,8 +30,8 @@
 #     species.data <- load_species_data(sp.code = "GPOR",
 #                                       sp.code.all = "GPOR",
 #                                       file.info = allfiles,
-#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                       region = region,
 #                                       filter.region = T,
 #                                       year.start = 1800,
@@ -63,8 +64,8 @@
 #     species.data <- load_species_data(sp.code = "GPOR",
 #                                       sp.code.all = "GPOR",
 #                                       file.info = allfiles,
-#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                       region = region,
 #                                       filter.region = T,
 #                                       year.start = 1800,
@@ -92,8 +93,8 @@
 #     species.data <- load_species_data(sp.code = "GPOR",
 #                                       sp.code.all = "GPOR",
 #                                       file.info = allfiles,
-#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                       region = region,
 #                                       filter.region = T,
 #                                       year.start = 1800,
@@ -119,8 +120,8 @@
 #     species.data <- load_species_data(sp.code = "GPOR",
 #                                       sp.code.all = "GPOR",
 #                                       file.info = allfiles,
-#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                       region = region,
 #                                       filter.region = T,
 #                                       year.start = 1800,
@@ -153,8 +154,8 @@
 #     species.data <- load_species_data(sp.code = "GPOR",
 #                                       sp.code.all = "GPOR",
 #                                       file.info = allfiles,
-#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                       region = region,
 #                                       filter.region = T,
 #                                       year.start = 1800,
@@ -187,8 +188,8 @@
 #     species.data <- load_species_data(sp.code = "GPOR",
 #                                       sp.code.all = "GPOR",
 #                                       file.info = allfiles,
-#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                       region = region,
 #                                       filter.region = T,
 #                                       year.start = 1800,
@@ -221,8 +222,8 @@
 #     species.data <- load_species_data(sp.code = "GPOR",
 #                                       sp.code.all = "GPOR",
 #                                       file.info = allfiles,
-#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                       region = region,
 #                                       filter.region = T,
 #                                       year.start = 1800,
@@ -255,8 +256,8 @@
 #     species.data <- load_species_data(sp.code = "GPOR",
 #                                       sp.code.all = c("GPOR", "EBIS"),
 #                                       file.info = allfiles,
-#                                       file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                       #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                       file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                       #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                       region = region,
 #                                       filter.region = T,
 #                                       year.start = 1800,
@@ -290,7 +291,8 @@
 #                          range.name = c("GAP", "IUCN"), crs = 4326)
 # 
 #   boundary <- rangelist[[1]]
-#   grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+#   grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+#     rename(geometry = x)
 # 
 #   region <- make_region(rangelist,
 #                         buffer = 1,
@@ -300,10 +302,10 @@
 #                         rm.clumps = F,
 #                         clump.size = 2,
 #                         continuous = F)
-#   expect_true(file.exists('../../../species-futures/DATA SWAMP/data-ready-testfunctions/'))
+#   expect_true(file.exists('../../../species-futures/pkg-tests/data-ready-testfunctions/'))
 # 
 # 
-#   # dat <- read.csv("../species-futures/DATA SWAMP/data-ready-testfunctions/NEARMI_test_count.csv") %>%
+#   # dat <- read.csv("../species-futures/pkg-tests/data-ready-testfunctions/NEARMI_test_count.csv") %>%
 #   #   st_as_sf(coords = c("lon", "lat"), crs = 4326)
 #   # ggplot(region$sp.grid) + geom_sf() + geom_sf(data = dat)
 # 
@@ -318,8 +320,8 @@
 #   species.data <- load_species_data(sp.code = "GPOR",
 #                                     sp.code.all = "GPOR",
 #                                     file.info = allfiles,
-#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                     region = region,
 #                                     filter.region = T,
 #                                     year.start = 1800,
@@ -350,8 +352,8 @@
 #   species.data <- load_species_data(sp.code = "GPOR",
 #                                     sp.code.all = c("GPOR", "EWIL"),
 #                                     file.info = allfiles,
-#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                     region = region,
 #                                     filter.region = T,
 #                                     year.start = 1800,
@@ -383,8 +385,8 @@
 #   species.data <- load_species_data(sp.code = "GPOR",
 #                                     sp.code.all = c("GPOR", "EWIL"),
 #                                     file.info = allfiles,
-#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                     region = region,
 #                                     filter.region = T,
 #                                     year.start = 2023,
@@ -415,8 +417,8 @@
 #   species.data <- load_species_data(sp.code = "GPOR",
 #                                     sp.code.all = c("GPOR", "EWIL"),
 #                                     file.info = allfiles,
-#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                     region = region,
 #                                     filter.region = T,
 #                                     year.start = 2023,
@@ -448,8 +450,8 @@
 #   expect_warning(species.data <- load_species_data(sp.code = "GPOR",
 #                                     sp.code.all = c("GPOR", "EWIL"),
 #                                     file.info = allfiles,
-#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                     region = region,
 #                                     filter.region = T,
 #                                     year.start = 2023,
@@ -470,25 +472,25 @@
 #   expect_equal(length(colnames(species.data$obs$NEARMI_test)), 18)
 # 
 # 
-#   
+# 
 #   # test count and DND ----
 #   allfiles <- data.frame(file.name = c("NEARMI_test_count", "Dodd_test_DND"),
 #                          file.label = c("NEARMI_test", "Dodd_test"),
 #                          covar.mean = c("StartWaterTemp", NA),
 #                          covar.sum = c("EffectValue", "time"),
 #                          data.type = c("count", "DND"))
-#   
+# 
 #   species.data <- load_species_data(sp.code = "GPOR",
 #                                     sp.code.all = "GPOR",
 #                                     file.info = allfiles,
-#                                     file.path = "../../../species-futures/DATA SWAMP/data-ready-testfunctions/",
-#                                     #file.path = "../species-futures/DATA SWAMP/data-ready-testfunctions/",
+#                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
 #                                     region = region,
 #                                     filter.region = T,
 #                                     year.start = 1800,
 #                                     year.end = 2025,
 #                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
-#   
+# 
 #   # output structure
 #   expect_type(species.data, "list")
 #   expect_equal(length(species.data), 2)
@@ -496,17 +498,81 @@
 #   expect_type(species.data$locs, "list")
 #   expect_type(species.data$obs, "list")
 #   expect_s3_class(species.data$locs$cont, "sf")
-#   
+# 
 #   # output content
 #   expect_equal(length(species.data$obs), 2)
 #   expect_equal(nrow(species.data$obs$NEARMI_test), 60)
 #   expect_equal(colnames(species.data$obs$NEARMI_test)[19:20], c("StartWaterTemp", "EffectValue"))
 #   expect_equal(nrow(species.data$obs$Dodd_test), 20)
 #   expect_equal(colnames(species.data$obs$Dodd_test)[19], c("time"))
-#   
-#   
+# 
+# 
 # })
 # 
 # 
 # 
+# 
+# test_that("load_species_data() works with CV", {
+#   
+#   rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
+#                                         paste0("../../../species-futures/data/species/GPOR/IUCN/")),
+#                          range.name = c("GAP", "IUCN"), crs = 4326)
+#   
+#   boundary <- rangelist[[1]]
+#   grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+#     rename(geometry = x)
+#   
+#   region <- make_region(rangelist,
+#                         buffer = 1,
+#                         sub = F,
+#                         boundary = boundary,
+#                         grid = grid,
+#                         rm.clumps = F,
+#                         clump.size = 2,
+#                         continuous = F)
+# 
+#   # make CV blocks
+#   spatblocks <- make_CV_blocks(region, 5, 5, 3)
+#   
+#   block1 <- filter(spatblocks, folds == 2)
+#   
+#   # find grid.ids for test block, everything else is train
+#   suppressWarnings(test.i <- st_intersection(region$sp.grid, block1) %>%
+#     pull(conus.grid.id) %>%
+#     unique())
+#   train.i <- filter(region$sp.grid, conus.grid.id %in% test.i == F) %>%
+#     pull(conus.grid.id)
+#   
+#   gridkey <- select(region$sp.grid, conus.grid.id) %>%
+#     st_drop_geometry() %>%
+#     mutate(grid.id = 1:nrow(.),
+#            group = case_when(conus.grid.id %in% train.i ~ "train",
+#                              conus.grid.id %in% test.i ~ "test"))
+#   
+#   
+#   # test normal ----
+#   allfiles <- data.frame(file.name = c("NEARMI_test_count", "iNat_test_PO"),
+#                          file.label = c("NEARMI_test", "iNat"),
+#                          covar.mean = c("StartWaterTemp", NA),
+#                          covar.sum = c("EffectValue", NA),
+#                          data.type = c("count", "PO"))
+#   
+#   species.data <- load_species_data(sp.code = "GPOR",
+#                                     sp.code.all = "GPOR",
+#                                     file.info = allfiles,
+#                                     file.path = "../../../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
+#                                     region = region,
+#                                     filter.region = T,
+#                                     year.start = 1800,
+#                                     year.end = 2025,
+#                                     keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")])
+#   
+#   suppressWarnings(tmp <- st_intersection(species.data$locs$cont, spatblocks) %>%
+#     filter(folds == 2))
+#   expect_equal(nrow(tmp), 0)
+#   
+#   
+#   
+# })
 # 

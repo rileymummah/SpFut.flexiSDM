@@ -301,7 +301,7 @@ load_species_data <- function(sp.code,
     keepcols <- covariates[[f]]
     keepcols1 <- keepcols[which(keepcols %in% colnames(file))]
     missingcovs <- setdiff(keepcols, keepcols1)
-    missingcovs <- missingcovs[-which(missingcovs == "yday")] # because yday is generated later
+    if ("yday" %in% missingcovs) missingcovs <- missingcovs[-which(missingcovs == "yday")] # because yday is generated later
     
     if (length(keepcols1) > 0) cat("Using ", keepcols1, " as covariate(s)\n")
     file1 <- inner_join(file,

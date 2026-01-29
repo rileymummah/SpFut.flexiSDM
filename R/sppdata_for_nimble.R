@@ -2,7 +2,7 @@
 #'
 #' @param species.data (list) output from load_species_data()
 #' @param region (list) output from make_region()
-#' @param file.info ()
+#' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species
 #' @param covar (data.frame) dataframe containing covariates for PO data
 #' @param stategrid (data.frame) output from make_state_grid()
 #' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
@@ -434,11 +434,11 @@ sppdata_for_nimble <- function(species.data,
         }
 
         # format for nimble
+        data <- filter(data, .data$conus.grid.id %in% keep.conus.grid.id)
         DND <- survey_for_nimble(data,
                                  cov.names,
                                  type = "DND",
-                                 rename = counter,
-                                 keep.conus.grid.id = keep.conus.grid.id)
+                                 rename = counter)
 
         # if this is going to have a logit link (ie nVisits >= min.visits.incl)
         # it needs an intercept
@@ -545,11 +545,11 @@ sppdata_for_nimble <- function(species.data,
         }
 
         # format for nimble
+        data <- filter(data, .data$conus.grid.id %in% keep.conus.grid.id)
         COUNT <- survey_for_nimble(data,
                                    count.covs,
                                    type = "count",
-                                   rename = counter,
-                                   keep.conus.grid.id = keep.conus.grid.id)
+                                   rename = counter)
 
         # if this is going to have a logit link (ie nVisits >= min.visits.incl)
         # it needs an intercept
