@@ -210,34 +210,7 @@ for (d in 1:constants$nD) {
 
 
   ### Set up detection/effort equation ----
-  # Four options:
-  #   1. iNaturalist dataset
-  #   2. 0 covariates in observation model, link = log always
-  #   3. 1 covariate in observation model
-  #         a. logit
-  #         b. log
-  #   4. >1 covariate in observation model
-  #         a. state
-  #         b. no state
-
-#   if (name == "iNaturalist") {
-#     # not fixed, goes on the inside
-#     obs.mod1 <- gsub("_DEout", "", obs.mod1)
-#     obs.mod1 <- gsub("_DEin", "# _LABDE \n  _EQN", obs.mod1)
-#
-#     eqn <- "_LINK(eff_NUM[j]) <- inprod(_PARAM_NUM[1:nCovW_NUM], X_LOWLETTER_NUM[j,1:nCovW_NUM])
-#   E_NUM[j] <- eff_NUM[j] * S_NUM[j]
-#
-#   # Prior for X imputation
-#   X_LOWLETTER_NUM[j, 1] ~ dnorm(0, 1)"
-#
-#     prior1 <- "
-# # Observation priors, _TYPE _NUM: _NAME
-# for (b in 1:nCov_LETTER_NUM) {
-#   _PARAM_NUM[b] ~ dnorm(0,1)
-# }"
-
-  # } else if (constants[[ncov]] == 0) {
+  
   if (constants[[ncov]] == 0) {
 
     # This will only ever happen when link == log, because if link == logit,
