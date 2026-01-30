@@ -26,9 +26,7 @@ plot_chains <- function(samples,
                         chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
 
   
-  if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
-  if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
-
+  
     if (plot == "B") {
       bnames <- data.frame(name = colnames(data$Xz),
                            param = paste0("B[", 1:ncol(data$Xz), "]"))
@@ -44,6 +42,25 @@ plot_chains <- function(samples,
       bind <- grep("tau", colnames(samples[[1]]))
       bnames <- data.frame(name = "tau",
                            param = "tau[1]")
+    } else if (plot == "observation") {
+      bind <- grep("A|C|D", colnames(samples[[1]]))
+      xind <- grep("Xw|Xy|Xv", names(data))
+      nameind <- grep("name", names(constants))
+      
+      # get names
+      xnames <- c()
+      for (x in 1:length(xind)) {
+        num <- as.numeric(substr(names(data)[[xind[x]]], 3, 3))
+        
+        tmp <- colnames(data[[xind[x]]])
+        tmp1 <- constants[[nameind[num]]]
+        
+        xnames <- c(xnames, paste0(tmp1, ": ", tmp))
+      }
+      
+      
+      bnames <- data.frame(name = xnames,
+                           param = colnames(samples[[1]])[bind])
     }
 
 
@@ -83,6 +100,9 @@ plot_chains <- function(samples,
 
     if (plot == "B") {
 
+      if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
+      if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
+      
       call <- call %>%
                 mutate(cov1 = gsub("2", "", .data$name.y),
                               tmp = gsub("_x_.*", "", .data$name.y),
