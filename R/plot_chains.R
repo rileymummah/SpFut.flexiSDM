@@ -38,10 +38,14 @@ plot_chains <- function(samples,
       bind <- grep("alpha", colnames(samples[[1]]))
       bnames <- data.frame(name = unlist(constants[grep("name", names(constants))]),
                            param = paste0("alpha[", 1:length(bind), "]"))
+      
     } else if (plot == "tau") {
       bind <- grep("tau", colnames(samples[[1]]))
       bnames <- data.frame(name = "tau",
                            param = "tau[1]")
+      
+      if(length(bind) == 0) stop("The model does not include a spatial random effect, therefore tau is not estimated")
+      
     } else if (plot == "observation") {
       bind <- grep("A|C|D", colnames(samples[[1]]))
       xind <- grep("Xw|Xy|Xv", names(data))
