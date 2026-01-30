@@ -300,6 +300,9 @@ test_that("sppdata_for_nimble() works with PO data", {
 test_that("sppdata_for_nimble() works with DND data", {
 
   # set up ----
+  st.map <- rnaturalearth::ne_states(country = c("Canada", "Mexico", "United States of America"),
+                                     returnclass = "sf")
+  
   rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
                                         paste0("../../../species-futures/data/species/GPOR/IUCN/")),
                          range.name = c("GAP", "IUCN"), crs = 4326)
@@ -442,6 +445,9 @@ test_that("sppdata_for_nimble() works with DND data", {
 test_that("sppdata_for_nimble() works with count data", {
 
   # set up ----
+  st.map <- rnaturalearth::ne_states(country = c("Canada", "Mexico", "United States of America"),
+                                     returnclass = "sf")
+  
   rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
                                         paste0("../../../species-futures/data/species/GPOR/IUCN/")),
                          range.name = c("GAP", "IUCN"), crs = 4326)
@@ -551,6 +557,9 @@ test_that("sppdata_for_nimble() works with count data", {
 test_that("sppdata_for_nimble() works with all data", {
 
   # set up ----
+  st.map <- rnaturalearth::ne_states(country = c("Canada", "Mexico", "United States of America"),
+                                     returnclass = "sf")
+  
   rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
                                         paste0("../../../species-futures/data/species/GPOR/IUCN/")),
                          range.name = c("GAP", "IUCN"), crs = 4326)
