@@ -115,7 +115,7 @@ plot_chains <- function(samples,
     }
 
     call <- mutate(call, lab = paste0(.data$name.y, "\nRhat = ", rhat))
-
+    call$lab <- gsub("^2", "\u00B2", call$lab, fixed = T)
 
     pl <- ggplot(call) +
             geom_hline(yintercept = 0) +
@@ -130,6 +130,9 @@ plot_chains <- function(samples,
             scale_color_manual(values = chaincols) +
             theme_bw()
 
-    return(pl)
+    out <- list(dat = call,
+                plot = pl)
+    
+    return(out)
 
 }
