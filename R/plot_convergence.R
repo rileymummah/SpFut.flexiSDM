@@ -20,7 +20,8 @@ plot_convergence <- function(out) {
 
   tmp1 <- tmp %>%
             filter(.data$type %in% c("process.coef", "obs.coef", "alpha")) %>%
-            select(!.data$name) %>%
+    rename(source = name) %>%
+            #select(!.data$name) %>%
             mutate(`Log(ESS)` = log(.data$ESS),
                    Rhat = .data$rhat,
                    type1 = case_when(type == "process.coef" ~ "Process \ncoefficients",
@@ -36,7 +37,7 @@ plot_convergence <- function(out) {
                       ymax = c(5.29, max(c(tmp$rhat, 1.1), na.rm = T)))
 
 
-  ggplot() +
+  pl <- ggplot() +
     geom_rect(data = boxes,
               aes(xmin = .data$xmin, xmax = .data$xmax,
                   ymin = .data$ymin, ymax = .data$ymax),
@@ -55,4 +56,14 @@ plot_convergence <- function(out) {
     labs(x = "Parameter", y = "Value",
                   title = "Red shaded area means chains may not have converged")
 
+  
+  
+  dat <- tmp1 %>%
+    select("source", "data.type", "type", "covariate", "name", "value") %>%
+    pivot_wider(names_from = "name", values_from = "value") %>%
+    mutate(ESS = exp(`Log(ESS)`)) %>%
+    select(!"Log(ESS)")
+  
+  return(list(dat = dat,
+              plot = pl))
   }
