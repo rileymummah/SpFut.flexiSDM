@@ -2,6 +2,7 @@
 #'
 #' @param species.data (list) output from load_species_data()
 #' @param out (list) output from summarize_samples()
+#' @param block (character) block excluded (1, 2, 3, or "none")
 #'
 #' @returns (data.frame) Overall AUC and AUC for each dataset
 #' @export
@@ -13,7 +14,8 @@
 
 
 get_AUC <- function(species.data,
-                   out) {
+                   out,
+                   block.out = "none") {
   val.dat <- c()
   for (d in 1:length(species.data$obs)) {
     tmp <- species.data$obs[[d]] %>%
@@ -25,7 +27,7 @@ get_AUC <- function(species.data,
     filter(.data$data.type != "PO") %>%
     mutate(pa = case_when(count > 0 ~ 1,
                           count == 0 ~ 0)) %>%
-    select(.data$conus.grid.id, .data$source, .data$pa)
+    select("conus.grid.id", "source", "pa")
 
   # If it's only PO data, skip the following
   if (nrow(val.dat) > 0) {
@@ -53,7 +55,8 @@ get_AUC <- function(species.data,
         AUCin1 <- auc(val.in1$pa, val.in1$mean)
       }
 
-      tmpin <- data.frame(source = dats[s],
+      tmpin <- data.frame(block = block.out,
+                          source = dats[s],
                           AUCin = as.numeric(AUCin1),
                           in.n = nrow(val.in1),
                           in.cell = length(unique(val.in1$conus.grid.id)))
@@ -113,9 +116,7 @@ get_AUC <- function(species.data,
     if (nrow(val.out) != 0) {aucs <- full_join(aucsin, aucsout, by = "source")}
     if (nrow(val.out) == 0) {aucs <- aucsin}
 
-    all.auc <- data.frame(sp.code = .data$sp.code,
-                          block = .data$block.out,
-                          AUCin.full = as.numeric(AUCin),
+    all.auc <- data.frame(AUCin.full = as.numeric(AUCin),
                           in.full.n = nrow(val.in),
                           in.full.cell = length(unique(val.in$conus.grid.id)),
                           AUCout.full = as.numeric(AUCout),
