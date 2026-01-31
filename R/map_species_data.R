@@ -53,8 +53,7 @@ map_species_data <- function(title,
                              year.start = 1900,
                              year.end = as.numeric(format(Sys.Date(), "%Y")),
                              details = F,
-                             plot.blocks = F,
-                             blocks,
+                             blocks = NULL,
 
                              # For map of model output
                              out,
@@ -118,7 +117,8 @@ map_species_data <- function(title,
   # __a. region ----
   if (plot.region == T) {
     base <- base +
-      geom_sf(data = region$region, alpha = 1, fill = "gray80", color = NA)
+      # geom_sf(data = region$region, alpha = 1, fill = "gray80", color = NA) +
+      geom_sf(data = region$sp.grid, alpha = 1, fill = "gray80", color = "gray80")
   }
 
   # __b. cells ----
@@ -452,9 +452,10 @@ map_species_data <- function(title,
   }
 
   # __e. blocks ----
-  if (plot.blocks == T) {
+  if (is.null(blocks) == F) {
 
-    suppressWarnings(blocks <- st_intersection(blocks, region$region))
+    tmp <- region$sp.grid %>% summarize(geometry = st_union(geometry))
+    suppressWarnings(blocks <- st_intersection(blocks, tmp))
 
     if (length(unique(blocks$folds)) == 1) {
       base <- base +
@@ -544,7 +545,7 @@ map_species_data <- function(title,
 
 
   # 4. add limits ----
-  if (plot.blocks == F) {
+  if (is.null(blocks)) {
     bb <- st_bbox(region$region)
     xlim <- c(bb[1], bb[3])
     ylim <- c(bb[2], bb[4])

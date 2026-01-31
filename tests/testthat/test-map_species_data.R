@@ -6,7 +6,8 @@
 #                      range.name = c("GAP", "IUCN"), crs = 4326)
 # 
 #     boundary <- rangelist[[1]]
-#     grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.))
+#     grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>% st_as_sf() %>% mutate(conus.grid.id = 1:nrow(.)) %>%
+#       rename(geometry = x)
 # 
 #     region <- make_region(rangelist,
 #                           buffer = 1,
@@ -57,7 +58,7 @@
 #     expect_equal(nrow(out$dat), 35)
 #     expect_equal(ncol(out$dat), 15)
 #     expect_doppelganger("samples with details", out$plot)
-#     
+# 
 # 
 #     # plot samples only, without details ----
 #     out <- map_species_data(region = region,
@@ -79,9 +80,29 @@
 #     expect_equal(nrow(out$dat), 35)
 #     expect_equal(ncol(out$dat), 12)
 #     expect_doppelganger("samples without details", out$plot)
+# 
+# 
+#     # plot samples with blocks
+#     spatblocks <- make_CV_blocks(region, rows = 4, cols = 3, k = 3)
+#     out <- map_species_data(region = region,
+#                             species.data = species.data,
+#                             year.start = 1800,
+#                             year.end = 2025,
+#                             plot = "samples",
+#                             plot.region = T,
+#                             details = F,
+#                             title = "TEST MAP", 
+#                             blocks = spatblocks)
+#     # output format
+#     expect_type(out, "list")
+#     expect_equal(length(out), 2)
+#     expect_true(is_ggplot(out$plot))
+#     expect_s3_class(out$dat, "sf")
 #     
-# 
-# 
+#     # output content
+#     expect_equal(nrow(out$dat), 35)
+#     expect_equal(ncol(out$dat), 12)
+#     expect_doppelganger("samples with blocks", out$plot)
 # 
 # })
 # 
