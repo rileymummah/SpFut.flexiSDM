@@ -18,7 +18,7 @@ plot_auc <- function(auc,
   blockcols <- c("none" = "black", "1" = "#e79f1e", "2" = "#009e73", "3" = "#cb79a8")
 
 
-  auc1 <- pivot_longer(auc, cols = !c("sp.code", "block", "source")) %>%
+  auc1 <- pivot_longer(auc, cols = !c("source", "block")) %>%
     mutate(inout = case_when(name %in% c("AUCin", "AUCin.full", "in.cell", "in.full.cell", "in.full.n", "in.n") ~ "In sample",
                              T ~ "Out of sample"),
            type = case_when(name %in% c("AUCin", "AUCin.full", "AUCout", "AUCout.full") ~ "AUC",
@@ -26,10 +26,11 @@ plot_auc <- function(auc,
                             name %in% c("in.full.n", "in.n", "out.full.n", "out.n") ~ "samples"),
            full = case_when(name %in% c("AUCin.full", "AUCout.full", "in.full.cell", "in.full.n", "out.full.cell", "out.full.n") ~ "full",
                             T ~ "dataset")) %>%
-    select(!.data$name) %>%
-    pivot_wider(names_from = c(.data$type), values_from = .data$value) %>%
+    select(!"name") %>%
+    pivot_wider(names_from = c("type"), values_from = "value") %>%
     mutate(source = case_when(full == "dataset" ~ source, T ~ "All")) %>%
-    distinct()
+    distinct() %>%
+    filter(is.na(.data$AUC) == F)
 
   if (lines == T) {
     pl <- ggplot(auc1) +
