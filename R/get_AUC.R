@@ -55,8 +55,7 @@ get_AUC <- function(species.data,
         AUCin1 <- auc(val.in1$pa, val.in1$mean)
       }
 
-      tmpin <- data.frame(block = block.out,
-                          source = dats[s],
+      tmpin <- data.frame(source = dats[s],
                           AUCin = as.numeric(AUCin1),
                           in.n = nrow(val.in1),
                           in.cell = length(unique(val.in1$conus.grid.id)))
@@ -116,7 +115,8 @@ get_AUC <- function(species.data,
     if (nrow(val.out) != 0) {aucs <- full_join(aucsin, aucsout, by = "source")}
     if (nrow(val.out) == 0) {aucs <- aucsin}
 
-    all.auc <- data.frame(AUCin.full = as.numeric(AUCin),
+    all.auc <- data.frame(block = as.character(block.out),
+                          AUCin.full = as.numeric(AUCin),
                           in.full.n = nrow(val.in),
                           in.full.cell = length(unique(val.in$conus.grid.id)),
                           AUCout.full = as.numeric(AUCout),
