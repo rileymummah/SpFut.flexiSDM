@@ -72,7 +72,7 @@ summarize_samples <- function(samples,
   lambda0 <- out %>%
               slice(keep) %>%
               mutate(grid.id = as.numeric(gsub("lambda0", "", .data$param)),
-                     block.out = block.out) %>%
+                     block.out = as.character(block.out)) %>%
               inner_join(gridkey, by = "grid.id")  %>%
               select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
                      "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
@@ -84,7 +84,7 @@ summarize_samples <- function(samples,
   psi0 <- out %>%
             slice(keep) %>%
             mutate(grid.id = as.numeric(gsub("psi0", "", .data$param)),
-                   block.out = block.out) %>%
+                   block.out = as.character(block.out)) %>%
             inner_join(gridkey, by = "grid.id") %>%
             select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
                    "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
@@ -96,7 +96,7 @@ summarize_samples <- function(samples,
   XB0 <- out %>%
           slice(keep) %>%
           mutate(grid.id = as.numeric(gsub("XB0", "", .data$param)),
-                 block.out = block.out) %>%
+                 block.out = as.character(block.out)) %>%
           inner_join(gridkey, by = "grid.id") %>%
           select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
                  "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
@@ -123,7 +123,7 @@ summarize_samples <- function(samples,
              grid.id = gsub(".*[[]", "", .data$name1),
              grid.id = as.numeric(gsub("[]]", "", .data$grid.id)),
              PO.dataset = gsub("[[].*", "", .data$name1),
-             block.out = block.out) %>%
+             block.out = as.character(block.out)) %>%
       inner_join(gridkey, by = "grid.id") %>%
       inner_join(dnames, by = "PO.dataset") %>%
       select("conus.grid.id", "PO.dataset.name", "group", "block.out", "mean",
@@ -139,7 +139,7 @@ summarize_samples <- function(samples,
       lambda0 <- out %>%
                   slice(keep) %>%
                   mutate(grid.id = as.numeric(gsub(paste0("lambda", z), "", .data$param)),
-                         block.out = block.out) %>%
+                         block.out = as.character(block.out)) %>%
                   inner_join(gridkey, by = "grid.id") %>%
                   select("conus.grid.id", "group", "block.out", "mean", "lo",
                          "hi", "lotail", "hitail", "unc.range", "unc.rel", "rhat",
@@ -152,7 +152,7 @@ summarize_samples <- function(samples,
       psi0 <- out %>%
                 slice(keep) %>%
                 mutate(grid.id = as.numeric(gsub(paste0("psi", z), "", .data$param)),
-                       block.out = block.out) %>%
+                       block.out = as.character(block.out)) %>%
                 inner_join(gridkey, by = "grid.id") %>%
                 select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
                        "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
@@ -164,7 +164,7 @@ summarize_samples <- function(samples,
       XB0 <- out %>%
               slice(keep) %>%
               mutate(grid.id = as.numeric(gsub(paste0("XB", z), "", .data$param)),
-                     block.out = block.out) %>%
+                     block.out = as.character(block.out)) %>%
               inner_join(gridkey, by = "grid.id") %>%
               select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
                      "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
@@ -188,7 +188,7 @@ summarize_samples <- function(samples,
     spat <- out %>%
               slice(keep) %>%
               mutate(grid.id = as.numeric(gsub("spat", "", .data$param)),
-                     block.out = block.out) %>%
+                     block.out = as.character(block.out)) %>%
       # Changed following line from:
               left_join(key, .data, by = "grid.id") %>%
               select("conus.grid.id", "group", "block.out", "mean", "lo", "hi",
@@ -203,7 +203,7 @@ summarize_samples <- function(samples,
   keep <- keep[-which(keep %in% dontkeep)]
   process.coef <- out %>%
                   slice(keep) %>%
-                  mutate(covariate = colnames(data$Xz), block.out = block.out) %>%
+                  mutate(covariate = colnames(data$Xz), block.out = as.character(block.out)) %>%
                   select("covariate", "block.out", "mean", "lo", "hi", "lotail",
                          "hitail", "unc.range", "unc.rel", "rhat", "ESS")
 
@@ -223,7 +223,7 @@ summarize_samples <- function(samples,
   keep <- grep("alpha", out$param)
   alpha <- out %>%
             slice(keep) %>%
-            mutate(number = gsub("alpha", "", .data$param), block.out = block.out) %>%
+            mutate(number = gsub("alpha", "", .data$param), block.out = as.character(block.out)) %>%
             left_join(datasets, by = "number") %>%
             select("name", "data.type", "block.out", "mean", "lo", "hi",
                    "lotail", "hitail", "unc.range", "unc.rel", "rhat", "ESS")
@@ -252,7 +252,7 @@ summarize_samples <- function(samples,
                 slice(keep) %>%
                 mutate(number = substr(.data$param, 2, nchar(.data$param) - 1)) %>%
                 group_by(.data$number) %>%
-                mutate(colnumber = row_number(), block.out = block.out) %>%
+                mutate(colnumber = row_number(), block.out = as.character(block.out)) %>%
                 ungroup() %>%
                 left_join(datasets, by = "number") %>%
                 left_join(obs.covs, by = c("number", "colnumber")) %>%
@@ -267,7 +267,7 @@ summarize_samples <- function(samples,
   keep <- grep("tau", out$param)
   tau <- out %>%
           slice(keep) %>%
-          mutate(block.out = block.out) %>%
+          mutate(block.out = as.character(block.out)) %>%
           select("block.out", "mean", "lo", "hi", "lotail", "hitail", "unc.range",
                  "unc.rel", "rhat", "ESS")
   dat$tau <- tau
