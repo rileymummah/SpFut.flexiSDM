@@ -507,15 +507,15 @@ map_species_data <- function(title,
         distinct()
     } else {
       plotpoints <- species.data$locs$cont %>%
-                    filter(.data$year >= year.start,
-                           .data$year <= year.end,
-                           .data$survey.conducted == 1) %>%
+                    # filter(.data$year >= year.start,
+                    #        .data$year <= year.end,
+                    #        .data$survey.conducted == 1) %>%
         select(!"unique.id") %>%
         distinct()
     }
 
 
-    plotpoints <- filter(plotpoints, .data$year <= year.end & .data$year >= year.start)
+    # plotpoints <- filter(plotpoints, .data$year <= year.end & .data$year >= year.start)
 
 
 
