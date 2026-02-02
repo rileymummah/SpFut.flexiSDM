@@ -14,15 +14,12 @@
 #' @param blocks (sf) sf object containing blocks, e.g., output from cv_spatial(), out$blocks; only required if plot.blocks == T
 #' @param out (list) summarized output from nimble model; output from summarize_samples(); only required if plot != "samples"
 #' @param plot.current (logical) whether to plot the current output (T) or projections (F); defaults to T; only required if plot != "samples"
-#' @param plot.uncertainty (logical) whether to plot uncertainty (T) or mean values (F); defaults to F; only required if plot != "samples"
-#' @param plot.log (logical) whether to plot the log of the value (T) or not (F); defaults to F; only required if plot != "samples"
-#' @param plot.exp (logical) whether to plot the exponent of the value (T) or not (F); defaults to F; only required if plot != "samples"
+#' @param plot.uncertainty (logical) plot relative uncertainty ("unc.rel"), absolute uncertainty ("unc.range"), or mean values (F); defaults to F; only required if plot != "samples"
+#' @param transform (character) transform ("log" or "exp") plotted values, or not ("none"); defaults to "none"
 #' @param plot.change (logical) whether to plot the projected value (F) or the projected change from current (T); defaults to F; only required if plot.current == F
 #' @param proj.n (numeric) number of projection scenarios to plot
 #' @param proj.names (character vector) names for each projection; only required if plot.current == F
 #' @param threshold (numeric) value between 0 and 1 to use as occupancy probability threshold for drawing range boundary; defaults to 0.5; only required if plot == "boundary"
-#' @param coarse.grid (logical) whether to use coarse grid (T) or not (F)
-#' @param spatRegion (list) output from make_spatKey(); only required if coarse.grid == T
 #'
 #' @returns ggplot object containing map of desired data
 #' @export
@@ -59,16 +56,11 @@ map_species_data <- function(title,
                              out,
                              plot.current = T,
                              plot.uncertainty = F,
-                             plot.log = F,
-                             plot.exp = F,
+                             transform = "none",
                              plot.change = F,
                              proj.n = 0,
                              proj.names = "",
-                             threshold = 0.5,
-
-                             # Species grid
-                             coarse.grid,
-                             spatRegion) {
+                             threshold = 0.5) {
 
   if (plot.uncertainty %in% c(F, "lotail", "hitail", "unc.rel", "unc.range") == F) {
     stop("Options for uncertainty are F (do not plot uncertainty) or 'unc.rel.', 'unc.range', 'hitail', or 'lotail'")
@@ -191,18 +183,22 @@ map_species_data <- function(title,
 
 
     # adjust values
-    if (plot.log == F & plot != "spat") {
+    if (transform == "none" & plot != "spat") {
       q99 <- quantile(intensity$plot.val, 0.99, na.rm = T)
       intensity$plot.val[which(intensity$plot.val > q99)] <- q99
     }
 
-    if (plot.log == T) {
+    
+    if (transform == "log") {
       intensity$plot.val <- log(intensity$plot.val)
-    }
-
-    if (plot.exp == T) {
+    } else if (transform == "exp") {
       intensity$plot.val <- exp(intensity$plot.val)
+    } else if (transform == "none") {
+      intensity$plot.val <- intensity$plot.val
+    } else {
+      stop("transform must be 'exp', 'log', or 'none'")
     }
+    
 
     if (plot == "boundary") {
       intensity$plot.val <- ifelse(intensity$plot.val >= threshold, "Present", "Absent")
@@ -212,8 +208,11 @@ map_species_data <- function(title,
     intensity <- full_join(region$sp.grid, intensity, by = "conus.grid.id")
 
 
-
-
+    # make color label
+    col.lab <- paste0(fill, unc)
+    if (transform == "log") col.lab <- paste0("Log(", col.lab, ")")
+    if (transform == "exp") col.lab <- paste0("Exp(", col.lab, ")")
+    
     # add fill color
     if (plot != "spat") {
 
@@ -232,7 +231,7 @@ map_species_data <- function(title,
 
           base <- base +
             geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
-            labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
+            labs(fill = col.lab, color = col.lab, title = title)
 
 
         } else {
@@ -256,7 +255,7 @@ map_species_data <- function(title,
             guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
                                                        legend.key.width = unit(20, "lines")),
                                          title.hjust = 0.9, title.vjust = 1)) +
-            labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
+            labs(fill = col.lab, color = col.lab, title = title)
 
         }
 
@@ -288,7 +287,7 @@ map_species_data <- function(title,
 
             base <- base +
               geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
-              labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
+              labs(fill = col.lab, color = col.lab, title = title) +
               facet_wrap(~scenario, labeller = labeller(scenario = labs))
 
 
@@ -311,7 +310,7 @@ map_species_data <- function(title,
               guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
                                                          legend.key.width = unit(20, "lines")),
                                            title.hjust = 1, title.vjust = 1)) +
-              labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
+              labs(fill = col.lab, color = col.lab, title = title) +
               facet_wrap(~scenario, labeller = labeller(scenario = labs))
           }
 
@@ -351,7 +350,7 @@ map_species_data <- function(title,
 
             base <- base +
                       geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
-                      labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title) +
+                      labs(fill = col.lab, color = col.lab, title = title) +
                       facet_wrap(~scenario, labeller = labeller(scenario = labs))
 
           } else {
@@ -427,9 +426,8 @@ map_species_data <- function(title,
 
       base <- base +
                 geom_sf(data = intensity, aes(fill = .data$plot.val, color = .data$plot.val)) +
-                guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
-                                                           title.hjust = 1, title.vjust = 1))) +
-                labs(fill = paste0(fill, unc), color = paste0(fill, unc), title = title)
+                guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines")))) +
+                labs(fill = col.lab, color = col.lab, title = title)
     }
 
   }
@@ -585,6 +583,10 @@ map_species_data <- function(title,
   
   if (plot == "samples") {
     dat <- plotpoints
+  } else {
+    dat <- intensity %>%
+      select("conus.grid.id", "group", "block.out", "plot.val", "geometry") %>%
+      rename(value = "plot.val")
   }
   
   return(list(dat = dat, 

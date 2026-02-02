@@ -1,5 +1,5 @@
 
-test_that("map_species_data() works with samples", {
+test_that("map_species_data() works with plot = samples", {
   
   rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
                                         paste0("../../../species-futures/data/species/GPOR/IUCN/")),
@@ -153,3 +153,226 @@ test_that("map_species_data() works with samples", {
   
 })
 
+test_that("map_species_data() works with plot = lambda", {
+  
+  mod1 <- readRDS('~/GitHub/species-futures/pkg-tests/mod1.rds')
+  
+  # everything normal ----
+  out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("lambda", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  
+  # add range and region ----
+  out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda", 
+                          out = mod1$out,
+                          plot.range = T, plot.region = T, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("lambda with region", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:41, 43:95)], mod1$out$lambda0$mean[c(1:41, 43:95)]) # because highest value is truncated
+  
+  # uncertainty ----
+  out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.rel", 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("lambda, relative uncertainty", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:15, 17:95)], mod1$out$lambda0$unc.rel[c(1:15, 17:95)]) # because highest value is truncated
+  
+  out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.range", 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("lambda, absolute uncertainty", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:41, 43:95)], mod1$out$lambda0$unc.range[c(1:41, 43:95)]) # because highest value is truncated
+  
+  # transform ----
+  out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.rel", 
+                          transform = "log", plot.change = F)
+  expect_doppelganger("lambda, relative uncertainty log", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:15, 17:95)], log(mod1$out$lambda0$unc.rel[c(1:15, 17:95)])) # because highest value is truncated
+  
+  out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.range", 
+                          transform = "exp", plot.change = F)
+  expect_doppelganger("lambda, absolute uncertainty exp", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:41, 43:95)], exp(mod1$out$lambda0$unc.range[c(1:41, 43:95)])) # because highest value is truncated
+  
+  out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "exp", plot.change = F)
+  expect_doppelganger("lambda, mean exp", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:41, 43:95)], exp(mod1$out$lambda0$mean[c(1:41, 43:95)])) # because highest value is truncated
+  
+  
+  mod4 <- readRDS('~/GitHub/species-futures/pkg-tests/mod4.rds')
+  
+  # coarse grid ----
+  out <- map_species_data(title = "Lambda test", region = mod4$region, plot = "lambda", 
+                          out = mod4$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("lambda coarse", out$plot)
+  expect_equal(nrow(out$dat), 473)
+})
+
+
+
+test_that("map_species_data() works with plot = psi and plot = threshold", {
+  
+  mod1 <- readRDS('~/GitHub/species-futures/pkg-tests/mod1.rds')
+  
+  # everything normal ----
+  out <- map_species_data(title = "Psi test", region = mod1$region, plot = "psi", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("psi", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:47, 49:95)], mod1$out$psi0$mean[c(1:47, 49:95)]) # because highest value is truncated
+  expect_lte(max(out$dat$value), 1)
+  expect_lte(0, min(out$dat$value))
+  
+  # uncertainty ----
+  out <- map_species_data(title = "Psi test", region = mod1$region, plot = "psi", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.rel", 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("psi, relative uncertainty", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:83, 85:95)], mod1$out$psi0$unc.rel[c(1:83, 85:95)]) # because highest value is truncated
+  
+  out <- map_species_data(title = "Psi test", region = mod1$region, plot = "psi", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.range", 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("psi, absolute uncertainty", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  expect_equal(out$dat$value[c(1:15, 17:95)], mod1$out$psi0$unc.range[c(1:15, 17:95)]) # because highest value is truncated
+  
+  # coarse grid ----
+  out <- map_species_data(title = "Psi test", region = mod4$region, plot = "psi", 
+                          out = mod4$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("psi coarse", out$plot)
+  expect_equal(nrow(out$dat), 473)
+  
+  # boundary ----
+  out <- map_species_data(title = "Boundary test", region = mod1$region, plot = "boundary", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("threshold 0.5", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  
+  test <- nrow(out$dat[which(out$dat$value == "Present"),]) + nrow(out$dat[which(out$dat$value == "Absent"),])
+  expect_equal(test, 95)
+  
+  
+  out <- map_species_data(title = "Boundary test", region = mod1$region, plot = "boundary", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F,
+                          threshold = 0.90)
+  expect_doppelganger("threshold 0.9", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  
+  test <- nrow(out$dat[which(out$dat$value == "Present"),]) + nrow(out$dat[which(out$dat$value == "Absent"),])
+  expect_equal(test, 95)
+  
+  # coarse grid ----
+  out <- map_species_data(title = "Boundary test", region = mod4$region, plot = "boundary", 
+                          out = mod4$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("threshold coarse", out$plot)
+  expect_equal(nrow(out$dat), 473)
+})
+  
+
+
+test_that("map_species_data() works with plot = spat", {
+  
+  mod4 <- readRDS('~/GitHub/species-futures/pkg-tests/mod4.rds')
+  
+  # everything normal ----
+  out <- map_species_data(title = "Spatial test", region = mod4$region, plot = "spat", 
+                          out = mod4$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("spatial", out$plot)
+  expect_equal(nrow(out$dat), 90)
+  
+  
+  # no spatial effect ----
+  mod1 <- readRDS('~/GitHub/species-futures/pkg-tests/mod1.rds')
+  expect_error(out <- map_species_data(title = "Spatial test", region = mod1$region, plot = "spat", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F))
+})
+
+
+test_that("map_species_data() works with plot = XB", {
+  
+  mod1 <- readRDS('~/GitHub/species-futures/pkg-tests/mod1.rds')
+  
+  # everything normal ----
+  out <- map_species_data(title = "XB test", region = mod1$region, plot = "XB", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F, 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("xb", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  
+  
+  # uncertainty ----
+  out <- map_species_data(title = "XB test", region = mod1$region, plot = "XB", 
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.rel", 
+                          transform = "none", plot.change = F)
+  expect_doppelganger("xb relative uncertainty", out$plot)
+  expect_equal(nrow(out$dat), 95)
+  
+  
+})
+
+
+test_that("map_species_data() works with plot = effort", {
+  
+  
+  
+  
+})
