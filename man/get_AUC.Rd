@@ -4,12 +4,14 @@
 \alias{get_AUC}
 \title{Get AUC}
 \usage{
-get_AUC(species.data, out)
+get_AUC(species.data, out, block.out = "none")
 }
 \arguments{
 \item{species.data}{(list) output from load_species_data()}
 
 \item{out}{(list) output from summarize_samples()}
+
+\item{block}{(character) block excluded (1, 2, 3, or "none")}
 }
 \value{
 (data.frame) Overall AUC and AUC for each dataset

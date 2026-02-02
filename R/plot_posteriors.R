@@ -26,9 +26,6 @@ plot_posteriors <- function(samples,
                             cutoff = 0,
                             Bprior = "dnorm(0,1)",
                             plot = "B",
-                            # Bpriordist = "dnorm",
-                            # Bpriorvar1 = 0,
-                            # Bpriorvar2 = 1,
                             chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
 
 

@@ -4,18 +4,14 @@
 \alias{plot_pars}
 \title{Plot parameter estimates}
 \usage{
-plot_pars(out, plot.group = "process", plot.type = "full", cov.labs, title)
+plot_pars(out, plot.type = "full", cov.labs)
 }
 \arguments{
-\item{out}{(list) output from summarize_chains()}
-
-\item{plot.group}{(character) which type of parameters to plot; options are "process", "observation", or "dataset"; defaults to "process"}
+\item{out}{(data.frame) output from summarize_chains() containing correct parameters}
 
 \item{plot.type}{(character) which type of plot to make; options are "full" or "cv"; defaults to "full}
 
 \item{cov.labs}{(data.frame) dataframe containing covariate column names ("covariate") and labels ("Label")}
-
-\item{title}{(character) title for plot}
 }
 \value{
 A plot of parameter estimates

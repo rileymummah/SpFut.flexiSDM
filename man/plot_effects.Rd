@@ -4,12 +4,14 @@
 \alias{plot_effects}
 \title{Plot marginal effects of process parameters}
 \usage{
-plot_effects(data, out, breaks = 0.01, unscale_covar = NULL)
+plot_effects(data, out, cov.labs, breaks = 0.01, unscale_covar = NULL)
 }
 \arguments{
 \item{data}{(list) output from data_for_nimble()}
 
 \item{out}{(list) output from summarize_chains()}
+
+\item{cov.labs}{(data.frame)}
 
 \item{breaks}{(numeric) distance between covariate values to simulate}
 

@@ -184,7 +184,8 @@ make_region <- function(rangelist,
       grid1 <- gridc %>%
                 summarize(geometry = st_union(.data$geometry, by_feature = F)) %>%
                 st_cast("POLYGON") %>%
-                mutate(group.id = 1:nrow(.data))
+                # Changed from 1:nrow() to 1:n()
+                mutate(group.id = 1:n())
 
       # see how many cells are in each group
       suppressWarnings(tmp <- st_intersection(gridc, grid1))
