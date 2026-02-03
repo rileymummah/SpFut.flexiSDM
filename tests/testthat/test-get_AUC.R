@@ -18,9 +18,9 @@ test_that("get_AUC() works", {
 
 
   # CV ----
-  mod5 <- readRDS('~/GitHub/species-futures/pkg-tests/mod5.rds')
+  mod4 <- readRDS('~/GitHub/species-futures/pkg-tests/mod4.rds')
 
-  auc <- get_AUC(mod5$species.data, out = mod5$out, block.out = 3)
+  auc <- get_AUC(mod4$species.data, out = mod4$out, block.out = 3)
 
   expect_true(is.data.frame(auc))
   expect_equal(nrow(auc), 3)
