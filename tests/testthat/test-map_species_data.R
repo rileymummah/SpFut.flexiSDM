@@ -104,7 +104,7 @@ test_that("map_species_data() works with plot = samples", {
   # output content
   expect_equal(nrow(out$dat), 35)
   expect_equal(ncol(out$dat), 12)
-  expect_doppelganger("samples with blocks", out$plot)
+  vdiffr::expect_doppelganger("samples with blocks", out$plot)
 
 
   # leave out data from one block ----
@@ -310,6 +310,9 @@ test_that("map_species_data() works with plot = psi and plot = threshold", {
   expect_equal(test, 95)
 
   # coarse grid ----
+
+  mod4 <- readRDS('~/GitHub/species-futures/pkg-tests/mod4.rds')
+
   out <- map_species_data(title = "Boundary test", region = mod4$region, plot = "boundary",
                           out = mod4$out,
                           plot.range = F, plot.region = F, plot.cells = F,
