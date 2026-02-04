@@ -1,10 +1,10 @@
 test_that("nimble_code() works with full data", {
 
-  source("../../../species-futures/functions/FXN-nimbleParallel.R")
+  source("~/GitHub/species-futures/functions/FXN-nimbleParallel.R")
 
   # set up ----
-  rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
-                                        paste0("../../../species-futures/data/species/GPOR/IUCN/")),
+  rangelist <- get_range(range.path = c(paste0("~/GitHub/species-futures/data/species/GPOR/GAP/"),
+                                        paste0("~/GitHub/species-futures/data/species/GPOR/IUCN/")),
                          range.name = c("GAP", "IUCN"), crs = 4326)
 
   boundary <- rangelist[[1]]
@@ -1090,6 +1090,172 @@ test_that("nimble_code() works with full data", {
                             iter = 100,
                             burnin = 25,
                             thin = 5)
-  
+
   file.remove("modelfull.R")
   })
+
+
+test_that("nimble_code() works with CV", {
+  
+  # set up ----
+  rangelist <- get_range(range.path = c(paste0("~/GitHub/species-futures/data/species/GPOR/GAP/"),
+                                        paste0("~/GitHub/species-futures/data/species/GPOR/IUCN/")),
+                         range.name = c("GAP", "IUCN"), crs = 4326)
+  
+  boundary <- rangelist[[1]]
+  grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>%
+    st_as_sf() %>%
+    mutate(conus.grid.id = 1:nrow(.)) %>%
+    rename(geometry = x)
+  
+  region <- make_region(rangelist,
+                        buffer = 1,
+                        sub = F,
+                        boundary = boundary,
+                        grid = grid,
+                        rm.clumps = F,
+                        clump.size = 2,
+                        continuous = F)
+  
+  st.map <- rnaturalearth::ne_states(country = c("Canada", "Mexico", "United States of America"),
+                                     returnclass = "sf")
+  
+  stategrid <- get_state_grid(region, st.map)
+  
+  covariates <- data.frame(conus.grid.id = region$sp.grid$conus.grid.id,
+                           temp = rnorm(nrow(region$sp.grid), 0, 1),
+                           prec = rnorm(nrow(region$sp.grid), 0, 1) + runif(nrow(region$sp.grid), 0, 1))
+  
+  # make CV blocks
+  spatblocks <- make_CV_blocks(region, 5, 5, 3)
+  
+  block1 <- filter(spatblocks, folds == 2)
+  
+  # find grid.ids for test block, everything else is train
+  suppressWarnings(test.i <- st_intersection(region$sp.grid, block1) %>%
+                     pull(conus.grid.id) %>%
+                     unique())
+  train.i <- filter(region$sp.grid, conus.grid.id %in% test.i == F) %>%
+    pull(conus.grid.id)
+  
+  gridkey <- select(region$sp.grid, conus.grid.id) %>%
+    st_drop_geometry() %>%
+    mutate(grid.id = 1:nrow(.),
+           group = case_when(conus.grid.id %in% train.i ~ "train",
+                             conus.grid.id %in% test.i ~ "test"))
+  
+  # Full model ----
+  covs.inat <- ""
+  covs.PO <- ""
+  allfiles <- data.frame(file.name = c("iNat_test_PO", "iNat_test1_PO", "Dodd_test_DND", "NEARMI_test_count"),
+                         file.label = c("iNat_test", "iNat_test1", "Dodd_test", "NEARMI_test"),
+                         covar.mean = c(NA, NA, "elevation", "depth"),
+                         covar.sum = c(NA, NA, NA, "EffectValue"),
+                         data.type = c("PO", "PO", "DND", "count"),
+                         PO.extent = c("CONUS", "PA", NA, NA))
+  
+  species.data <- load_species_data(sp.code = "GPOR",
+                                    sp.code.all = "GPOR",
+                                    file.info = allfiles,
+                                    file.path = "~/GitHub/species-futures/pkg-tests/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    region = region,
+                                    filter.region = T,
+                                    year.start = 1800,
+                                    year.end = 2025,
+                                    coordunc = 1000,
+                                    coordunc_na.rm = T,
+                                    spat.thin = F,
+                                    keep.conus.grid.id = train.i)
+  
+  sp.data <- sppdata_for_nimble(species.data,
+                                region,
+                                file.info = allfiles,
+                                covar = covariates,
+                                covs.inat = covs.inat,
+                                covs.PO = covs.PO,
+                                DND.maybe = 1,
+                                keep.conus.grid.id = train.i)
+  
+  
+  tmp <- data_for_nimble(sp.data,
+                         covar = covariates,
+                         covs.z = c("temp", "prec"),
+                         sp.auto = T,
+                         coarse.grid = F,
+                         region = region,
+                         process.intercept = F,
+                         gridkey = gridkey,
+                         spatRegion= spatRegion)
+  
+  data <- tmp$data
+  constants <- tmp$constants
+  
+  constants <- add_state_ind(species.data,
+                             region,
+                             gridkey,
+                             constants,
+                             stategrid = stategrid,
+                             obsc.state = "",
+                             keep.conus.grid.id = train.i)
+  
+  code <- nimble_code(data,
+                      constants,
+                      path = "",
+                      sp.auto = T,
+                      coarse.grid = F,
+                      Bprior = "dnorm(0,1)",
+                      block.out = 2,
+                      zero_mean = T,
+                      rm.state = F,
+                      tau = 1)
+  
+  txt <- trimws(readLines("model2.r"))
+  
+  # lambda is estimated for each dataset
+  for (d in 1:4) {
+    expect_true(paste0("lambdaD", d, "[j] <- lambda0[Wcells", d, "[j]] * alpha[", d, "]") %in% txt |
+                  paste0("lambdaD", d, "[j] <- lambda0[Vcells", d, "[j]] * alpha[", d, "]") %in% txt |
+                  paste0("lambdaD", d, "[j] <- lambda0[Ycells", d, "[j]] * alpha[", d, "]") %in% txt)
+  }
+  
+  # dataset 1
+  expect_true("# 47 cells" %in% txt)
+  expect_true("W1[j] ~ dpois(lambdaD1[j] * E1) # Poisson" %in% txt)
+  expect_true("log(E1) <- 0" %in% txt)
+  
+  # dataset 2
+  expect_true("E2[j] <- eff2[j] * S2[j]" %in% txt)
+  expect_true("W2[j] ~ dpois(lambdaD2[j] * E2[j]) # Poisson" %in% txt)
+  
+  # dataset 3
+  expect_true("V3[j] ~ dbern(1-exp(-lambdaD3[j] * p3[j])) # Bernoulli" %in% txt)
+  expect_true("log(p3[j]) <- D3[1] * Xv3[j,1]" %in% txt)
+  
+  # dataset 4
+  expect_true("Y4[j] ~ dpois(lambdaD4[j] * p4[j]) # Poisson" %in% txt)
+  expect_true("log(p4[j]) <- inprod(C4[1:nCovY4], Xy4[j,1:nCovY4])" %in% txt)
+  
+  inits <- function(x){nimble_inits(data,
+                                    constants,
+                                    sp.auto = T,
+                                    seed = x)}
+  
+  params <- nimble_params(data,
+                          constants,
+                          lambda = F,
+                          XB = F,
+                          sp.auto = F,
+                          effort = F)
+  
+  samples <- nimbleParallel(code = code,
+                            data = data,
+                            constants = constants,
+                            inits = inits,
+                            param = params,
+                            iter = 100,
+                            burnin = 25,
+                            thin = 5)
+  
+  file.remove("model2.R")
+})
