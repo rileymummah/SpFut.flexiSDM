@@ -36,6 +36,12 @@ test_that("summarize_samples() works", {
   expect_true(length(tmp) == 9)
 
   # MODEL 4 W/ PROJECTIONS
+
+  # remove psi from samples
+  mod4$samples[[1]] <- mod4$samples[[1]][,-grep("psi", colnames(mod4$samples[[1]]))]
+  mod4$samples[[2]] <- mod4$samples[[2]][,-grep("psi", colnames(mod4$samples[[2]]))]
+  mod4$samples[[3]] <- mod4$samples[[3]][,-grep("psi", colnames(mod4$samples[[3]]))]
+
   mod4$samples <- lapply(mod4$samples,
                          get_derived,
                          data = mod4$data,
