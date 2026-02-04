@@ -33,16 +33,33 @@ test_that("plot_covar() works", {
              region,
              cov.names = covlabs$covariate,
              cov.labels = covlabs$Label,
-             out.path = "",
-             out.name = "1_covariates-a_process-map")
+             scaled = F)
 
 
   # check format
   expect_s3_class(out$dat, "sf")
   expect_equal(nrow(out$dat), 237)
   expect_equal(unique(table(out$dat$conus.grid.id)), 3) # each conus.grid.id has 3 values
-  expect_equal(file.exists("~/GitHub/SpFut.flexiSDM/tests/testthat/1_covariates-a_process-map.jpg"), T)
   vdiffr::expect_doppelganger("Covariate values", out$plot)
 
-
+  
+  # Scale covariates 
+  covar_unscaled <- covar
+  numcols <- sapply(covar, is.numeric)
+  numcols <- which(numcols)
+  covar[,numcols] <- sapply(covar[,numcols], scale_this)
+  
+  out <- plot_covar(covar,
+                    region,
+                    cov.names = covlabs$covariate,
+                    cov.labels = covlabs$Label,
+                    scaled = T)
+  
+  
+  # check format
+  expect_s3_class(out$dat, "sf")
+  expect_equal(nrow(out$dat), 237)
+  expect_equal(unique(table(out$dat$conus.grid.id)), 3) # each conus.grid.id has 3 values
+  vdiffr::expect_doppelganger("Covariate values, scaled", out$plot)
+  
 })
