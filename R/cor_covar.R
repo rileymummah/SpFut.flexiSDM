@@ -36,8 +36,6 @@ cor_covar <- function(covar,
                       cov.names,
                       cov.labels = cov.names,
                       cov.levels = cov.labels,
-                      out.path = "",
-                      out.name = "covariate-cor",
                       color.threshold = 0.25) {
 
 
@@ -89,9 +87,9 @@ cor_covar <- function(covar,
                     legend.title = element_text(size = 9),
                     legend.text = element_text(size = 8))
 
-  ggsave(corspl,
-         filename = paste0(out.path, out.name, ".jpg"),
-         height = 5, width = 9)
+  # ggsave(corspl,
+  #        filename = paste0(out.path, out.name, ".jpg"),
+  #        height = 5, width = 9)
 
   return(list(dat = cors,
               plot = corspl))

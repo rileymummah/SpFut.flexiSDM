@@ -13,14 +13,11 @@ test_that("cor_covar() works", {
   out <- cor_covar(covar,
             cov.names = covlabs$covariate,
             cov.labels = covlabs$Label,
-            out.path = "",
-            out.name = "1_covariates-a_process-correlations",
             color.threshold = 0.04)
 
     # check format
     expect_equal(nrow(out$dat), 6)
     expect_equal(unique(table(out$dat$cov2)), 2) # each cov2 has 2 values
-    expect_equal(file.exists("~/GitHub/SpFut.flexiSDM/tests/testthat/1_covariates-a_process-correlations.jpg"), T)
     vdiffr::expect_doppelganger("Covariate correlations", out$plot)
 
 })
