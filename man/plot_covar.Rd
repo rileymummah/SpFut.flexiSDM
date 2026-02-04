@@ -4,14 +4,7 @@
 \alias{plot_covar}
 \title{Plot covariates}
 \usage{
-plot_covar(
-  covar,
-  region,
-  cov.names,
-  cov.labels = cov.names,
-  out.path = "",
-  out.name = "covariate-map"
-)
+plot_covar(covar, region, cov.names, cov.labels = cov.names, scaled)
 }
 \arguments{
 \item{covar}{(data.frame) dataframe holding covariate values and conus.grid.id}
@@ -21,10 +14,6 @@ plot_covar(
 \item{cov.names}{(character vector) column names from covar to plot}
 
 \item{cov.labels}{(character vector) labels for covariate names, defaults to use column names as labels}
-
-\item{out.path}{(character) path to save figure}
-
-\item{out.name}{(character) file name to save figure}
 }
 \value{
 Saves a map of scaled covariate values to the desired path.
