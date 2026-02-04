@@ -6,8 +6,6 @@
 #' @param cov.names (character vector) column names from covar to plot
 #' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
 #' @param cov.levels (character vector) column names in order they should appear on plot
-#' @param out.path (character) path to save figure
-#' @param out.name (character) file name to save figure
 #' @param color.threshold (numeric) threshold above which to add color to plot; default is 0.25
 #'
 #' @returns Saves a plot showing correlations between covariates
