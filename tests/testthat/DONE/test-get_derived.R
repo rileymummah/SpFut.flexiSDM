@@ -6,6 +6,9 @@ test_that("get_derived() works", {
   data <- mod1$data
   region <- mod1$region
 
+  # remove psi from samples
+  samples <- samples[,-grep("psi", colnames(samples))]
+  
   # Only run this on one chain at a time
   test1 <- get_derived(samples = samples,
                        data = data,
@@ -34,6 +37,9 @@ test_that("get_derived() works", {
   data <- mod2$data
   region <- mod2$region
 
+  # remove psi from samples
+  samples <- samples[,-grep("psi", colnames(samples))]
+  
   test2 <- get_derived(samples = samples,
                        data = data,
                        project = 0,
@@ -61,6 +67,9 @@ test_that("get_derived() works", {
   data <- mod3$data
   region <- mod3$region
 
+  # remove psi from samples
+  samples <- samples[,-grep("psi", colnames(samples))]
+  
   test3 <- get_derived(samples = samples,
                        data = data,
                        project = 0,
@@ -89,6 +98,9 @@ test_that("get_derived() works", {
   data <- mod4$data
   region <- mod4$region
 
+  # remove psi from samples
+  samples <- samples[,-grep("psi", colnames(samples))]
+  
   test4 <- get_derived(samples = samples,
                        data = data,
                        project = 0,
