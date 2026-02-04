@@ -1,4 +1,4 @@
-test_that("nimble_code() works", {
+test_that("nimble_code() works with full data", {
 
   source("../../../species-futures/functions/FXN-nimbleParallel.R")
 
@@ -1090,4 +1090,6 @@ test_that("nimble_code() works", {
                             iter = 100,
                             burnin = 25,
                             thin = 5)
+  
+  file.remove("modelfull.R")
   })
