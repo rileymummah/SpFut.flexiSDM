@@ -6,8 +6,6 @@
 #' @param region (list) region output from make_region()
 #' @param cov.names (character vector) column names from covar to plot
 #' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
-#' @param out.path (character) path to save figure
-#' @param out.name (character) file name to save figure
 #'
 #' @returns Saves a map of scaled covariate values to the desired path.
 #' @export
@@ -37,8 +35,9 @@ plot_covar <- function(covar,
                        region,
                        cov.names,
                        cov.labels = cov.names,
-                       out.path = "",
-                       out.name = "covariate-map") {
+                       scaled){ #,
+                       # out.path = "",
+                       # out.name = "covariate-map") {
 
   cov.labs <- data.frame(name = cov.names,
                          label = cov.labels)
@@ -68,9 +67,12 @@ plot_covar <- function(covar,
                                        T ~ value)) %>%
 
               # add labels
-              left_join(cov.labs, by = "name")
+              left_join(cov.labs, by = "name") %>%
+    select(!"square")
 
 
+  if (scaled == T) title <- "Scaled covariate values"
+  if (scaled == F) title <- "Covariate values"
   pl <- ggplot(filter(sp.grid, is.na(.data$value) == F)) +
           geom_sf(aes(fill = .data$value, color = .data$value)) +
           geom_sf(data = st, fill = NA, color= "gray40") +
@@ -91,11 +93,11 @@ plot_covar <- function(covar,
                                                      legend.key.width = unit(1.5, "lines")),
                                        title.hjust = 0, title.vjust = 1)) +
           labs(fill = "Value", color = "Value",
-               title = "Scaled covariate values") +
+               title = title) +
           coord_sf(xlim = c(bb$xmin, bb$xmax), ylim = c(bb$ymin, bb$ymax))
 
 
-  ggsave(pl, filename = paste0(out.path, out.name, ".jpg"), height = 15, width = 15)
+  # ggsave(pl, filename = paste0(out.path, out.name, ".jpg"), height = 15, width = 15)
 
   return(list(dat = sp.grid,
               plot = pl))
