@@ -14,6 +14,8 @@ plot_covar(covar, region, cov.names, cov.labels = cov.names, scaled)
 \item{cov.names}{(character vector) column names from covar to plot}
 
 \item{cov.labels}{(character vector) labels for covariate names, defaults to use column names as labels}
+
+\item{scaled}{(logical) Are the covariate values scaled?}
 }
 \value{
 Saves a map of scaled covariate values to the desired path.

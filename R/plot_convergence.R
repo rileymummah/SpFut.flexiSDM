@@ -17,10 +17,10 @@ plot_convergence <- function(out) {
     tmp1 <- out[[i]] %>% mutate(type = names(out)[i])
     tmp <- bind_rows(tmp, tmp1)
   }
-  
+
   tmp1 <- tmp %>%
     filter(.data$type %in% c("process.coef", "obs.coef", "alpha")) %>%
-    rename(source = name) %>%
+    rename(source = .data$name) %>%
     #select(!.data$name) %>%
     mutate(`Log(ESS)` = log(.data$ESS),
            Rhat = .data$rhat,
@@ -28,14 +28,14 @@ plot_convergence <- function(out) {
                              type == "obs.coef" ~ "Observation \ncoefficients",
                              type == "alpha" ~ "Dataset \nintercepts")) %>%
     pivot_longer(cols = c("Rhat", "Log(ESS)"))
-  
-  
+
+
   boxes <- data.frame(name = c("Log(ESS)", "Rhat"),
                       xmin = c(0.5, 0.5),
                       xmax = c(3.5, 3.5),
                       ymin = c(0, 1.1),
                       ymax = c(5.29, max(c(tmp$rhat, 1.1), na.rm = T)))
-  
+
   set.seed(1)
   pl <- ggplot() +
     geom_rect(data = boxes,
@@ -55,15 +55,15 @@ plot_convergence <- function(out) {
                                      vjust = 1)) +
     labs(x = "Parameter", y = "Value",
          title = "Red shaded area means chains may not have converged")
-  
-  
-  
+
+
+
   dat <- tmp1 %>%
     select("source", "data.type", "type", "covariate", "name", "value") %>%
     pivot_wider(names_from = "name", values_from = "value") %>%
-    mutate(ESS = exp(`Log(ESS)`)) %>%
+    mutate(ESS = exp(.data$`Log(ESS)`)) %>%
     select(!"Log(ESS)")
-  
+
   return(list(dat = dat,
               plot = pl))
 }

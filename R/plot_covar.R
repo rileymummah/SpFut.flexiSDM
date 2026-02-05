@@ -6,6 +6,7 @@
 #' @param region (list) region output from make_region()
 #' @param cov.names (character vector) column names from covar to plot
 #' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
+#' @param scaled (logical) Are the covariate values scaled?
 #'
 #' @returns Saves a map of scaled covariate values to the desired path.
 #' @export
@@ -35,7 +36,7 @@ plot_covar <- function(covar,
                        region,
                        cov.names,
                        cov.labels = cov.names,
-                       scaled){ #,
+                       scaled){ #,F
                        # out.path = "",
                        # out.name = "covariate-map") {
 
@@ -55,7 +56,7 @@ plot_covar <- function(covar,
               full_join(covar, by = c("conus.grid.id")) %>%
               select(all_of(c("conus.grid.id", cov.names)))
 
-  
+
 
   sp.grid <- sp.grid %>% pivot_longer(!c("conus.grid.id", "geometry")) %>%
 

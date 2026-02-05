@@ -15,9 +15,9 @@
 plot_pars <- function(out,
                       plot.type = "full",
                       cov.labs) {
-  
+
   if ("list" %in% class(out)) stop("'out' must be a dataframe element from the summarize_samples() output")
-  
+
   tmp <- colnames(out)
   if ("covariate" %in% tmp & "data.type" %in% tmp) {
     plot.group <- "observation"
@@ -32,14 +32,14 @@ plot_pars <- function(out,
     plot.group <- "tau"
     title <- "Tau estimate"
   }
-  
+
   blockcols <- c("none" = "black", "1" = "#e79f1e", "2" = "#009e73", "3" = "#cb79a8")
-  
-  
+
+
   if (plot.group == "process") {
     dat <- mutate(out, x = .data$covariate)
     xlab <- "Covariate"
-    
+
     # rename interaction reference level
     ints <- grep("_x_", dat$x)
     if (length(ints) == 2) { # interaction with quadratic term
@@ -47,18 +47,18 @@ plot_pars <- function(out,
       newname <- grep(paste0(cov, collapse = "|"), dat$x)[1:2]
       newname1 <- paste0(dat$x[newname], "_x_reference")
       dat$x[newname] <- newname1
-      
+
     } else { # interaction with linear term
       cov <- gsub("_x_.*", "", dat$x[ints])
       newname <- grep(paste0(cov, collapse = "|"), dat$x)[1]
       newname1 <- paste0(dat$x[newname], "_x_reference")
       dat$x[newname] <- newname1
     }
-    
+
     if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
     if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
-    
-    
+
+
     dat <- dat %>%
       mutate(cov1 = gsub("2", "", .data$covariate),
              tmp = gsub("_x_.*", "", .data$covariate),
@@ -67,12 +67,12 @@ plot_pars <- function(out,
       left_join(cov.labs, by = c("cov1" = "covariate")) %>%
       mutate(x = paste0(.data$Label, .data$quad)) %>%
       select(!"tmp")
-    
-    
+
+
   } else if (plot.group == "observation") {
     dat <- mutate(out, x = .data$covariate, lab = paste0(.data$name, ", ", .data$data.type))
     xlab <- "Covariate"
-    
+
     dat <- dat %>%
       mutate(cov1 = gsub("2", "", .data$covariate),
              quad = case_when(substr(.data$covariate,
@@ -82,7 +82,7 @@ plot_pars <- function(out,
       left_join(cov.labs, by = c("cov1" = "covariate")) %>%
       mutate(x = paste0(.data$Label, .data$quad)) %>%
       mutate(x = case_when(x == "NA" ~ cov1, T ~ x))
-    
+
   } else if (plot.group == "dataset") {
     dat <- rename(out, x = "name")
     xlab <- "Dataset"
@@ -92,14 +92,14 @@ plot_pars <- function(out,
   } else {
     stop("plot.group must be 'process' or 'observation' or 'dataset'")
   }
-  
+
   dat$x <- gsub("^2", "\u00B2", dat$x, fixed = T)
-  
-  
+
+
   if (plot.type == "full") {
-    dat <- filter(dat, block.out == "none")
+    dat <- filter(dat, .data$block.out == "none")
     if (nrow(dat) == 0) stop("No information on this parameter")
-    
+
     pl <- ggplot(dat) +
       geom_hline(yintercept = 0) +
       theme_bw() +
@@ -113,10 +113,10 @@ plot_pars <- function(out,
       labs(y = 'Estimate', x = xlab,
            title = title,
            subtitle = "Mean and 95% credible intervals")
-    
+
   } else if (plot.type == "cv") {
     if (nrow(dat) == 0) stop("No information on this parameter")
-    
+
     pl <- ggplot(dat) +
       geom_hline(yintercept = 0) +
       theme_bw() +
@@ -132,16 +132,16 @@ plot_pars <- function(out,
       labs(y = 'Estimate', x = xlab, color = "Excluded fold",
            title = title,
            subtitle = "Mean and 95% credible intervals")
-    
+
   } else {stop("plot.type must be 'full' or 'cv'")}
-  
-  
-  
+
+
+
   if (plot.group == "observation") {
     pl <- pl + facet_wrap(~lab, scales = "free")
   }
-  
-  
+
+
   return(pl)
-  
+
 }

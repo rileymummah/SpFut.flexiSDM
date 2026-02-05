@@ -2,7 +2,7 @@
 #'
 #' @param species.data (list) output from load_species_data()
 #' @param out (list) output from summarize_samples()
-#' @param block (character) block excluded (1, 2, 3, or "none")
+#' @param block.out (character) block excluded (1, 2, 3, or "none")
 #'
 #' @returns (data.frame) Overall AUC and AUC for each dataset
 #' @export
@@ -14,8 +14,8 @@
 
 
 get_AUC <- function(species.data,
-                   out,
-                   block.out = "none") {
+                    out,
+                    block.out = "none") {
   val.dat <- c()
   for (d in 1:length(species.data$obs)) {
     tmp <- species.data$obs[[d]] %>%
