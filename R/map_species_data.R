@@ -585,7 +585,7 @@ map_species_data <- function(title,
     dat <- plotpoints
   } else {
     dat <- intensity %>%
-      select("conus.grid.id", "group", "block.out", "plot.val", "geometry") %>%
+      select("conus.grid.id", "group", "block.out", "plot.val", "geometry", any_of("PO.dataset.name")) %>%
       rename(value = "plot.val")
   }
   
