@@ -176,7 +176,7 @@ test_that("map_species_data() works with plot = lambda", {
                           transform = "none", plot.change = F)
   vdiffr::expect_doppelganger("lambda with region", out$plot)
   expect_equal(nrow(out$dat), 95)
-  expect_equal(out$dat$value[c(1:41, 43:95)], mod1$out$lambda0$mean[c(1:41, 43:95)]) # because highest value is truncated
+  expect_equal(out$dat$value[c(1:41, 50:95)], mod1$out$lambda0$mean[c(1:41, 50:95)]) # because highest value is truncated
 
   # uncertainty ----
   out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda",
@@ -186,7 +186,7 @@ test_that("map_species_data() works with plot = lambda", {
                           transform = "none", plot.change = F)
   vdiffr::expect_doppelganger("lambda, relative uncertainty", out$plot)
   expect_equal(nrow(out$dat), 95)
-  expect_equal(out$dat$value[c(1:15, 17:95)], mod1$out$lambda0$unc.rel[c(1:15, 17:95)]) # because highest value is truncated
+  expect_equal(out$dat$value[c(1:15, 50:95)], mod1$out$lambda0$unc.rel[c(1:15, 50:95)]) # because highest value is truncated
 
   out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda",
                           out = mod1$out,
@@ -195,7 +195,7 @@ test_that("map_species_data() works with plot = lambda", {
                           transform = "none", plot.change = F)
   vdiffr::expect_doppelganger("lambda, absolute uncertainty", out$plot)
   expect_equal(nrow(out$dat), 95)
-  expect_equal(out$dat$value[c(1:41, 43:95)], mod1$out$lambda0$unc.range[c(1:41, 43:95)]) # because highest value is truncated
+  expect_equal(out$dat$value[c(1:41, 50:95)], mod1$out$lambda0$unc.range[c(1:41, 50:95)]) # because highest value is truncated
 
   # transform ----
   out <- map_species_data(title = "Lambda test", region = mod1$region, plot = "lambda",
@@ -323,7 +323,7 @@ test_that("map_species_data() works with plot = psi and plot = threshold", {
                           transform = "none", plot.change = F)
   vdiffr::expect_doppelganger("psi, relative uncertainty", out$plot)
   expect_equal(nrow(out$dat), 95)
-  expect_equal(out$dat$value[c(1:83, 85:95)], mod1$out$psi0$unc.rel[c(1:83, 85:95)]) # because highest value is truncated
+  expect_equal(out$dat$value[c(1:10, 85:95)], mod1$out$psi0$unc.rel[c(1:10, 85:95)]) # because highest value is truncated
 
   out <- map_species_data(title = "Psi test", region = mod1$region, plot = "psi",
                           out = mod1$out,
@@ -332,7 +332,7 @@ test_that("map_species_data() works with plot = psi and plot = threshold", {
                           transform = "none", plot.change = F)
   vdiffr::expect_doppelganger("psi, absolute uncertainty", out$plot)
   expect_equal(nrow(out$dat), 95)
-  expect_equal(out$dat$value[c(1:15, 17:95)], mod1$out$psi0$unc.range[c(1:15, 17:95)]) # because highest value is truncated
+  expect_equal(out$dat$value[c(1:15, 50:95)], mod1$out$psi0$unc.range[c(1:15, 50:95)]) # because highest value is truncated
 
   # coarse grid ----
   out <- map_species_data(title = "Psi test", region = mod4$region, plot = "psi",
@@ -394,7 +394,7 @@ test_that("map_species_data() works with plot = spat", {
                           plot.current = T, plot.uncertainty = F,
                           transform = "none", plot.change = F)
   vdiffr::expect_doppelganger("spatial", out$plot)
-  expect_equal(nrow(out$dat), 90)
+  expect_equal(nrow(out$dat), 473)
 
 
   # no spatial effect ----
@@ -458,7 +458,7 @@ test_that("map_species_data() works with plot = effort", {
 
   tmp <- out$dat %>% full_join(mod1$out$effort, by = c("conus.grid.id", "PO.dataset.name"))
   expect_equal(tmp$value[1:90], tmp$unc.rel[1:90])
-  expect_equal(nrow(out$dat), 95)
+  expect_equal(nrow(out$dat), 95*2)
   
 
   
@@ -472,7 +472,7 @@ test_that("map_species_data() works with plot = effort", {
   
   tmp <- out$dat %>% full_join(mod1$out$effort, by = c("conus.grid.id", "PO.dataset.name"))
   expect_equal(tmp$value, log(tmp$unc.rel))
-  expect_equal(nrow(out$dat), 95)
+  expect_equal(nrow(out$dat), 95*2)
   
 })
 
