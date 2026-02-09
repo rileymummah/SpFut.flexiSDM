@@ -119,8 +119,8 @@ summarize_samples <- function(samples,
     Enames <- colnames(samples[[1]][grep("E", colnames(samples[[1]]))])
     E <- out %>%
       slice(keep) %>%
-      mutate(name1 = Enames,
-             grid.id = gsub(".*[[]", "", .data$name1),
+      mutate(name1 = Enames) %>%
+      mutate(grid.id = gsub(".*[[]", "", .data$name1),
              grid.id = as.numeric(gsub("[]]", "", .data$grid.id)),
              PO.dataset = gsub("[[].*", "", .data$name1),
              block.out = as.character(block.out)) %>%
