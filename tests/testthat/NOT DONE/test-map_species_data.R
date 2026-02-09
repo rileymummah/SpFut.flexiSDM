@@ -377,7 +377,42 @@ test_that("map_species_data() works with plot = XB", {
 
 test_that("map_species_data() works with plot = effort", {
 
+  mod1 <- readRDS('~/GitHub/species-futures/pkg-tests/mod1.rds')
+  
+  # everything normal ----
+  out <- map_species_data(title = "Effort test", region = mod1$region, plot = "effort",
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F,
+                          transform = "none", plot.change = F)
+  vdiffr::expect_doppelganger("effort", out$plot)
+  expect_equal(nrow(out$dat), 95*2)
+  
+  
+  # uncertainty ----
+  out <- map_species_data(title = "Effort test", region = mod1$region, plot = "effort",
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.rel",
+                          transform = "none", plot.change = F)
+  vdiffr::expect_doppelganger("effort relative uncertainty", out$plot)
 
+  tmp <- out$dat %>% full_join(mod1$out$effort, by = c("conus.grid.id", "PO.dataset.name"))
+  expect_equal(tmp$value[1:90], tmp$unc.rel[1:90])
+  expect_equal(nrow(out$dat), 95)
+  
 
-
+  
+  # transform ----
+  out <- map_species_data(title = "Effort test", region = mod1$region, plot = "effort",
+                          out = mod1$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = "unc.rel",
+                          transform = "log", plot.change = F)
+  vdiffr::expect_doppelganger("effort relative uncertainty, log", out$plot)
+  
+  tmp <- out$dat %>% full_join(mod1$out$effort, by = c("conus.grid.id", "PO.dataset.name"))
+  expect_equal(tmp$value, log(tmp$unc.rel))
+  expect_equal(nrow(out$dat), 95)
+  
 })
