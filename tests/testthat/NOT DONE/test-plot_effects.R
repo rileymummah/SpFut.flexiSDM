@@ -6,18 +6,21 @@ test_that("plot_effects() works", {
                          Label = c("CovA", "CovB", "CovC"))
   out1 <- plot_effects(data = mod1$data, out = mod1$out, cov.labs = cov.labs)
   
-  out1$plot
+  vdiffr::expect_doppelganger("spatial", out1$plot)
+  expect_equal(nrow(out1$dat), 946)
   
-  out1$dat %>% filter(lo > mean | hi < mean, cov == "CovB") -> tmp
+  
+  
+  
+  mod4 <- readRDS('~/GitHub/species-futures/pkg-tests/mod4.rds')
+  
+  cov.labs <- data.frame(covariate = c("covA", "covB", "covC"),
+                         Label = c("CovA", "CovB", "CovC"))
+  out4 <- plot_effects(data = mod4$data, out = mod4$out, cov.labs = cov.labs)
+  
+  vdiffr::expect_doppelganger("spatial", out4$plot)
+  expect_equal(nrow(out4$dat), 1036)
+  
 
-  ggplot(tmp) +
-    geom_hline(yintercept = 0) +
-    geom_ribbon(aes(x = .data$xplot, ymax = .data$hi, ymin = .data$lo),
-                alpha = 0.5) +
-    geom_line(aes(x = .data$xplot, y = .data$mean)) +
-    facet_wrap(~ cov, scales = "free") +
-    theme_bw() +
-    labs(x = xlab, y = "Exp(Estimate)",
-         title = "Marginal effects of process covariates",
-         subtitle = "Ribbon indicates 95% credible interval")
+  
 })
