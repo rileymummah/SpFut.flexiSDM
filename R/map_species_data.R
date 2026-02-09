@@ -422,10 +422,10 @@ map_species_data <- function(title,
         scale_fill_gradient2(guide = guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
         scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
 
-      intensity <- filter(intensity, is.na(.data$plot.val) == F)
+      intensity0 <- filter(intensity, is.na(.data$plot.val) == F)
 
       base <- base +
-                geom_sf(data = intensity, aes(fill = .data$plot.val, color = .data$plot.val)) +
+                geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
                 guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines")))) +
                 labs(fill = col.lab, color = col.lab, title = title)
     }
@@ -584,8 +584,21 @@ map_species_data <- function(title,
   if (plot == "samples") {
     dat <- plotpoints
   } else {
-    dat <- intensity %>%
-      select("conus.grid.id", "group", "block.out", "plot.val", "geometry", any_of("PO.dataset.name")) %>%
+    
+    if (plot.change %in% c("absolute", "relative")) {
+      # get train and test groups
+      train.id <- out$lambda0 %>% filter(group == "train") %>% pull(conus.grid.id)
+      test.id <- out$lambda0 %>% filter(group == "test") %>% pull(conus.grid.id)
+      
+      intensity0 <- intensity0 %>%
+        mutate(group = case_when(conus.grid.id %in% train.id ~ "train",
+                                 conus.grid.id %in% test.id ~ "test"),
+               block.out = out$lambda0$block.out[1]) %>%
+        rename(plot.val = "change")
+    }
+    
+    dat <- intensity0 %>%
+      select("conus.grid.id", "group", "block.out", "plot.val", "geometry", any_of(c("PO.dataset.name", "scenario"))) %>%
       rename(value = "plot.val")
   }
   
