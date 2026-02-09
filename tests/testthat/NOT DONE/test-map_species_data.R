@@ -226,9 +226,9 @@ test_that("map_species_data() works with plot = lambda", {
   expect_equal(out$dat$value[c(1:41, 43:95)], exp(mod1$out$lambda0$mean[c(1:41, 43:95)])) # because highest value is truncated
 
 
-  mod4 <- readRDS('~/GitHub/species-futures/pkg-tests/mod4.rds')
 
   # coarse grid ----
+  mod4 <- readRDS('~/GitHub/species-futures/pkg-tests/mod4.rds')
   out <- map_species_data(title = "Lambda test", region = mod4$region, plot = "lambda",
                           out = mod4$out,
                           plot.range = F, plot.region = F, plot.cells = F,
@@ -236,6 +236,65 @@ test_that("map_species_data() works with plot = lambda", {
                           transform = "none", plot.change = F)
   vdiffr::expect_doppelganger("lambda coarse", out$plot)
   expect_equal(nrow(out$dat), 473)
+  
+  
+  
+  # projections ----
+  mod5 <- readRDS('~/GitHub/species-futures/pkg-tests/mod5.rds')
+  
+  out <- map_species_data(title = "Lambda test", region = mod5$region, plot = "lambda",
+                          out = mod5$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = T, plot.uncertainty = F,
+                          transform = "none", plot.change = F)
+  vdiffr::expect_doppelganger("lambda projections", out$plot)
+  expect_equal(nrow(out$dat), 473)
+  
+  
+  expect_error(out <- map_species_data(title = "Lambda test", region = mod5$region, plot = "lambda",
+                          out = mod5$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = F, plot.uncertainty = F,
+                          transform = "none", plot.change = T, proj.n = 2))
+  
+  out <- map_species_data(title = "Lambda test", region = mod5$region, plot = "lambda",
+                          out = mod5$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = F, plot.uncertainty = F,
+                          transform = "none", plot.change = F, proj.n = 2, proj.names = c("Scen 1", "Scen 2"))
+  vdiffr::expect_doppelganger("lambda future projections with names", out$plot)
+  expect_equal(nrow(out$dat), 473*2)
+  
+  
+  out <- map_species_data(title = "Lambda test", region = mod5$region, plot = "lambda",
+                          out = mod5$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = F, plot.uncertainty = "unc.range",
+                          transform = "none", plot.change = F, proj.n = 2)
+  vdiffr::expect_doppelganger("lambda projections uncertainty", out$plot)
+  expect_equal(nrow(out$dat), 473*2)
+  
+  
+  
+  out <- map_species_data(title = "Lambda test", region = mod5$region, plot = "lambda",
+                          out = mod5$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = F, plot.uncertainty = F,
+                          transform = "none", plot.change = "relative", proj.n = 2)
+  vdiffr::expect_doppelganger("lambda projections relative change", out$plot)
+  expect_equal(nrow(out$dat), 473*2)
+  
+  
+  out <- map_species_data(title = "Lambda test", region = mod5$region, plot = "lambda",
+                          out = mod5$out,
+                          plot.range = F, plot.region = F, plot.cells = F,
+                          plot.current = F, plot.uncertainty = F,
+                          transform = "none", plot.change = "absolute", proj.n = 2)
+  vdiffr::expect_doppelganger("lambda projections absolute change", out$plot)
+  expect_equal(nrow(out$dat), 473*2)
+  
+  
+  
 })
 
 
@@ -416,3 +475,7 @@ test_that("map_species_data() works with plot = effort", {
   expect_equal(nrow(out$dat), 95)
   
 })
+
+
+
+
