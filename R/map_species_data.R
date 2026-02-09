@@ -337,7 +337,7 @@ map_species_data <- function(title,
             scens <- scens[-which(scens == "0")]
             intensity0 <- intensity %>%
                             select("conus.grid.id", "scenario", "plot.val") %>%
-                            pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
+                            pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
                             pivot_longer(cols = all_of(scens)) %>%
                             rename(current = "0",
                                    future = "value",
@@ -363,7 +363,7 @@ map_species_data <- function(title,
             scens <- scens[-which(scens == "0")]
             intensity0 <- intensity %>%
                             select("conus.grid.id", "scenario", "plot.val") %>%
-                            pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
+                            pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
                             pivot_longer(cols = all_of(scens)) %>%
                             rename(current = "0",
                                    future = "value",
@@ -394,7 +394,7 @@ map_species_data <- function(title,
           scens <- scens[-which(scens == "0")]
           intensity0 <- intensity %>%
                           select("conus.grid.id", "scenario", "plot.val") %>%
-                          pivot_wider(names_from = .data$scenario, values_from = .data$plot.val) %>%
+                          pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
                           pivot_longer(cols = all_of(scens)) %>%
                           rename(current = "0",
                                  future = "value",
