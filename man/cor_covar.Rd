@@ -4,20 +4,12 @@
 \alias{cor_covar}
 \title{Plot correlations between covariates}
 \usage{
-cor_covar(
-  covar,
-  cov.names,
-  cov.labels = cov.names,
-  cov.levels = cov.labels,
-  color.threshold = 0.25
-)
+cor_covar(covar, cov.labs, cov.levels = cov.labels, color.threshold = 0.25)
 }
 \arguments{
 \item{covar}{(data.frame) data.frame holding covariate values and conus.grid.id}
 
-\item{cov.names}{(character vector) column names from covar to plot}
-
-\item{cov.labels}{(character vector) labels for covariate names, defaults to use column names as labels}
+\item{cov.labs}{(data.frame) Labels for each covariate}
 
 \item{cov.levels}{(character vector) column names in order they should appear on plot}
 

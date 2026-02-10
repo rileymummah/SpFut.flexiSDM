@@ -11,9 +11,9 @@ test_that("cor_covar() works", {
                         Label = c("Temperature", "Precipitation", "Elevation"))
 
   out <- cor_covar(covar,
-            cov.names = covlabs$covariate,
-            cov.labels = covlabs$Label,
-            color.threshold = 0.04)
+                   cov.labs = covlabs$Label,
+                   cov.levels = covlabs$covariate,
+                   color.threshold = 0.04)
 
     # check format
     expect_equal(nrow(out$dat), 6)

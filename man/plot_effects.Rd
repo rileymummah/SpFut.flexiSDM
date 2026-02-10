@@ -11,7 +11,7 @@ plot_effects(data, out, cov.labs, breaks = 0.01, unscale_covar = NULL)
 
 \item{out}{(list) output from summarize_chains()}
 
-\item{cov.labs}{(data.frame)}
+\item{cov.labs}{(data.frame) Labels for each covariate}
 
 \item{breaks}{(numeric) distance between covariate values to simulate}
 

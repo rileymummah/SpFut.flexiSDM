@@ -21,10 +21,8 @@
 #' @examples
 #' \dontrun{
 #' cor_covar(covar,
-#'           cov.names = c("cwd", "permwater"),
-#'           cov.labels = c("CWD", "Permanent water"),
-#'           out.path = "outputs/",
-#'           out.name = "covs-cor")
+#'           cov.labs = c("CWD", "Permanent water"),
+#'           cov.levels = c("cwd", "permwater"))
 #'}
 
 
@@ -36,11 +34,11 @@ cor_covar <- function(covar,
 
   if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
   if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
-  
+
 
   cov.labs <- cov.labs %>%
-    rename(label = Label,
-           name = covariate)
+              rename(label = .data$Label,
+                     name = .data$covariate)
   cov.names <- cov.labs$name
   cov.labels <- cov.labs$label
 

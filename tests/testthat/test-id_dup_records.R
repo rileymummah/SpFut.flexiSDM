@@ -3,8 +3,8 @@ test_that("id_dup_records() works", {
 
     ## set up ----
 
-    rangelist <- get_range(range.path = c(paste0("../../../species-futures/data/species/GPOR/GAP/"),
-                                          paste0("../../../species-futures/data/species/GPOR/IUCN/")),
+    rangelist <- get_range(range.path = c(paste0("~/GitHub/species-futures/data/species/GPOR/GAP/"),
+                                          paste0("~/GitHub/species-futures/data/species/GPOR/IUCN/")),
                            range.name = c("GAP", "IUCN"), crs = 4326)
 
     boundary <- rangelist[[1]]

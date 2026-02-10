@@ -32,6 +32,7 @@ Imports:
     readr,
     rlang,
     rnaturalearth,
+    rnaturalearthhires,
     rstan,
     scales,
     sf,
@@ -42,6 +43,7 @@ Imports:
     tidyr,
     tidyselect,
     utils,
+    vdiffr,
     VGAM,
     viridis
 Suggests: 

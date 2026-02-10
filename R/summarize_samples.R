@@ -45,18 +45,19 @@ summarize_samples <- function(samples,
   if (SLURM) {
     cores <- get_cpus_per_task() - 1
   } else {
-    cores <- 5
+    cores <- max(1, parallel::detectCores() - 1)
   }
 
   start <- Sys.time()
   this_cluster <- makeCluster(cores)
+  on.exit(stopCluster(this_cluster), add = TRUE)
+
   out <- parLapply(cl = this_cluster,
                    X = 1:ncol(samples[[1]]),
                    fun = chain_summary,
                    samples = samples,
                    chains = chains,
                    cutoff = cutoff)
-  stopCluster(this_cluster)
 
 
   out <- bind_rows(out)

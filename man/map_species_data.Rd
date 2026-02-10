@@ -64,8 +64,6 @@ map_species_data(
 \item{proj.names}{(character vector) names for each projection; only required if plot.current == F}
 
 \item{threshold}{(numeric) value between 0 and 1 to use as occupancy probability threshold for drawing range boundary; defaults to 0.5; only required if plot == "boundary"}
-
-\item{plot.blocks}{(logical) whether to add blocks to map (T) or not (F); defaults to F; only required if plot == "samples"}
 }
 \value{
 ggplot object containing map of desired data

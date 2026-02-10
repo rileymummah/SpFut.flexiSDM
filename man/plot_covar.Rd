@@ -4,16 +4,14 @@
 \alias{plot_covar}
 \title{Plot covariates}
 \usage{
-plot_covar(covar, region, cov.names, cov.labels = cov.names, scaled)
+plot_covar(covar, region, cov.labs, scaled)
 }
 \arguments{
 \item{covar}{(data.frame) dataframe holding covariate values and conus.grid.id}
 
 \item{region}{(list) region output from make_region()}
 
-\item{cov.names}{(character vector) column names from covar to plot}
-
-\item{cov.labels}{(character vector) labels for covariate names, defaults to use column names as labels}
+\item{cov.labs}{(data.frame) Labels for each covariate}
 
 \item{scaled}{(logical) Are the covariate values scaled?}
 }
