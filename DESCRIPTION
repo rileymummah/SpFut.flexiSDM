@@ -11,7 +11,12 @@ Authors@R:
               family = "Mummah", 
               email = "rmummah@usgs.gov", 
               role = c("aut", "cre"),
-              comment = c(ORCID = "0000-0002-4542-3483"))
+              comment = c(ORCID = "0000-0002-4542-3483")),
+      person(given = "David", 
+              family = "Miller", 
+              email = "dxm84@psu.edu", 
+              role = c("aut"),
+              comment = c(ORCID = "0000-0002-3011-3677"))
       )
 Description: What the package does (one paragraph).
 License: CC0
@@ -32,7 +37,6 @@ Imports:
     readr,
     rlang,
     rnaturalearth,
-    rnaturalearthhires,
     rstan,
     scales,
     sf,
@@ -43,13 +47,14 @@ Imports:
     tidyr,
     tidyselect,
     utils,
-    vdiffr,
     VGAM,
     viridis
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    rnaturalearthhires,
+    testthat (>= 3.0.0),
+    vdiffr
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)
