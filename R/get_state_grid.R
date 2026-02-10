@@ -10,6 +10,7 @@
 #' @importFrom rlang .data
 #' @importFrom dplyr filter left_join mutate pull case_when
 
+
 get_state_grid <- function(region,
                            states) {
 

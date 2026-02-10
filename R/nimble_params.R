@@ -13,18 +13,6 @@
 #' @export
 #'
 #' @importFrom tidyselect everything
-#'
-#' @examples
-#'\dontrun{
-#'
-#'params <- nimble_params(data,
-#'                        constants,
-#'                        lambda = T,
-#'                        XB = T,
-#'                        sp.auto = T,
-#'                        effort = F)
-#'
-#'}
 
 
 nimble_params <- function(data,

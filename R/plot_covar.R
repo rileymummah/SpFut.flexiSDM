@@ -18,17 +18,6 @@
 #' @importFrom grid unit
 #' @importFrom dplyr select full_join group_by_at filter mutate left_join
 #' @importFrom ggplot2 ggplot aes geom_sf facet_wrap scale_fill_gradient2 scale_color_gradient2 theme_bw element_blank element_text guides guide_colorbar theme labs coord_sf ggsave
-#'
-#' @examples
-#' \dontrun{
-#' plot_covar(covar,
-#'            region,
-#'            cov.names = c("cwd", "permwater"),
-#'            cov.labels = c("CWD", "Permanent water"),
-#'            out.path = "outputs/",
-#'            out.name = "covs-map")
-#'
-#'}
 
 
 plot_covar <- function(covar,
@@ -40,7 +29,7 @@ plot_covar <- function(covar,
 
   if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
   if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
-  
+
   st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
                   returnclass = "sf") %>%
           st_transform(crs = 3857) %>%

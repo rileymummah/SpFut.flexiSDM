@@ -16,13 +16,6 @@
 #' @importFrom stats dist
 #' @importFrom sf st_centroid st_coordinates st_as_sf st_drop_geometry
 #' @importFrom dplyr mutate filter group_by summarize distinct ungroup n
-#'
-#' @examples
-#' \dontrun{
-#'
-#' spatial.grid <- make_spatkey(grid)
-#'
-#' }
 
 
 make_spatkey <- function(grid) {

@@ -13,17 +13,6 @@
 #'
 #' @importFrom tidyselect everything
 #' @importFrom stats rnorm rbeta
-#'
-#' @examples
-#'\dontrun{
-#'
-#'inits <- function(x){nimble_inits(data,
-#'                                  constants,
-#'                                  sp.auto = T,
-#'                                  seed = x)}
-#'
-#'}
-
 
 
 nimble_inits <- function(data,

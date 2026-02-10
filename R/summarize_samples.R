@@ -45,7 +45,19 @@ summarize_samples <- function(samples,
   if (SLURM) {
     cores <- get_cpus_per_task() - 1
   } else {
-    cores <- max(1, parallel::detectCores() - 1)
+    # Source - https://stackoverflow.com/a/50571533
+    # Posted by Alexis, modified by community. See post 'Timeline' for change history
+    # Retrieved 2026-02-10, License - CC BY-SA 4.0
+
+    chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+
+    if (nzchar(chk) && chk == "TRUE") {
+      # use 2 cores in CRAN
+      cores <- 2L
+    } else {
+      # use all cores in devtools::test()
+      cores <- max(1, parallel::detectCores() - 1)
+    }
   }
 
   start <- Sys.time()

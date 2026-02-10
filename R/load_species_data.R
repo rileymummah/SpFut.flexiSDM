@@ -24,26 +24,6 @@
 #' @importFrom tidyselect any_of
 #' @importFrom sf st_transform st_join st_as_sf st_make_grid st_coordinates st_drop_geometry st_crs st_within
 #' @importFrom dplyr mutate filter select group_by slice_sample ungroup
-#'
-#' @examples
-#'\dontrun{
-#'
-#' species.data <- load_species_data(sp.code = "ANMI",
-#'                 sp.code.all = "ANMI",
-#'                 file.name = c("name-of-file.csv"),
-#'                 file.label = c("File Label"),
-#'                 file.path = "DATA SWAMP/data-ready/",
-#'                 keep.cols = list(c("duration")),
-#'                 region = region,
-#'                 filter.region = T,
-#'                 year.start = 1994,
-#'                 year.end = 2004,
-#'                 coordunc = 1000,
-#'                 coordunc_na.rm = T,
-#'                 spat.thin = F,
-#'                 keep.conus.grid.id = region$sp.grid$conus.grid.id
-#'
-#'}
 
 
 load_species_data <- function(sp.code,
@@ -59,7 +39,7 @@ load_species_data <- function(sp.code,
                               spat.thin = F,
                               keep.conus.grid.id = region$sp.grid$conus.grid.id) {
 
-  
+
   if (year.end < year.start) stop("'year.end' must be after 'year.start'")
   if (length(sp.code.all) > 1) sp.code.all <- paste0(sp.code.all, collapse = "|")
 
@@ -72,7 +52,7 @@ load_species_data <- function(sp.code,
   for (i in 1:nrow(file.info)) {
     if (is.na(file.info$covar.mean[i])) file.info$covar.mean[i] <- ""
     if (is.na(file.info$covar.sum[i])) file.info$covar.sum[i] <- ""
-    
+
     covs.mean <- unlist(strsplit(file.info$covar.mean[i], split = ", "))
     covs.sum <- unlist(strsplit(file.info$covar.sum[i], split = ", "))
     covs1 <- c(covs.mean, covs.sum)
@@ -111,7 +91,7 @@ load_species_data <- function(sp.code,
     tmp2 <- paste0("^", tmp1, "$")
     file <- file[grep(tmp2, file$species),]
     cat("Starting with", nrow(file), "observations of", sp.code, "\n")
-    
+
 
     # filter to get only survey.conducted == 1
     file <- filter(file, .data$survey.conducted == 1)
@@ -302,7 +282,7 @@ load_species_data <- function(sp.code,
     keepcols1 <- keepcols[which(keepcols %in% colnames(file))]
     missingcovs <- setdiff(keepcols, keepcols1)
     if ("yday" %in% missingcovs) missingcovs <- missingcovs[-which(missingcovs == "yday")] # because yday is generated later
-    
+
     if (length(keepcols1) > 0) cat("Using ", keepcols1, " as covariate(s)\n")
     file1 <- inner_join(file,
                         select(locs.d, "unique.id", "conus.grid.id"),
@@ -313,7 +293,7 @@ load_species_data <- function(sp.code,
                      "year", "survey.conducted", "species", "age",
                      "time.to.detect", "individual.id", "count",
                      any_of(keepcols1))
-    
+
     if (length(missingcovs) > 0)  warning(missingcovs, " column(s) missing from ", file.label[f])
 
     # If label already exists, just append dfs

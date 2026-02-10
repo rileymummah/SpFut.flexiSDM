@@ -17,14 +17,6 @@
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr group_by_at mutate cur_group_id filter left_join rename select
 #' @importFrom ggplot2 ggplot geom_tile aes geom_hline geom_vline geom_text ggsave scale_fill_gradient2 scale_color_gradient2 labs theme_bw theme element_text
-#'
-#' @examples
-#' \dontrun{
-#' cor_covar(covar,
-#'           cov.labs = c("CWD", "Permanent water"),
-#'           cov.levels = c("cwd", "permwater"))
-#'}
-
 
 
 cor_covar <- function(covar,

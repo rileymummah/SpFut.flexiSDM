@@ -21,31 +21,6 @@
 #' @importFrom sf sf_use_s2 st_buffer st_centroid st_bbox st_as_sfc st_crop st_area st_intersection st_transform st_cast st_union st_as_sf st_touches st_geometry_type
 #' @importFrom dplyr bind_rows summarize filter mutate select pull ungroup reframe
 #' @importFrom magrittr "%>%"
-#'
-#' @examples
-#'\dontrun{
-#' # Predownload range boundaries of interest
-#'
-#' # Provide the path to each boundary
-#' range.path <- c("GAP/aAZTOx_CONUS_Range_2001v1/",
-#'                 "IUCN/")
-#'
-#' # Give each boundary a name
-#' range.name <- c("GAP", "IUCN")
-#'
-#' rangelist <- get_range(range.path,
-#'                        range.name,
-#'                        crs = 4326)
-#'
-#' region <- make_region(rangelist,
-#'                       buffer = 50000,
-#'                       crs = 3857,
-#'                       sub = F,
-#'                       boundary = usa,
-#'                       grid = conus.grid)
-#'
-#'}
-
 
 
 make_region <- function(rangelist,
@@ -142,7 +117,7 @@ make_region <- function(rangelist,
     gridb <- grida %>%
       mutate(area = round(as.numeric(st_area(.data$geometry))), 0) %>%
       filter(.data$area >= cellsize)
-      
+
     cat("Removing small cells\n")
 
     if (nrow(gridb) == 0) stop("No remaining grid cells")
