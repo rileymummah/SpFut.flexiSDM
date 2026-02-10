@@ -3,8 +3,7 @@
 #' @description Calculates and plots correlations between covariates.
 #'
 #' @param covar (data.frame) data.frame holding covariate values and conus.grid.id
-#' @param cov.names (character vector) column names from covar to plot
-#' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
+#' @param cov.labs (data.frame) Labels for each covariate
 #' @param cov.levels (character vector) column names in order they should appear on plot
 #' @param color.threshold (numeric) threshold above which to add color to plot; default is 0.25
 #'
@@ -31,14 +30,19 @@
 
 
 cor_covar <- function(covar,
-                      cov.names,
-                      cov.labels = cov.names,
+                      cov.labs,
                       cov.levels = cov.labels,
                       color.threshold = 0.25) {
 
+  if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
+  if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
+  
 
-  cov.labs <- data.frame(name = cov.names,
-                         label = cov.labels)
+  cov.labs <- cov.labs %>%
+    rename(label = Label,
+           name = covariate)
+  cov.names <- cov.labs$name
+  cov.labels <- cov.labs$label
 
   cors <- as.data.frame(covar[,cov.names])
 
