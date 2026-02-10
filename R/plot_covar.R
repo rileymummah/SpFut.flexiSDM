@@ -4,8 +4,7 @@
 #'
 #' @param covar (data.frame) dataframe holding covariate values and conus.grid.id
 #' @param region (list) region output from make_region()
-#' @param cov.names (character vector) column names from covar to plot
-#' @param cov.labels (character vector) labels for covariate names, defaults to use column names as labels
+#' @param cov.labs (data.frame) Labels for each covariate
 #' @param scaled (logical) Are the covariate values scaled?
 #'
 #' @returns Saves a map of scaled covariate values to the desired path.
@@ -34,15 +33,14 @@
 
 plot_covar <- function(covar,
                        region,
-                       cov.names,
-                       cov.labels = cov.names,
+                       cov.labs,
                        scaled){ #,F
                        # out.path = "",
                        # out.name = "covariate-map") {
 
-  cov.labs <- data.frame(name = cov.names,
-                         label = cov.labels)
-
+  if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
+  if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
+  
   st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
                   returnclass = "sf") %>%
           st_transform(crs = 3857) %>%
@@ -54,7 +52,7 @@ plot_covar <- function(covar,
 
   sp.grid <- region$sp.grid %>%
               full_join(covar, by = c("conus.grid.id")) %>%
-              select(all_of(c("conus.grid.id", cov.names)))
+              select(all_of(c("conus.grid.id", cov.labs$covariate)))
 
 
 
@@ -68,7 +66,7 @@ plot_covar <- function(covar,
                                        T ~ value)) %>%
 
               # add labels
-              left_join(cov.labs, by = "name") %>%
+              left_join(cov.labs, by = c("name" = "covariate")) %>%
     select(!"square")
 
 
@@ -77,7 +75,7 @@ plot_covar <- function(covar,
   pl <- ggplot(filter(sp.grid, is.na(.data$value) == F)) +
           geom_sf(aes(fill = .data$value, color = .data$value)) +
           geom_sf(data = st, fill = NA, color= "gray40") +
-          facet_wrap(~label) +
+          facet_wrap(~Label) +
           scale_fill_gradient2(high = "darkblue", low = "darkred", mid = "white") +
           scale_color_gradient2(high = "darkblue", low = "darkred", mid = "white", guide = "none") +
           theme_bw() +
