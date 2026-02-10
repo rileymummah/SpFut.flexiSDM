@@ -21,7 +21,7 @@ PO_for_nimble <- function(POdata,
   if (length(grep("conus.grid.id", colnames(covariates))) != 1) {stop("There must be exactly one column named 'conus.grid.id' in covariates")}
 
   # check that conus.grid.ids are in the same order
-  if (nrow(POdata) != nrow(covariates)) {stop("STOP! POdata and covariates must contain the same number of rows.")}
+  if (nrow(POdata) != nrow(covariates)) {stop("STOP! POdata and covariates must contain the same number of rows. Hint: check that conus.grid.id in covar matches conus.grid.id in region$sp.grid.")}
   
   
   if ("FALSE" %in% names(table(POdata$conus.grid.id == covariates$conus.grid.id))) {
