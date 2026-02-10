@@ -39,19 +39,19 @@
 map_species_data <- function(title,
                              region,
                              plot = "samples",
-
+                             
                              # Map features
                              plot.range = T,
                              plot.region = F,
                              plot.cells = F,
-
+                             
                              # For map of data samples
                              species.data,
                              year.start = 1900,
                              year.end = as.numeric(format(Sys.Date(), "%Y")),
                              details = F,
                              blocks = NULL,
-
+                             
                              # For map of model output
                              out,
                              plot.current = T,
@@ -61,71 +61,71 @@ map_species_data <- function(title,
                              proj.n = 0,
                              proj.names = "",
                              threshold = 0.5) {
-
+  
   if (plot.uncertainty %in% c(F, "lotail", "hitail", "unc.rel", "unc.range") == F) {
     stop("Options for uncertainty are F (do not plot uncertainty) or 'unc.rel.', 'unc.range', 'hitail', or 'lotail'")
   }
-
+  
   if (plot %in% c("samples", "lambda", "psi", "spat", "boundary", "XB", "effort") == F) {
     stop("Options for plot are 'samples', 'lambda', 'psi', 'boundary', 'effort', 'XB' or 'spat'")
   }
-
+  
   blockcols <- c("none" = "black", "1" = "#e79f1e", "2" = "#009e73", "3" = "#cb79a8")
-
-
-
+  
+  
+  
   # 1. load map features ----
   na <- ne_countries(continent = "North America",
                      returnclass = "sf",
                      scale = 10) %>%
-          st_transform(crs = st_crs(region$range))
-
+    st_transform(crs = st_crs(region$range))
+  
   suppressMessages(wa <- ne_download(type = "lakes",
                                      category = "physical", load = T,
                                      returnclass = "sf",
                                      scale = 10) %>%
                      st_transform(crs = st_crs(region$range)))
   
-
+  
   st <- ne_states(country = c("Canada", "Mexico", "United States of America"),
                   returnclass = "sf") %>%
-          st_transform(crs = st_crs(region$range))
-
+    st_transform(crs = st_crs(region$range))
+  
   # 2. make base map ----
   base <- ggplot() +
-          geom_sf(data = na, fill = "gray90") +
-          geom_sf(data = st, fill = "gray90", color= "gray40") +
-          geom_sf(data = wa, fill = "lightsteelblue") +
-          theme(panel.background = element_rect(fill = "lightsteelblue"),
-                panel.grid = element_blank(),
-                axis.text = element_text(size = 12),
-                legend.text = element_text(size = 12),
-                legend.title = element_text(size = 14))
-
-
-
+    geom_sf(data = na, fill = "gray90") +
+    geom_sf(data = st, fill = "gray90", color= "gray40") +
+    geom_sf(data = wa, fill = "lightsteelblue") +
+    theme(panel.background = element_rect(fill = "lightsteelblue"),
+          panel.grid = element_blank(),
+          axis.text = element_text(size = 12),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 14))
+  
+  
+  
   # 3. add data to map ----
-
+  
   # __a. region ----
   if (plot.region == T) {
     base <- base +
       # geom_sf(data = region$region, alpha = 1, fill = "gray80", color = NA) +
       geom_sf(data = region$sp.grid, alpha = 1, fill = "gray80", color = "gray80")
   }
-
+  
   # __b. cells ----
   if (plot.cells == T) {
     base <- base +
       geom_sf(data = region$sp.grid, alpha = 1, fill = "lightblue", color = "gray20")
   }
-
-
+  
+  
   # __c. fill color ----
-
-
+  
+  
   # for anything other than plot == "samples"
   if (plot %in% c("lambda", "psi", "spat", "boundary", "XB", "effort")) {
-
+    
     if (plot == "lambda") {
       fill <- "Relative abundance"
     } else if (plot == "psi") {
@@ -139,55 +139,55 @@ map_species_data <- function(title,
     } else if (plot == "effort") {
       fill <- "Effort"
     }
-
-
+    
+    
     plot1 <- ifelse(plot == "boundary", "psi", plot)
-
+    
     # put all values together
     ind <- grep(plot1, names(out))
     intensity <- c()
     for (i in 1:length(ind)) {
-
+      
       tmp <- out[[ind[i]]] %>%
         mutate(scenario = gsub(plot1, "", names(out)[[ind[i]]]))
       intensity <- bind_rows(intensity, tmp)
-
+      
     }
-
+    
     if (plot == "effort") intensity$scenario <- 0
-
-
+    
+    
     # get correct column to plot
     if (plot.uncertainty == F) {
       intensity$plot.val <- intensity$mean
       unc <- ""
-
+      
     } else if (plot.uncertainty == "unc.rel") {
       intensity$plot.val <- intensity$unc.rel
       unc <- "\n(relative uncertainty)"
-
+      
     } else if (plot.uncertainty == "unc.range") {
       intensity$plot.val <- intensity$unc.range
       unc <- "\n(range)"
-
+      
     } else if (plot.uncertainty == "hitail") {
       intensity$plot.val <- intensity$hitail
       unc <- "\n(probability of higher than expected)"
-
+      
     } else if (plot.uncertainty == "lotail") {
       intensity$plot.val <- intensity$lotail
       unc <- "\n(probability of lower than expected)"
-
+      
     }
-
-
-
+    
+    
+    
     # adjust values
     if (transform == "none" & plot != "spat") {
       q99 <- quantile(intensity$plot.val, 0.99, na.rm = T)
       intensity$plot.val[which(intensity$plot.val > q99)] <- q99
     }
-
+    
     
     if (transform == "log") {
       intensity$plot.val <- log(intensity$plot.val)
@@ -199,15 +199,15 @@ map_species_data <- function(title,
       stop("transform must be 'exp', 'log', or 'none'")
     }
     
-
+    
     if (plot == "boundary") {
       intensity$plot.val <- ifelse(intensity$plot.val >= threshold, "Present", "Absent")
     }
-
+    
     # add geometry
     intensity <- full_join(region$sp.grid, intensity, by = "conus.grid.id")
-
-
+    
+    
     # make color label
     col.lab <- paste0(fill, unc)
     if (transform == "log") col.lab <- paste0("Log(", col.lab, ")")
@@ -215,25 +215,25 @@ map_species_data <- function(title,
     
     # add fill color
     if (plot != "spat") {
-
+      
       if (plot.current == T) { # Plot current
-
+        
         if (plot == "boundary") {
-
+          
           # set color scheme
           base <- base +
             scale_fill_manual(values = c("white", "darkblue"), na.value = NA) +
             scale_color_manual(values = c("white", "darkblue"), na.value = NA)
-
-
+          
+          
           # Plot current
           intensity0 <- filter(intensity, .data$scenario == 0)
-
+          
           base <- base +
             geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
             labs(fill = col.lab, color = col.lab, title = title)
-
-
+          
+          
         } else {
           # set color scheme
           base <- base +
@@ -245,66 +245,66 @@ map_species_data <- function(title,
                                 option = "magma",
                                 na.value = NA,
                                 direction = -1)
-
-
+          
+          
           # Plot current
           intensity0 <- filter(intensity, .data$scenario == 0)
-
+          
           base <- base +
             geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
             guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
                                                        legend.key.width = unit(20, "lines")),
                                          title.hjust = 0.9, title.vjust = 1)) +
             labs(fill = col.lab, color = col.lab, title = title)
-
+          
         }
-
-
-
+        
+        
+        
       } else { # Plot projections
-
-
+        
+        
         if (length(proj.names) == 1) {
           if (proj.names == "") {
             proj.names <- paste0("Scenario ", 1:proj.n)
           }
         }
-
+        
         labs <- proj.names
         names(labs) <- paste0(1:proj.n)
-
-
+        
+        
         if (plot.change == F) { # Plot estimated values
-
-
+          
+          
           if (plot == "boundary") {
             # set color scheme
             base <- base +
               scale_fill_manual(values = c("white", "darkblue"), na.value = NA) +
               scale_color_manual(values = c("white", "darkblue"), na.value = NA)
-
+            
             intensity0 <- filter(intensity, .data$scenario != 0, is.na(.data$plot.val) == F)
-
+            
             base <- base +
               geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
               labs(fill = col.lab, color = col.lab, title = title) +
               facet_wrap(~scenario, labeller = labeller(scenario = labs))
-
-
+            
+            
           } else {
             # set color scheme
             base <- base +
               scale_fill_viridis(guide = guide_colorbar(),
-                                          option = "magma",
-                                          na.value = NA,
-                                          direction = -1) +
+                                 option = "magma",
+                                 na.value = NA,
+                                 direction = -1) +
               scale_color_viridis(guide = "none",
-                                           option = "magma",
-                                           na.value = NA,
-                                           direction = -1)
-
+                                  option = "magma",
+                                  na.value = NA,
+                                  direction = -1)
+            
             intensity0 <- filter(intensity, .data$scenario != 0, is.na(.data$plot.val) == F)
-
+            
             base <- base +
               geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
               guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
@@ -313,235 +313,237 @@ map_species_data <- function(title,
               labs(fill = col.lab, color = col.lab, title = title) +
               facet_wrap(~scenario, labeller = labeller(scenario = labs))
           }
-
-
-
+          
+          
+          
         } else if (plot.change == "absolute") { # Plot estimated change
-
+          
           if (plot == "boundary") {
-
+            
             # set color scheme
             base <- base +
               scale_fill_manual(values = c("Unsuitable" = "white",
-                                                     "Safe" = "darkblue",
-                                                     "Loss" = "red",
-                                                     "Gain" = "green"),
-                                          na.value = NA) +
+                                           "Safe" = "darkblue",
+                                           "Loss" = "red",
+                                           "Gain" = "green"),
+                                na.value = NA) +
               scale_color_manual(values = c("Unsuitable" = "white",
-                                                      "Safe" = "darkblue",
-                                                      "Loss" = "red",
-                                                      "Gain" = "green"),
-                                           na.value = NA)
-
+                                            "Safe" = "darkblue",
+                                            "Loss" = "red",
+                                            "Gain" = "green"),
+                                 na.value = NA)
+            
             scens <- unique(intensity$scenario)
             scens <- scens[-which(scens == "0")]
             intensity0 <- intensity %>%
-                            select("conus.grid.id", "scenario", "plot.val") %>%
-                            pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
-                            pivot_longer(cols = all_of(scens)) %>%
-                            rename(current = "0",
-                                   future = "value",
-                                   scenario = "name") %>%
+              select("conus.grid.id", "scenario", "plot.val") %>%
+              pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
+              pivot_longer(cols = all_of(scens)) %>%
+              rename(current = "0",
+                     future = "value",
+                     scenario = "name") %>%
               mutate(change = case_when(current == "Absent" & future == "Absent" ~ "Unsuitable",
                                         current == "Present" & future == "Absent" ~ "Loss",
                                         current == "Absent" & future == "Present" ~ "Gain",
                                         current == "Present" & future == "Present" ~ "Safe")) %>%
               filter(is.na(.data$change) == F)
-
+            
             base <- base +
-                      geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
-                      labs(fill = col.lab, color = col.lab, title = title) +
-                      facet_wrap(~scenario, labeller = labeller(scenario = labs))
-
+              geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
+              labs(fill = col.lab, color = col.lab, title = title) +
+              facet_wrap(~scenario, labeller = labeller(scenario = labs))
+            
           } else {
             # set color scheme
             base <- base +
               scale_fill_gradient2(guide = guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
               scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
-
+            
             scens <- unique(intensity$scenario)
             scens <- scens[-which(scens == "0")]
             intensity0 <- intensity %>%
-                            select("conus.grid.id", "scenario", "plot.val") %>%
-                            pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
-                            pivot_longer(cols = all_of(scens)) %>%
-                            rename(current = "0",
-                                   future = "value",
-                                   scenario = "name") %>%
-                            mutate(change = .data$future - .data$current) %>%
-                            filter(is.na(.data$change) == F)
-
+              select("conus.grid.id", "scenario", "plot.val") %>%
+              pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
+              pivot_longer(cols = all_of(scens)) %>%
+              rename(current = "0",
+                     future = "value",
+                     scenario = "name") %>%
+              mutate(change = .data$future - .data$current) %>%
+              filter(is.na(.data$change) == F)
+            
             base <- base +
-                      geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
-                      guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
-                                                                                            legend.key.width = unit(20, "lines")),
-                                                                     title.hjust = 1, title.vjust = 1)) +
-                      labs(fill = paste0("Absolute change in ", tolower(fill), unc), title = title) +
-                      facet_wrap(~scenario, labeller = labeller(scenario = labs))
+              geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
+              guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
+                                                         legend.key.width = unit(20, "lines")),
+                                           title.hjust = 1, title.vjust = 1)) +
+              labs(fill = paste0("Absolute change in ", tolower(fill), unc), title = title) +
+              facet_wrap(~scenario, labeller = labeller(scenario = labs))
           }
-
-
-
-
-
+          
+          
+          
+          
+          
         } else if (plot.change == "relative") { # Plot estimated relative change
           # set color scheme
           base <- base +
             scale_fill_gradient2(guide = guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
             scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
-
+          
           scens <- unique(intensity$scenario)
           scens <- scens[-which(scens == "0")]
           intensity0 <- intensity %>%
-                          select("conus.grid.id", "scenario", "plot.val") %>%
-                          pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
-                          pivot_longer(cols = all_of(scens)) %>%
-                          rename(current = "0",
-                                 future = "value",
-                                 scenario = "name") %>%
-                          mutate(change = (.data$future - .data$current)/.data$current) %>%
-                          filter(is.na(.data$change) == F)
-
+            select("conus.grid.id", "scenario", "plot.val") %>%
+            pivot_wider(names_from = "scenario", values_from = "plot.val") %>%
+            pivot_longer(cols = all_of(scens)) %>%
+            rename(current = "0",
+                   future = "value",
+                   scenario = "name") %>%
+            mutate(change = (.data$future - .data$current)/.data$current) %>%
+            filter(is.na(.data$change) == F)
+          
           base <- base +
-                    geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
-                    guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
-                                                               legend.key.width = unit(20, "lines")),
-                                                 title.hjust = 1, title.vjust = 1)) +
+            geom_sf(data = intensity0, aes(fill = .data$change, color = .data$change)) +
+            guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
+                                                       legend.key.width = unit(20, "lines")),
+                                         title.hjust = 1, title.vjust = 1)) +
             labs(fill = paste0("Relative change in ", tolower(fill), unc), title = title) +
             facet_wrap(~scenario, labeller = labeller(scenario = labs))
-
+          
         } else {
           stop("plot.change must be FALSE, 'relative', or 'absolute'")
         }
-
+        
       } # end plot projections
-
-
+      
+      
     } else { # if plot == 'spat'
       base <- base +
         scale_fill_gradient2(guide = guide_colorbar(), high = "darkblue", low = "darkred", mid = "white", na.value = NA) +
         scale_color_gradient2(guide = "none", high = "darkblue", low = "darkred", mid = "white", na.value = NA)
-
+      
       intensity0 <- filter(intensity, is.na(.data$plot.val) == F)
-
+      
       base <- base +
-                geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
-                guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines")))) +
-                labs(fill = col.lab, color = col.lab, title = title)
+        geom_sf(data = intensity0, aes(fill = .data$plot.val, color = .data$plot.val)) +
+        guides(fill = guide_colorbar(theme = theme(legend.key.height = unit(0.75, "lines"),
+                                                   legend.key.width = unit(20, "lines")),
+                                     title.hjust = 0.9, title.vjust = 1)) +
+        labs(fill = col.lab, color = col.lab, title = title)
     }
-
+    
   }
-
-
-
-
+  
+  
+  
+  
   # put state lines and water on top of fill color
   base <- base +
-            geom_sf(data = st, fill = NA) +
-            geom_sf(data = wa, fill = "lightsteelblue")
-
-
-
+    geom_sf(data = st, fill = NA) +
+    geom_sf(data = wa, fill = "lightsteelblue")
+  
+  
+  
   # __d. range ----
   if (plot.range == T) {
     base <- base +
-             geom_sf(data = region$range, fill = NA, color = "gray35",
-                     linewidth = 0.4, aes(linetype = .data$range.name))
+      geom_sf(data = region$range, fill = NA, color = "gray35",
+              linewidth = 0.4, aes(linetype = .data$range.name))
   }
-
+  
   # __e. blocks ----
   if (is.null(blocks) == F) {
-
+    
     tmp <- region$sp.grid %>% summarize(geometry = st_union(geometry))
     suppressWarnings(blocks <- st_intersection(blocks, tmp))
-
+    
     if (length(unique(blocks$folds)) == 1) {
       base <- base +
-              geom_sf(data = blocks, size = 1, linewidth = .15,
-                               aes(fill = as.factor(.data$folds)), color = "gray30", alpha = 0.5) +
-              scale_fill_manual(values = blockcols, name = "Out-of-sample test area",
-                                label = paste0("Fold ", blocks$folds[1]))
+        geom_sf(data = blocks, size = 1, linewidth = .15,
+                aes(fill = as.factor(.data$folds)), color = "gray30", alpha = 0.5) +
+        scale_fill_manual(values = blockcols, name = "Out-of-sample test area",
+                          label = paste0("Fold ", blocks$folds[1]))
     } else {
       base <- base +
-                geom_sf(data = blocks, size = 1, linewidth = .15,
-                        aes(fill = as.factor(.data$folds)), color = "gray30", alpha = 0.3) +
-                scale_fill_manual(values = blockcols, name = "Fold")
+        geom_sf(data = blocks, size = 1, linewidth = .15,
+                aes(fill = as.factor(.data$folds)), color = "gray30", alpha = 0.3) +
+        scale_fill_manual(values = blockcols, name = "Fold")
     }
-
-
+    
+    
   }
-
+  
   # __f. samples ----
   if (plot == "samples") {
-
+    
     if (details == T) {
-
+      
       locs <- species.data$locs$cont %>%
-                st_drop_geometry() %>%
-                select("site.id", "source") %>%
-                distinct()
-
+        st_drop_geometry() %>%
+        select("site.id", "source") %>%
+        distinct()
+      
       n.sites <- as.data.frame(table(locs$source))
       colnames(n.sites) <- c("source", "n.sites")
-
+      
       locs <- species.data$locs$cont %>%
-                st_drop_geometry() %>%
-                select("site.id", "survey.id", "source")  %>%
-                distinct()
-
+        st_drop_geometry() %>%
+        select("site.id", "survey.id", "source")  %>%
+        distinct()
+      
       n.surveys <- as.data.frame(table(locs$source, locs$site.id)) %>%
-                    filter(.data$Freq != 0) %>%
-                    group_by(.data$Var1) %>%
-                    summarize(n.visits = median(.data$Freq))
+        filter(.data$Freq != 0) %>%
+        group_by(.data$Var1) %>%
+        summarize(n.visits = median(.data$Freq))
       colnames(n.surveys) <- c("source", "n.visits")
-
+      
       tab <- full_join(n.sites, n.surveys, by = "source") %>%
-              select("source", "n.sites", "n.visits")
-
+        select("source", "n.sites", "n.visits")
+      
       plotpoints <- species.data$locs$cont %>%
-                    full_join(tab, by = "source") %>%
-                    mutate(label = paste0(.data$source, " (", .data$data.type, ": ", .data$n.sites, ", ", .data$n.visits, ")")) %>%
+        full_join(tab, by = "source") %>%
+        mutate(label = paste0(.data$source, " (", .data$data.type, ": ", .data$n.sites, ", ", .data$n.visits, ")")) %>%
         select(!"unique.id") %>%
         distinct()
     } else {
       plotpoints <- species.data$locs$cont %>%
-                    # filter(.data$year >= year.start,
-                    #        .data$year <= year.end,
-                    #        .data$survey.conducted == 1) %>%
+        # filter(.data$year >= year.start,
+        #        .data$year <= year.end,
+        #        .data$survey.conducted == 1) %>%
         select(!"unique.id") %>%
         distinct()
     }
-
-
+    
+    
     # plotpoints <- filter(plotpoints, .data$year <= year.end & .data$year >= year.start)
-
-
-
+    
+    
+    
     if (details == T) {
       base <- base +
-                geom_sf(data = plotpoints, aes(color = .data$label, shape = .data$data.type),
-                        alpha = 1, size = 1.5) +
-                scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
-                labs(color = "Dataset (data type: number of sites, \nmedian visits per site)",
-                              shape = "Data type",
-                              subtitle = paste0("All available data between ", year.start, " and ", year.end),
-                              title = title,
-                              linetype = "Range")
+        geom_sf(data = plotpoints, aes(color = .data$label, shape = .data$data.type),
+                alpha = 1, size = 1.5) +
+        scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
+        labs(color = "Dataset (data type: number of sites, \nmedian visits per site)",
+             shape = "Data type",
+             subtitle = paste0("All available data between ", year.start, " and ", year.end),
+             title = title,
+             linetype = "Range")
     } else {
       base <- base +
-              geom_sf(data = plotpoints, aes(color = .data$source, shape = .data$data.type),
-                      alpha = 1, size = 1.5) +
-              scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
-              labs(color = "Dataset",
-                            shape = "Data type",
-                            subtitle = paste0("All available data between ", year.start, " and ", year.end),
-                            title = title,
-                            linetype = "Range")
+        geom_sf(data = plotpoints, aes(color = .data$source, shape = .data$data.type),
+                alpha = 1, size = 1.5) +
+        scale_shape_manual(values = c("PO" = 4, "DND" = 0, "count" = 15, "CMR" = 17)) +
+        labs(color = "Dataset",
+             shape = "Data type",
+             subtitle = paste0("All available data between ", year.start, " and ", year.end),
+             title = title,
+             linetype = "Range")
     }
-
+    
   }
-
-
+  
+  
   # 4. add limits ----
   if (is.null(blocks)) {
     bb <- st_bbox(region$region)
@@ -552,32 +554,32 @@ map_species_data <- function(title,
     xlim <- c(bb[1], bb[3])
     ylim <- c(bb[2], bb[4])
   }
-
+  
   base <- base +
     coord_sf(xlim = xlim, ylim = ylim)
-
-
+  
+  
   # 5. change theme ----
   if (plot == "samples") {
     base <- base +
-            theme(legend.key = element_rect(fill = "gray90"),
-                  axis.text.x = element_text(angle = 45,
-                                             hjust = 1,
-                                             vjust = 1))
+      theme(legend.key = element_rect(fill = NA),
+            axis.text.x = element_text(angle = 45,
+                                       hjust = 1,
+                                       vjust = 1))
   } else {
     base <- base +
-            theme(legend.position = "bottom",
-                  axis.text.x = element_text(angle = 45,
-                                             hjust = 1,
-                                             vjust = 1),
-                  strip.text = element_text(size = 12)) +
+      theme(legend.position = "bottom",
+            axis.text.x = element_text(angle = 45,
+                                       hjust = 1,
+                                       vjust = 1),
+            strip.text = element_text(size = 12)) +
       scale_linetype(guide = "none")
   }
-
+  
   if (plot == "effort") base <- base + facet_wrap(~ PO.dataset.name)
-
+  
   #base
-
+  
   
   # output ----
   
@@ -604,5 +606,5 @@ map_species_data <- function(title,
   
   return(list(dat = dat, 
               plot = base))
-
+  
 }
