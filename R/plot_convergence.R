@@ -20,7 +20,7 @@ plot_convergence <- function(out) {
 
   tmp1 <- tmp %>%
     filter(.data$type %in% c("process.coef", "obs.coef", "alpha")) %>%
-    rename(source = .data$name) %>%
+    rename("source" = "name") %>%
     #select(!.data$name) %>%
     mutate(`Log(ESS)` = log(.data$ESS),
            Rhat = .data$rhat,
