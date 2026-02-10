@@ -335,6 +335,7 @@ test_that("map_species_data() works with plot = psi and plot = threshold", {
   expect_equal(out$dat$value[c(1:15, 50:95)], mod1$out$psi0$unc.range[c(1:15, 50:95)]) # because highest value is truncated
 
   # coarse grid ----
+  mod4 <- readRDS('~/GitHub/species-futures/pkg-tests/mod4.rds')
   out <- map_species_data(title = "Psi test", region = mod4$region, plot = "psi",
                           out = mod4$out,
                           plot.range = F, plot.region = F, plot.cells = F,
