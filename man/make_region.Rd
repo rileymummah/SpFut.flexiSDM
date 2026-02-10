@@ -50,27 +50,3 @@ A list containing ranges, the full region, sp.grid, and the boundary
 \description{
 Define the region for inference using a buffer around external range boundaries.
 }
-\examples{
-\dontrun{
-# Predownload range boundaries of interest
-
-# Provide the path to each boundary
-range.path <- c("GAP/aAZTOx_CONUS_Range_2001v1/",
-                "IUCN/")
-
-# Give each boundary a name
-range.name <- c("GAP", "IUCN")
-
-rangelist <- get_range(range.path,
-                       range.name,
-                       crs = 4326)
-
-region <- make_region(rangelist,
-                      buffer = 50000,
-                      crs = 3857,
-                      sub = F,
-                      boundary = usa,
-                      grid = conus.grid)
-
-}
-}

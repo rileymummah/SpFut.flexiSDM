@@ -21,14 +21,3 @@ Saves a map of scaled covariate values to the desired path.
 \description{
 Makes maps of scaled covariate values.
 }
-\examples{
-\dontrun{
-plot_covar(covar,
-           region,
-           cov.names = c("cwd", "permwater"),
-           cov.labels = c("CWD", "Permanent water"),
-           out.path = "outputs/",
-           out.name = "covs-map")
-
-}
-}

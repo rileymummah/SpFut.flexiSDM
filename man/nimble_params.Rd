@@ -25,15 +25,3 @@ A vector of parameters to trace
 \description{
 Sets up vector of parameters to trace
 }
-\examples{
-\dontrun{
-
-params <- nimble_params(data,
-                       constants,
-                       lambda = T,
-                       XB = T,
-                       sp.auto = T,
-                       effort = F)
-
-}
-}

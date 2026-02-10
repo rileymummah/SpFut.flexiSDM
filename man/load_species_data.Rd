@@ -50,23 +50,3 @@ A list with two objects. The first object (locs) is a dataframe containing the c
 \description{
 Loads species data and does initial cleaning necessary for iSDM
 }
-\examples{
-\dontrun{
-
-species.data <- load_species_data(sp.code = "ANMI",
-                sp.code.all = "ANMI",
-                file.name = c("name-of-file.csv"),
-                file.label = c("File Label"),
-                file.path = "DATA SWAMP/data-ready/",
-                keep.cols = list(c("duration")),
-                region = region,
-                filter.region = T,
-                year.start = 1994,
-                year.end = 2004,
-                coordunc = 1000,
-                coordunc_na.rm = T,
-                spat.thin = F,
-                keep.conus.grid.id = region$sp.grid$conus.grid.id
-
-}
-}

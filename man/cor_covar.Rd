@@ -21,12 +21,3 @@ Saves a plot showing correlations between covariates
 \description{
 Calculates and plots correlations between covariates.
 }
-\examples{
-\dontrun{
-cor_covar(covar,
-          cov.names = c("cwd", "permwater"),
-          cov.labels = c("CWD", "Permanent water"),
-          out.path = "outputs/",
-          out.name = "covs-cor")
-}
-}

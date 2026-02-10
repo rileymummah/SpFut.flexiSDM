@@ -23,13 +23,3 @@ Initial values to be used in nimble code
 \description{
 Creates initial values for nimble based on content of 'data' and 'constants'
 }
-\examples{
-\dontrun{
-
-inits <- function(x){nimble_inits(data,
-                                 constants,
-                                 sp.auto = T,
-                                 seed = x)}
-
-}
-}
