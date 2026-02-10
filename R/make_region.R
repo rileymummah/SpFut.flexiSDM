@@ -138,16 +138,13 @@ make_region <- function(rangelist,
     # this gets grid cells in region
     suppressWarnings(grida <- st_intersection(region, grid))
 
-    # THIS IS NO LONGER REQUIRED BECAUSE ALL CELLS MUST BE SAME SIZE
-    # find cells that are too small and remove (these are along the edges of the boundary)
+    # find cells that are too small and remove (these are along the edges of the boundary and buffer)
     gridb <- grida %>%
       mutate(area = round(as.numeric(st_area(.data$geometry))), 0) %>%
       filter(.data$area >= cellsize)
-      # inner_join(st_drop_geometry(grid.og), by = "conus.grid.id")# %>%
-      # filter(area.x == area.y)
+      
     cat("Removing small cells\n")
-    # gridb <- grida
-    
+
     if (nrow(gridb) == 0) stop("No remaining grid cells")
 
     # # Find which grid cells are split into multiple pieces (eg by water) and remove
