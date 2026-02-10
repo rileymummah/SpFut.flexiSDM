@@ -205,4 +205,7 @@ test_that("nimble_params() works", {
                           sp.auto = T,
                           effort = T)
   expect_equal(params, c("B", "alpha", "spat", "tau", "lambda0", "XB0", "A1", "E1", "A2", "E2", "D3", "C4"))
+  
+  file.remove("modelfull.R")
+  
 })

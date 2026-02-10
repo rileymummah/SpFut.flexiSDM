@@ -168,4 +168,6 @@ test_that("nimble_inits() works", {
   expect_equal(length(inits$w), constants$nD)
   expect_equal(length(inits$spat), constants$nCell)
 
+  file.remove("modelfull.R")
+  
 })
