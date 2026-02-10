@@ -47,6 +47,7 @@ load_species_data <- function(sp.code,
   # Pull info from file.info
   file.name <- file.info$file.name
   file.label <- file.info$file.label
+  PO.extent <- file.info$PO.extent
 
   covariates <- list()
   for (i in 1:nrow(file.info)) {
@@ -118,6 +119,8 @@ load_species_data <- function(sp.code,
       cat("No data for this analysis\n")
       next
     }
+    
+    
 
     # filter out records by year
     rm <- filter(file, .data$year < year.start | .data$year > year.end)
@@ -231,7 +234,7 @@ load_species_data <- function(sp.code,
     #if (keep.conus.grid.id[1] != "all") {
     rm <- filter(locs.d, .data$conus.grid.id %in% keep.conus.grid.id == F)
     if (nrow(rm) > 0) {
-      cat("Removing ", nrow(rm), " observations that are not in the correct block(s)\n")
+      cat("Removing", nrow(rm), "observations that are not in the correct block(s)\n")
 
       locs.d <- filter(locs.d, .data$conus.grid.id %in% keep.conus.grid.id)
       locs.c <- filter(locs.c, .data$unique.id %in% locs.d$unique.id)
@@ -242,11 +245,31 @@ load_species_data <- function(sp.code,
       next
     }
     #}
+    
+    # if state-specific PO, remove data in cells that cross state lines
+    if (file.info$data.type[f] == "PO" &
+        file.info$PO.extent[f] != "CONUS") {
+      
+      singlestate <- region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")]
+      rm <- filter(locs.d, .data$conus.grid.id %in% singlestate == F)
+      
+      if (nrow(rm) > 0) {
+        cat("Removing", nrow(rm), "observations in cells that fall across state lines\n")
+        
+        locs.d <- filter(locs.d, .data$conus.grid.id %in% singlestate)
+        locs.c <- filter(locs.c, .data$unique.id %in% locs.d$unique.id)
+      }
+    }
+    
+    if(nrow(locs.d) == 0) {
+      cat("No data for this analysis\n")
+      next
+    }
 
     # remove dataset if there is only one unique survey.id
     survs <- length(unique(locs.d$survey.id))
     if (survs < 2) {
-      cat("Removing ", file.label[f], " dataset because there is only one remaining survey.id\n")
+      cat("Removing", file.label[f], "dataset because there is only one remaining survey.id\n")
       next
     }
 
