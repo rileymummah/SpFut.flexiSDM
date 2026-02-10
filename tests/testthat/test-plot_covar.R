@@ -31,8 +31,7 @@ test_that("plot_covar() works", {
 
   out <- plot_covar(covar,
              region,
-             cov.names = covlabs$covariate,
-             cov.labels = covlabs$Label,
+             cov.labs = covlabs,
              scaled = F)
 
 
@@ -51,8 +50,7 @@ test_that("plot_covar() works", {
   
   out <- plot_covar(covar,
                     region,
-                    cov.names = covlabs$covariate,
-                    cov.labels = covlabs$Label,
+                    cov.labs = covlabs,
                     scaled = T)
   
   
