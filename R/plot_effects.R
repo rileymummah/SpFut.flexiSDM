@@ -2,7 +2,7 @@
 #'
 #' @param data (list) output from data_for_nimble()
 #' @param out (list) output from summarize_chains()
-#' @param cov.labs (data.frame) 
+#' @param cov.labs (data.frame) Labels for each covariate
 #' @param breaks (numeric) distance between covariate values to simulate
 #' @param unscale_covar (data.frame) data.frame containing unscaled covariates; default is NULL
 #'
