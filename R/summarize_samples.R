@@ -121,22 +121,31 @@ summarize_samples <- function(samples,
     datasetnames <- grep("nW", names(constants))
     datasetnames <- gsub("nW", "", names(constants)[datasetnames])
     datasetnames <- grep(paste0("name", datasetnames, collapse = "|"), names(constants))
+    
     dnames <- c()
+    cellsall <- c()
     for (i in 1:length(datasetnames)) {
       dnames <- c(dnames, constants[[datasetnames[i]]])
+      
+      cells <- data.frame(PO.dataset = paste0("E", i),
+                          grid.id = constants[[paste0("Wcells", i)]],
+                          ind = 1:length(constants[[paste0("Wcells", i)]]))
+      cellsall <- bind_rows(cellsall, cells)
     }
     dnames <- data.frame(PO.dataset = paste0("E", 1:length(dnames)),
                          PO.dataset.name = dnames)
-
-    keep <- grep("E", out$param)
+    
     Enames <- colnames(samples[[1]][grep("E", colnames(samples[[1]]))])
+    
+    keep <- grep("E", out$param)
     E <- out %>%
       slice(keep) %>%
       mutate(name1 = Enames) %>%
-      mutate(grid.id = gsub(".*[[]", "", .data$name1),
-             grid.id = as.numeric(gsub("[]]", "", .data$grid.id)),
+      mutate(ind = gsub(".*[[]", "", .data$name1),
+             ind = as.numeric(gsub("[]]", "", .data$ind)),
              PO.dataset = gsub("[[].*", "", .data$name1),
              block.out = as.character(block.out)) %>%
+      full_join(cellsall, by = c("PO.dataset", "ind")) %>%
       inner_join(gridkey, by = "grid.id") %>%
       inner_join(dnames, by = "PO.dataset") %>%
       select("conus.grid.id", "PO.dataset.name", "group", "block.out", "mean",
