@@ -28,7 +28,8 @@ test_that("id_dup_records() works", {
                            file.label = c("iNaturalist"),
                            covar.mean = c(NA),
                            covar.sum = c(NA),
-                           data.type = c("PO"))
+                           data.type = c("PO"),
+                           PO.extent = "CONUS")
 
     species.data <- load_species_data(sp.code = "GPOR",
                                       sp.code.all = "GPOR",
@@ -53,7 +54,8 @@ test_that("id_dup_records() works", {
                          file.label = c("iNaturalist", "iNat-other"),
                          covar.mean = c(NA),
                          covar.sum = c(NA),
-                         data.type = c("PO"))
+                         data.type = c("PO"),
+                         PO.extent = c("CONUS", "CONUS"))
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = c("GPOR", "GPORPO"),
@@ -78,7 +80,8 @@ test_that("id_dup_records() works", {
                          file.label = c("iNaturalist", "iNat-other"),
                          covar.mean = c(NA, NA),
                          covar.sum = c(NA, NA),
-                         data.type = c("PO", "PO"))
+                         data.type = c("PO", "PO"),
+                         PO.extent = c("CONUS", "CONUS"))
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = c("GPOR", "GPORPO"),
