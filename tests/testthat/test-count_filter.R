@@ -24,7 +24,8 @@ test_that("count_filter() works", {
                          file.label = c("iNat_test", "iNat_test", "Dodd_test", "Dodd_test1", "NEARMI_test"),
                          covar.mean = c(NA, NA, "", "", "depth"),
                          covar.sum = c(NA, NA, "time", "time", "EffectValue"),
-                         data.type = c("PO", "PO", "DND", "DND", "count"))
+                         data.type = c("PO", "PO", "DND", "DND", "count"),
+                         PO.extent = c("CONUS", "PA", NA, NA, NA))
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
@@ -38,6 +39,7 @@ test_that("count_filter() works", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
 

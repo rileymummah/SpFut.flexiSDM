@@ -37,7 +37,8 @@ test_that("sppdata_for_nimble() works with PO data", {
                          file.label = c("iNaturalist"),
                          covar.mean = c(NA),
                          covar.sum = c(NA),
-                         data.type = c("PO"))
+                         data.type = c("PO"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
@@ -51,6 +52,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -60,6 +62,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
 
@@ -77,6 +80,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = "", # no effort covariate
                                 covs.PO = "",
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   expect_type(sp.data, "list")
@@ -92,6 +96,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = NA, # no effort covariate
                                 covs.PO = "",
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   expect_type(sp.data, "list")
@@ -108,6 +113,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                                covs.inat = "traveltime", # effort covariate that isn't in covariates
                                                covs.PO = "",
                                                DND.maybe = 1,
+                                               statelines.rm = F,
                                                keep.conus.grid.id = region$sp.grid$conus.grid.id))
 
   expect_type(sp.data, "list")
@@ -124,6 +130,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = NA, # no effort covariate
                                 covs.PO = c("temp", "prec"),
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   expect_type(sp.data, "list")
@@ -141,6 +148,24 @@ test_that("sppdata_for_nimble() works with PO data", {
                          covar.sum = c(NA),
                          data.type = c("PO"))
 
+  expect_error(species.data <- load_species_data(sp.code = "GPOR",
+                                    sp.code.all = "GPOR",
+                                    file.info = allfiles,
+                                    file.path = "~/GitHub/species-futures/pkg-tests/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    region = region,
+                                    filter.region = T,
+                                    year.start = 1800,
+                                    year.end = 2025,
+                                    coordunc = 1000,
+                                    coordunc_na.rm = T,
+                                    spat.thin = F,
+                                    statelines.rm = F,
+                                    keep.conus.grid.id = region$sp.grid$conus.grid.id))
+
+  ## works! with CONUS extent ----
+  allfiles$PO.extent <- "CONUS"
+  
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
@@ -153,19 +178,8 @@ test_that("sppdata_for_nimble() works with PO data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
-
-  expect_error(sp.data <- sppdata_for_nimble(species.data,
-                                             region,
-                                             file.info = allfiles,
-                                             covar = covariates,
-                                             covs.inat = "prec",
-                                             covs.PO = NA,
-                                             DND.maybe = 1,
-                                             keep.conus.grid.id = region$sp.grid$conus.grid.id))
-
-  ## works! with CONUS extent ----
-  allfiles$PO.extent <- "CONUS"
 
   sp.data <- sppdata_for_nimble(species.data,
                                 region,
@@ -174,6 +188,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
   expect_type(sp.data, "list")
   expect_equal(length(sp.data), 1)
@@ -191,6 +206,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = "prec",
                                 covs.PO = "temp",
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   expect_type(sp.data, "list")
@@ -211,6 +227,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = "prec",
                                 covs.PO = "temp",
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
   expect_type(sp.data, "list")
   expect_equal(length(sp.data), 1)
@@ -240,6 +257,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -250,6 +268,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   expect_type(sp.data, "list")
@@ -258,6 +277,21 @@ test_that("sppdata_for_nimble() works with PO data", {
   expect_equal(names(sp.data$PO1), c("data", "constants"))
   expect_equal(colnames(sp.data$PO1$data$Xw1), c("MA"))
 
+  
+  # works! with statelines.rm = T
+  allfiles <- data.frame(file.name = c("iNat_test_PO", "iNat_test1_PO"),
+                         file.label = c("test1", "test2"),
+                         covar.mean = c(NA, NA),
+                         covar.sum = c(NA, NA),
+                         data.type = c("PO", "PO"),
+                         PO.extent = c("PA", "MA"))
+  
+  expect_type(sp.data, "list")
+  expect_equal(length(sp.data), 1)
+  expect_equal(names(sp.data), "PO1")
+  expect_equal(names(sp.data$PO1), c("data", "constants"))
+  expect_equal(colnames(sp.data$PO1$data$Xw1), c("MA"))
+  
 
   # PO data - iNat and other ----
   allfiles <- data.frame(file.name = c("iNat_test_PO", "iNat_test1_PO"),
@@ -279,6 +313,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -288,6 +323,7 @@ test_that("sppdata_for_nimble() works with PO data", {
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   expect_type(sp.data, "list")
@@ -337,7 +373,8 @@ test_that("sppdata_for_nimble() works with DND data", {
                          file.label = c("Dodd"),
                          covar.mean = c(NA),
                          covar.sum = c(NA),
-                         data.type = c("DND"))
+                         data.type = c("DND"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
@@ -375,7 +412,8 @@ test_that("sppdata_for_nimble() works with DND data", {
                          file.label = c("Dodd"),
                          covar.mean = c("elevation"),
                          covar.sum = c("time"),
-                         data.type = c("DND"))
+                         data.type = c("DND"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
@@ -411,7 +449,8 @@ test_that("sppdata_for_nimble() works with DND data", {
                          file.label = c("Dodd"),
                          covar.mean = c("notacovariate"),
                          covar.sum = c("time"),
-                         data.type = c("DND"))
+                         data.type = c("DND"),
+                         PO.extent = NA)
 
   expect_warning(species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
@@ -478,13 +517,35 @@ test_that("sppdata_for_nimble() works with count data", {
   stategrid <- get_state_grid(region, st.map)
 
   # count data ----
+  allfiles <- data.frame(file.name = c("NEARMI_test_count"),
+                         file.label = c("NEARMI"),
+                         covar.mean = c(NA),
+                         covar.sum = c(NA),
+                         data.type = c("count"))
+  
+  expect_error(species.data <- load_species_data(sp.code = "GPOR",
+                                    sp.code.all = "GPOR",
+                                    file.info = allfiles,
+                                    file.path = "~/GitHub/species-futures/pkg-tests/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    region = region,
+                                    filter.region = T,
+                                    year.start = 1800,
+                                    year.end = 2025,
+                                    coordunc = 1000,
+                                    coordunc_na.rm = T,
+                                    spat.thin = F,
+                                    keep.conus.grid.id = region$sp.grid$conus.grid.id))
+  
+  
 
   ## works! ----
   allfiles <- data.frame(file.name = c("NEARMI_test_count"),
                          file.label = c("NEARMI"),
                          covar.mean = c(NA),
                          covar.sum = c(NA),
-                         data.type = c("count"))
+                         data.type = c("count"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
@@ -522,7 +583,8 @@ test_that("sppdata_for_nimble() works with count data", {
                          file.label = c("NEARMI"),
                          covar.mean = c("depth"),
                          covar.sum = c("EffectValue"),
-                         data.type = c("count"))
+                         data.type = c("count"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
@@ -612,6 +674,7 @@ test_that("sppdata_for_nimble() works with all data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -619,6 +682,7 @@ test_that("sppdata_for_nimble() works with all data", {
                                 file.info = allfiles,
                                 covar = covariates,
                                 stategrid = stategrid,
+                                statelines.rm = F,
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
@@ -651,6 +715,7 @@ test_that("sppdata_for_nimble() works with all data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -658,6 +723,7 @@ test_that("sppdata_for_nimble() works with all data", {
                                 file.info = allfiles,
                                 covar = covariates,
                                 stategrid = stategrid,
+                                statelines.rm = F,
                                 covs.inat = "", # no effort covariate
                                 covs.PO = "",
                                 DND.maybe = 1,
@@ -747,6 +813,7 @@ test_that("sppdata_for_nimble() works with CV", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")])
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -754,6 +821,7 @@ test_that("sppdata_for_nimble() works with CV", {
                                 file.info = allfiles,
                                 covar = covariates,
                                 stategrid = stategrid,
+                                statelines.rm = F,
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
