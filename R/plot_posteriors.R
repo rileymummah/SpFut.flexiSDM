@@ -28,6 +28,7 @@ plot_posteriors <- function(samples,
                             plot = "B",
                             chaincols = c("1" = "hotpink1", "2" = "olivedrab3", "3" = "deepskyblue3")) {
 
+  set.seed(1)
 
   if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
   if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
@@ -92,6 +93,9 @@ plot_posteriors <- function(samples,
 
 
     call <- mutate(call, lab = paste0(.data$name.y, "\nRhat = ", rhat))
+    
+    call$lab <- gsub("^2", "\u00B2", call$lab, fixed = T)
+    
 
     pl <- ggplot(data = filter(call, n > cutoff)) +
             geom_density(aes(x = .data$value, color = as.factor(.data$chain),
@@ -143,8 +147,11 @@ plot_posteriors <- function(samples,
                  subtitle = "Posterior distribution after burnin; black indicates prior distribution")
     }
 
+    
+    call <- select(call, !any_of(c("cov1", "quad", "Label", "min", "max", "value1")))
+    
 
-    return(pl)
-
-
+    out <- list(dat = call,
+                plot = pl)
+    return(out)
 }

@@ -141,7 +141,11 @@ plot_pars <- function(out,
     pl <- pl + facet_wrap(~lab, scales = "free")
   }
 
+  dat <- select(dat, !any_of(c("cov1", "quad", "Label")))
+  
 
-  return(pl)
+  out <- list(dat = dat,
+              plot = pl)
+  return(out)
 
 }

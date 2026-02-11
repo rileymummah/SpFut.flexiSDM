@@ -9,14 +9,18 @@ test_that("plot_posteriors() works", {
   cov.labs <- data.frame(covariate = c("covA", "covB", "covC"),
                          Label = c("Precipitation", "Elevation", "Temperature"))
 
-  pl <- plot_posteriors(mod1$samples, data = mod1$data, constants = mod1$constants,
+  out <- plot_posteriors(mod1$samples, data = mod1$data, constants = mod1$constants,
                         cov.labs = cov.labs, plot = "B", cutoff = 0)
-  vdiffr::expect_doppelganger("B posterior", pl)
+  vdiffr::expect_doppelganger("B posterior", out$plot)
+  expect_equal(nrow(out$dat), 104)
+  expect_equal(ncol(out$dat), 8)
 
   pl <- plot_posteriors(mod1$samples, data = mod1$data, constants = mod1$constants,
                         cov.labs = cov.labs, plot = "alpha", cutoff = 0)
-  vdiffr::expect_doppelganger("alpha posterior", pl)
-
+  vdiffr::expect_doppelganger("alpha posterior", out$plot)
+  expect_equal(nrow(out$dat), 104)
+  expect_equal(ncol(out$dat), 8)
+  
 
 
 
