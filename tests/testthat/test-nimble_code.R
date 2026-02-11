@@ -53,6 +53,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -62,6 +63,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -172,6 +174,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -181,6 +184,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -290,6 +294,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -299,6 +304,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -409,6 +415,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -418,6 +425,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -530,6 +538,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -539,6 +548,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -647,6 +657,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -656,6 +667,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -766,6 +778,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -775,6 +788,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -885,6 +899,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -894,6 +909,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -1004,6 +1020,7 @@ test_that("nimble_code() works with full data", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -1013,6 +1030,7 @@ test_that("nimble_code() works with full data", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -1174,6 +1192,7 @@ test_that("nimble_code() works with CV", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = train.i)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -1183,6 +1202,7 @@ test_that("nimble_code() works with CV", {
                                 covs.inat = covs.inat,
                                 covs.PO = covs.PO,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = train.i)
 
 
