@@ -5,6 +5,7 @@
 #' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species
 #' @param covar (data.frame) dataframe containing covariates for PO data
 #' @param stategrid (data.frame) output from make_state_grid()
+#' @param statelines.rm (logical) should state-specific PO data in cells that cross state lines be removed (T) or not (F)
 #' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
 #' @param covs.PO (character vector) vector of column names (from covar) to use for effort covariates for non-iNat PO data
 #' @param DND.maybe (numeric) whether to treat maybe detections as detections (1) or non-detections(0); defaults to 1
@@ -30,6 +31,7 @@ sppdata_for_nimble <- function(species.data,
                                file.info,
                                covar,
                                stategrid,
+                               statelines.rm = T,
                                covs.inat = c("traveltime", "density", "n.inat"),
                                covs.PO = c("traveltime", "density"),
                                DND.maybe = 1,
@@ -338,9 +340,12 @@ sppdata_for_nimble <- function(species.data,
           arrange(.data$order_index) %>%
           select(-"order_index")
 
-        # only keep cells that do not cross state lines
-        POdata <- POdata %>% filter(conus.grid.id %in% region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")])
-        covariates <- covariates %>% filter(conus.grid.id %in% region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")])
+        if (statelines.rm == T) {
+          # only keep cells that do not cross state lines
+          POdata <- POdata %>% filter(conus.grid.id %in% region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")])
+          covariates <- covariates %>% filter(conus.grid.id %in% region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")])
+          
+        }
         
         
         PO.other <- PO_for_nimble(POdata, covariates, rename = counter)

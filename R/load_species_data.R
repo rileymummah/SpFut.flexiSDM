@@ -13,6 +13,7 @@
 #' @param coordunc (numeric) if data has coord.unc column (e.g., GBIF data), remove records with coord.unc > coordunc
 #' @param coordunc_na.rm (logical) if data has coord.unc column (e.g., GBIF data), remove records with coord.unc == NA (T) or not (F)
 #' @param spat.thin (logical) if data is PO, do spatial thinning at 2km x 2km grid cell (T) or not (F)
+#' @param statelines.rm (logical) should state-specific PO data in cells that cross state lines be removed (T) or not (F)
 #' @param keep.conus.grid.id (character vector) Which grid cells to keep (e.g., for cross validation); defaults to all grid cells in the region
 #'
 #' @returns A list with two objects. The first object (locs) is a dataframe containing the coordinate locations of all observations. The second object (obs) is a list containing a dataframe for each dataset and the conus.grid.id location of each observation.
@@ -37,6 +38,7 @@ load_species_data <- function(sp.code,
                               coordunc = 1000,
                               coordunc_na.rm = T,
                               spat.thin = F,
+                              statelines.rm = T,
                               keep.conus.grid.id = region$sp.grid$conus.grid.id) {
 
 
@@ -246,20 +248,23 @@ load_species_data <- function(sp.code,
     }
     #}
     
-    # if state-specific PO, remove data in cells that cross state lines
-    if (file.info$data.type[f] == "PO" &
-        file.info$PO.extent[f] != "CONUS") {
-      
-      singlestate <- region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")]
-      rm <- filter(locs.d, .data$conus.grid.id %in% singlestate == F)
-      
-      if (nrow(rm) > 0) {
-        cat("Removing", nrow(rm), "observations in cells that fall across state lines\n")
+    if (statelines.rm == T) {
+      # if state-specific PO, remove data in cells that cross state lines
+      if (file.info$data.type[f] == "PO" &
+          file.info$PO.extent[f] != "CONUS") {
         
-        locs.d <- filter(locs.d, .data$conus.grid.id %in% singlestate)
-        locs.c <- filter(locs.c, .data$unique.id %in% locs.d$unique.id)
+        singlestate <- region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")]
+        rm <- filter(locs.d, .data$conus.grid.id %in% singlestate == F)
+        
+        if (nrow(rm) > 0) {
+          cat("Removing", nrow(rm), "observations in cells that fall across state lines\n")
+          
+          locs.d <- filter(locs.d, .data$conus.grid.id %in% singlestate)
+          locs.c <- filter(locs.c, .data$unique.id %in% locs.d$unique.id)
+        }
       }
     }
+    
     
     if(nrow(locs.d) == 0) {
       cat("No data for this analysis\n")
