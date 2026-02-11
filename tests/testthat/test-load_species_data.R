@@ -24,14 +24,14 @@ test_that("load_species_data() works with iNat format data", {
                            file.label = c("iNat_test"),
                            covar.mean = "",
                            covar.sum = "",
-                           data.type = c("PO"))
+                           data.type = c("PO"),
+                           PO.extent = "CONUS")
 
     # test normal ----
     species.data <- load_species_data(sp.code = "GPOR",
                                       sp.code.all = "GPOR",
                                       file.info = allfiles,
                                       file.path = "~/GitHub/species-futures/pkg-tests/",
-                                      #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                       region = region,
                                       filter.region = T,
                                       year.start = 1800,
@@ -39,6 +39,7 @@ test_that("load_species_data() works with iNat format data", {
                                       coordunc = 1000,
                                       coordunc_na.rm = T,
                                       spat.thin = F,
+                                      statelines.rm = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
     # output structure
@@ -58,14 +59,14 @@ test_that("load_species_data() works with iNat format data", {
                            file.label = c("iNat_test"),
                            covar.mean = NA,
                            covar.sum = NA,
-                           data.type = c("PO"))
+                           data.type = c("PO"),
+                           PO.extent = "CONUS")
 
 
     species.data <- load_species_data(sp.code = "GPOR",
                                       sp.code.all = "GPOR",
                                       file.info = allfiles,
                                       file.path = "~/GitHub/species-futures/pkg-tests/",
-                                      #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                       region = region,
                                       filter.region = T,
                                       year.start = 1800,
@@ -73,6 +74,7 @@ test_that("load_species_data() works with iNat format data", {
                                       coordunc = 1000,
                                       coordunc_na.rm = T,
                                       spat.thin = F,
+                                      statelines.rm = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
 
@@ -94,7 +96,6 @@ test_that("load_species_data() works with iNat format data", {
                                       sp.code.all = "GPOR",
                                       file.info = allfiles,
                                       file.path = "~/GitHub/species-futures/pkg-tests/",
-                                      #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                       region = region,
                                       filter.region = T,
                                       year.start = 1800,
@@ -102,6 +103,7 @@ test_that("load_species_data() works with iNat format data", {
                                       coordunc = 10,
                                       coordunc_na.rm = F,
                                       spat.thin = F,
+                                      statelines.rm = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
     # output structure
@@ -121,7 +123,6 @@ test_that("load_species_data() works with iNat format data", {
                                       sp.code.all = "GPOR",
                                       file.info = allfiles,
                                       file.path = "~/GitHub/species-futures/pkg-tests/",
-                                      #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                       region = region,
                                       filter.region = T,
                                       year.start = 1800,
@@ -129,6 +130,7 @@ test_that("load_species_data() works with iNat format data", {
                                       coordunc = 0,
                                       coordunc_na.rm = F,
                                       spat.thin = F,
+                                      statelines.rm = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
     # output structure
@@ -148,14 +150,14 @@ test_that("load_species_data() works with iNat format data", {
                            file.label = c("iNat_test"),
                            covar.mean = NA,
                            covar.sum = NA,
-                           data.type = c("PO"))
+                           data.type = c("PO"),
+                           PO.extent = "CONUS")
 
 
     species.data <- load_species_data(sp.code = "GPOR",
                                       sp.code.all = "GPOR",
                                       file.info = allfiles,
                                       file.path = "~/GitHub/species-futures/pkg-tests/",
-                                      #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                       region = region,
                                       filter.region = T,
                                       year.start = 1800,
@@ -163,6 +165,7 @@ test_that("load_species_data() works with iNat format data", {
                                       coordunc = 1000,
                                       coordunc_na.rm = F,
                                       spat.thin = T,
+                                      statelines.rm = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
     # output structure
@@ -183,13 +186,13 @@ test_that("load_species_data() works with iNat format data", {
                            file.label = c("iNat_test1", "iNat_test"),
                            covar.mean = c(NA, NA),
                            covar.sum = c(NA, NA),
-                           data.type = c("PO", "PO"))
+                           data.type = c("PO", "PO"),
+                           PO.extent = c("CONUS", "CONUS"))
 
     species.data <- load_species_data(sp.code = "GPOR",
                                       sp.code.all = "GPOR",
                                       file.info = allfiles,
                                       file.path = "~/GitHub/species-futures/pkg-tests/",
-                                      #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                       region = region,
                                       filter.region = T,
                                       year.start = 1800,
@@ -197,6 +200,7 @@ test_that("load_species_data() works with iNat format data", {
                                       coordunc = 1000,
                                       coordunc_na.rm = T,
                                       spat.thin = F,
+                                      statelines.rm = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
     # output structure
@@ -217,13 +221,13 @@ test_that("load_species_data() works with iNat format data", {
                            file.label = c("iNat_test", "iNat_test"),
                            covar.mean = c(NA, NA),
                            covar.sum = c(NA, NA),
-                           data.type = c("PO", "PO"))
+                           data.type = c("PO", "PO"),
+                           PO.extent = c("CONUS", "CONUS"))
 
     species.data <- load_species_data(sp.code = "GPOR",
                                       sp.code.all = "GPOR",
                                       file.info = allfiles,
                                       file.path = "~/GitHub/species-futures/pkg-tests/",
-                                      #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                       region = region,
                                       filter.region = T,
                                       year.start = 1800,
@@ -231,6 +235,7 @@ test_that("load_species_data() works with iNat format data", {
                                       coordunc = 1000,
                                       coordunc_na.rm = T,
                                       spat.thin = F,
+                                      statelines.rm = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
     # output structure
@@ -251,13 +256,13 @@ test_that("load_species_data() works with iNat format data", {
                            file.label = c("iNat_test"),
                            covar.mean = "",
                            covar.sum = "",
-                           data.type = c("PO"))
+                           data.type = c("PO"),
+                           PO.extent = "CONUS")
 
     species.data <- load_species_data(sp.code = "GPOR",
                                       sp.code.all = c("GPOR", "EBIS"),
                                       file.info = allfiles,
                                       file.path = "~/GitHub/species-futures/pkg-tests/",
-                                      #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                       region = region,
                                       filter.region = T,
                                       year.start = 1800,
@@ -265,6 +270,7 @@ test_that("load_species_data() works with iNat format data", {
                                       coordunc = 1000,
                                       coordunc_na.rm = T,
                                       spat.thin = F,
+                                      statelines.rm = F,
                                       keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
     # output structure
@@ -279,6 +285,47 @@ test_that("load_species_data() works with iNat format data", {
     expect_equal(length(species.data$obs), 1)
     expect_equal(nrow(species.data$obs$iNat_test), 10)
 
+    
+    # statelines.rm = T ----
+    
+    xstate <- stategrid %>% group_by(conus.grid.id) %>% summarize(nstate = n()) %>% filter(nstate > 1) %>% pull(conus.grid.id)
+    region$sp.grid <- region$sp.grid %>%
+      mutate(nstate = case_when(conus.grid.id %in% xstate ~ "multi",
+                                T ~ "single"))
+    
+    allfiles <- data.frame(file.name = c("iNat_test1_PO", "iNat_test_PO"),
+                           file.label = c("iNat_test1", "iNat_test"),
+                           covar.mean = c(NA, NA),
+                           covar.sum = c(NA, NA),
+                           data.type = c("PO", "PO"),
+                           PO.extent = c("CONUS", "PA"))
+    
+    species.data <- load_species_data(sp.code = "GPOR",
+                                      sp.code.all = "GPOR",
+                                      file.info = allfiles,
+                                      file.path = "~/GitHub/species-futures/pkg-tests/",
+                                      region = region,
+                                      filter.region = T,
+                                      year.start = 1800,
+                                      year.end = 2025,
+                                      coordunc = 1000,
+                                      coordunc_na.rm = T,
+                                      spat.thin = F,
+                                      statelines.rm = T,
+                                      keep.conus.grid.id = region$sp.grid$conus.grid.id)
+    
+    # output structure
+    expect_type(species.data, "list")
+    expect_equal(length(species.data), 2)
+    expect_equal(names(species.data), c("locs", "obs"))
+    expect_type(species.data$locs, "list")
+    expect_type(species.data$obs, "list")
+    expect_s3_class(species.data$locs$cont, "sf")
+    
+    # output content
+    expect_equal(length(species.data$obs), 2)
+    expect_equal(nrow(species.data$obs$iNat_test), 3)
+    expect_equal(nrow(species.data$obs$iNat_test1), 10)
 })
 
 
@@ -315,17 +362,18 @@ test_that("load_species_data() works with survey data", {
                          file.label = c("NEARMI_test"),
                          covar.mean = "StartWaterTemp",
                          covar.sum = "EffectValue",
-                         data.type = c("count"))
+                         data.type = c("count"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
                                     file.path = "~/GitHub/species-futures/pkg-tests/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
                                     year.end = 2025,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   # output structure
@@ -347,17 +395,18 @@ test_that("load_species_data() works with survey data", {
                          file.label = c("NEARMI_test"),
                          covar.mean = "StartWaterTemp",
                          covar.sum = "EffectValue",
-                         data.type = c("count"))
+                         data.type = c("count"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = c("GPOR", "EWIL"),
                                     file.info = allfiles,
                                     file.path = "~/GitHub/species-futures/pkg-tests/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
                                     year.end = 2025,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   # output structure
@@ -380,17 +429,18 @@ test_that("load_species_data() works with survey data", {
                          file.label = c("NEARMI_test"),
                          covar.mean = "StartWaterTemp",
                          covar.sum = "EffectValue",
-                         data.type = c("count"))
+                         data.type = c("count"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = c("GPOR", "EWIL"),
                                     file.info = allfiles,
                                     file.path = "~/GitHub/species-futures/pkg-tests/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 2023,
                                     year.end = 2025,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   # output structure
@@ -412,17 +462,18 @@ test_that("load_species_data() works with survey data", {
                          file.label = c("NEARMI_test"),
                          covar.mean = "",
                          covar.sum = NA,
-                         data.type = c("count"))
+                         data.type = c("count"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = c("GPOR", "EWIL"),
                                     file.info = allfiles,
                                     file.path = "~/GitHub/species-futures/pkg-tests/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 2023,
                                     year.end = 2025,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   # output structure
@@ -444,18 +495,19 @@ test_that("load_species_data() works with survey data", {
                          file.label = c("NEARMI_test"),
                          covar.mean = "notincovariates",
                          covar.sum = NA,
-                         data.type = c("count"))
+                         data.type = c("count"),
+                         PO.extent = NA)
 
 
   expect_warning(species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = c("GPOR", "EWIL"),
                                     file.info = allfiles,
                                     file.path = "~/GitHub/species-futures/pkg-tests/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 2023,
                                     year.end = 2025,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id))
 
   # output structure
@@ -478,17 +530,18 @@ test_that("load_species_data() works with survey data", {
                          file.label = c("NEARMI_test", "Dodd_test"),
                          covar.mean = c("StartWaterTemp", NA),
                          covar.sum = c("EffectValue", "time"),
-                         data.type = c("count", "DND"))
+                         data.type = c("count", "DND"),
+                         PO.extent = NA)
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
                                     file.path = "~/GitHub/species-futures/pkg-tests/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
                                     year.end = 2025,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   # output structure
@@ -555,17 +608,18 @@ test_that("load_species_data() works with CV", {
                          file.label = c("NEARMI_test", "iNat"),
                          covar.mean = c("StartWaterTemp", NA),
                          covar.sum = c("EffectValue", NA),
-                         data.type = c("count", "PO"))
+                         data.type = c("count", "PO"),
+                         PO.extent = c(NA, NA))
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
                                     file.path = "~/GitHub/species-futures/pkg-tests/",
-                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
                                     region = region,
                                     filter.region = T,
                                     year.start = 1800,
                                     year.end = 2025,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")])
 
   suppressWarnings(tmp <- st_intersection(species.data$locs$cont, spatblocks) %>%
