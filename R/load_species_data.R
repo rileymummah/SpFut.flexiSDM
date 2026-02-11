@@ -45,7 +45,10 @@ load_species_data <- function(sp.code,
   if (year.end < year.start) stop("'year.end' must be after 'year.start'")
   if (length(sp.code.all) > 1) sp.code.all <- paste0(sp.code.all, collapse = "|")
 
-
+  tmp <- colnames(file.info)
+  diff <- setdiff(c("file.name", "file.label", "covar.mean", "covar.sum", "data.type", "PO.extent"), tmp)
+  if (length(diff) > 0) stop("file.info must contain the following columns: 'file.name', 'file.label', 'covar.mean', 'covar.sum', 'data.type', 'PO.extent'")
+  
   # Pull info from file.info
   file.name <- file.info$file.name
   file.label <- file.info$file.label
