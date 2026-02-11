@@ -46,6 +46,7 @@ test_that("data_for_nimble() works", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -55,6 +56,7 @@ test_that("data_for_nimble() works", {
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
@@ -132,6 +134,7 @@ test_that("data_for_nimble() works", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -141,6 +144,7 @@ test_that("data_for_nimble() works", {
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
+                                statelines.rm = F,
                                 keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   gridkey <- select(region$sp.grid, conus.grid.id) %>%
