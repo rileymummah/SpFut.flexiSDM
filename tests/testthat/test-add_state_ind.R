@@ -51,6 +51,7 @@ test_that("add_state_ind() works", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -58,6 +59,7 @@ test_that("add_state_ind() works", {
                                 file.info = allfiles,
                                 covar = covariates,
                                 stategrid = stategrid,
+                                statelines.rm = F,
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
@@ -76,7 +78,7 @@ test_that("add_state_ind() works", {
                          region = region,
                          process.intercept = F,
                          gridkey = gridkey,
-                         spatRegion= spatRegion)
+                         spatRegion = spatRegion)
 
   data <- tmp$data
   constants <- tmp$constants
@@ -92,7 +94,32 @@ test_that("add_state_ind() works", {
 
   expect_equal(length(constants$S2), constants$nCell)
 
-
+  
+  # works for statelines.rm = T ----
+  allfiles <- data.frame(file.name = c("iNat_test_PO", "iNat_test1_PO", "Dodd_test_DND", "NEARMI_test_count"),
+                         file.label = c("iNat_test", "iNat_test1", "Dodd_test", "NEARMI_test"),
+                         covar.mean = c(NA, NA, NA, NA),
+                         covar.sum = c(NA, NA, NA, NA),
+                         data.type = c("PO", "PO", "DND", "count"),
+                         PO.extent = c("CONUS", "PA", NA, NA))
+  
+  species.data <- load_species_data(sp.code = "GPOR",
+                                    sp.code.all = "GPOR",
+                                    file.info = allfiles,
+                                    file.path = "~/GitHub/species-futures/pkg-tests/",
+                                    #file.path = "../species-futures/pkg-tests/data-ready-testfunctions/",
+                                    region = region,
+                                    filter.region = T,
+                                    year.start = 1800,
+                                    year.end = 2025,
+                                    coordunc = 1000,
+                                    coordunc_na.rm = T,
+                                    spat.thin = F,
+                                    statelines.rm = T,
+                                    keep.conus.grid.id = region$sp.grid$conus.grid.id)
+  expect_equal(length(species.data$obs), 3)
+  
+  
   # works for iNat ----
   allfiles <- data.frame(file.name = c("iNat_test_PO", "iNat_test1_PO", "Dodd_test_DND", "NEARMI_test_count"),
                          file.label = c("iNaturalist", "iNat_test1", "Dodd_test", "NEARMI_test"),
@@ -113,6 +140,7 @@ test_that("add_state_ind() works", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -120,6 +148,7 @@ test_that("add_state_ind() works", {
                                 file.info = allfiles,
                                 covar = covariates,
                                 stategrid = stategrid,
+                                statelines.rm = F,
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
@@ -249,6 +278,7 @@ test_that("add_state_ind() works with CV", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")])
 
   sp.data <- sppdata_for_nimble(species.data,
@@ -256,6 +286,7 @@ test_that("add_state_ind() works with CV", {
                                 file.info = allfiles,
                                 covar = covariates,
                                 stategrid = stategrid,
+                                statelines.rm = F,
                                 covs.inat = "prec",
                                 covs.PO = NA,
                                 DND.maybe = 1,
