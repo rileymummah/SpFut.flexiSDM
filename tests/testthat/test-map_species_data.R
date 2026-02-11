@@ -24,7 +24,8 @@ test_that("map_species_data() works with plot = samples", {
                          file.label = c("iNat_test", "iNat_test", "Dodd_test", "NEARMI_test"),
                          covar.mean = c(NA, NA, NA, NA),
                          covar.sum = c(NA, NA, NA, NA),
-                         data.type = c("PO", "PO", "DND", "count"))
+                         data.type = c("PO", "PO", "DND", "count"),
+                         PO.extent = c("CONUS", "CONUS", NA, NA))
 
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
@@ -38,6 +39,7 @@ test_that("map_species_data() works with plot = samples", {
                                     coordunc = 1000,
                                     coordunc_na.rm = T,
                                     spat.thin = F,
+                                    statelines.rm = F,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   # plot samples only, with details ----
