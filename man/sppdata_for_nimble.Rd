@@ -10,6 +10,7 @@ sppdata_for_nimble(
   file.info,
   covar,
   stategrid,
+  statelines.rm = T,
   covs.inat = c("traveltime", "density", "n.inat"),
   covs.PO = c("traveltime", "density"),
   DND.maybe = 1,
@@ -27,6 +28,8 @@ sppdata_for_nimble(
 \item{covar}{(data.frame) dataframe containing covariates for PO data}
 
 \item{stategrid}{(data.frame) output from make_state_grid()}
+
+\item{statelines.rm}{(logical) should state-specific PO data in cells that cross state lines be removed (T) or not (F)}
 
 \item{covs.inat}{(character vector) vector of column names (from covar) to use for effort covariates for iNat data}
 

@@ -16,6 +16,7 @@ load_species_data(
   coordunc = 1000,
   coordunc_na.rm = T,
   spat.thin = F,
+  statelines.rm = T,
   keep.conus.grid.id = region$sp.grid$conus.grid.id
 )
 }
@@ -41,6 +42,8 @@ load_species_data(
 \item{coordunc_na.rm}{(logical) if data has coord.unc column (e.g., GBIF data), remove records with coord.unc == NA (T) or not (F)}
 
 \item{spat.thin}{(logical) if data is PO, do spatial thinning at 2km x 2km grid cell (T) or not (F)}
+
+\item{statelines.rm}{(logical) should state-specific PO data in cells that cross state lines be removed (T) or not (F)}
 
 \item{keep.conus.grid.id}{(character vector) Which grid cells to keep (e.g., for cross validation); defaults to all grid cells in the region}
 }

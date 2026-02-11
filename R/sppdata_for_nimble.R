@@ -143,7 +143,7 @@ sppdata_for_nimble <- function(species.data,
                     mutate(order_index = match(.data$conus.grid.id, keep.conus.grid.id)) %>%
                     arrange(.data$order_index) %>%
                     select(-"order_index")
-      
+
       PO.inat <- PO_for_nimble(POdata, covariates,
                                rename = counter)
       PO.inat$constants[[paste0("name", counter)]] <- name
@@ -342,12 +342,12 @@ sppdata_for_nimble <- function(species.data,
 
         if (statelines.rm == T) {
           # only keep cells that do not cross state lines
-          POdata <- POdata %>% filter(conus.grid.id %in% region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")])
-          covariates <- covariates %>% filter(conus.grid.id %in% region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")])
-          
+          POdata <- POdata %>% filter(.data$conus.grid.id %in% region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")])
+          covariates <- covariates %>% filter(.data$conus.grid.id %in% region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")])
+
         }
-        
-        
+
+
         PO.other <- PO_for_nimble(POdata, covariates, rename = counter)
         PO.other$constants[[paste0("name", counter)]] <- name
         PO.other$constants[[paste0("states", counter)]] <- states
