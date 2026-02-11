@@ -287,6 +287,28 @@ test_that("load_species_data() works with iNat format data", {
 
     
     # statelines.rm = T ----
+    grid <- st_make_grid(st_transform(boundary, crs = 3857), cellsize = 100000) %>%
+      st_as_sf() %>%
+      mutate(conus.grid.id = 1:nrow(.)) %>%
+      rename(geometry = x)
+    
+    region <- make_region(rangelist,
+                          buffer = 1,
+                          sub = F,
+                          boundary = boundary,
+                          grid = grid,
+                          rm.clumps = F,
+                          clump.size = 2,
+                          continuous = F)
+    
+    covariates <- data.frame(conus.grid.id = region$sp.grid$conus.grid.id,
+                             temp = rnorm(nrow(region$sp.grid), 0, 1),
+                             prec = rnorm(nrow(region$sp.grid), 0, 1) + runif(nrow(region$sp.grid), 0, 1))
+    
+    
+    st.map <- ne_states(country = c("Canada", "Mexico", "United States of America"),
+                        returnclass = "sf")
+    stategrid <- get_state_grid(region, st.map)
     
     xstate <- stategrid %>% group_by(conus.grid.id) %>% summarize(nstate = n()) %>% filter(nstate > 1) %>% pull(conus.grid.id)
     region$sp.grid <- region$sp.grid %>%
