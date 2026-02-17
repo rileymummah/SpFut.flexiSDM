@@ -60,9 +60,10 @@ summarize_samples <- function(samples,
     }
   }
 
+
+
   start <- Sys.time()
   this_cluster <- makeCluster(cores)
-  on.exit(stopCluster(this_cluster), add = TRUE)
 
   out <- parLapply(cl = this_cluster,
                    X = 1:ncol(samples[[1]]),
@@ -70,6 +71,9 @@ summarize_samples <- function(samples,
                    samples = samples,
                    chains = chains,
                    cutoff = cutoff)
+
+  on.exit(stopCluster(this_cluster), add = TRUE)
+
 
 
   out <- bind_rows(out)
@@ -121,12 +125,12 @@ summarize_samples <- function(samples,
     datasetnames <- grep("nW", names(constants))
     datasetnames <- gsub("nW", "", names(constants)[datasetnames])
     datasetnames <- grep(paste0("name", datasetnames, collapse = "|"), names(constants))
-    
+
     dnames <- c()
     cellsall <- c()
     for (i in 1:length(datasetnames)) {
       dnames <- c(dnames, constants[[datasetnames[i]]])
-      
+
       cells <- data.frame(PO.dataset = paste0("E", i),
                           grid.id = constants[[paste0("Wcells", i)]],
                           ind = 1:length(constants[[paste0("Wcells", i)]]))
@@ -134,9 +138,9 @@ summarize_samples <- function(samples,
     }
     dnames <- data.frame(PO.dataset = paste0("E", 1:length(dnames)),
                          PO.dataset.name = dnames)
-    
+
     Enames <- colnames(samples[[1]][grep("E", colnames(samples[[1]]))])
-    
+
     keep <- grep("E", out$param)
     E <- out %>%
       slice(keep) %>%
