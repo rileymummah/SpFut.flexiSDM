@@ -16,6 +16,7 @@
 #' @export
 #'
 #' @importFrom rlang .data
+#' @importFrom magrittr "%>%"
 #' @importFrom dplyr right_join bind_rows mutate slice mutate inner_join select group_by ungroup left_join row_number
 #' @importFrom coda as.mcmc
 #' @importFrom parallel makeCluster parLapply stopCluster
