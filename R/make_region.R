@@ -1,22 +1,26 @@
 #' Make species region
 #'
-#' @description Define the region for inference using a buffer around external range boundaries.
-#'
+#' @description Define the region for inference using a buffer around external range boundaries. Note that the function uses a Psuedo-mercator projection (EPSG:3857), which distorts real earth area at extreme latitudes. Further, the area of the cells are in Mercator meters, which may not reflect real earth meters in all areas. Users should determine whether this projection is suitable for their analysis. 
+#' 
 #' @param rangelist (list) list of ranges generated from get_range()
 #' @param buffer (numeric) buffer size in meters
 #' @param boundary (sf object) A polygon that says where to cut off the region (e.g., political borders)
-#' @param grid (sf object) grid overlay
+#' @param grid (sf object) user-generated square or hexagonal grid with crs = 3857 and equal cell areas. Note that a coarse grid cannot be generated from square grid cells.
 #' @param sub (logical) whether to buffer around centroid (sub = T) or around full range (sub = F)
 #' @param lat.lo (numeric) lower boundary of latitude (degrees)
 #' @param lat.hi (numeric) upper boundary of latitude (degrees)
 #' @param lon.lo (numeric) lower boundary of longitude (degrees)
 #' @param lon.hi (numeric) upper boundary of longitude (degrees)
-#' @param continuous (logical) whether to keep only a continuous section of the range (T) or keep the whole range (F)
-#' @param rm.clumps (logical) whether to remove clumps of cells of size clump.size
+#' @param continuous (logical) whether to keep only a continuous section of the range (T) or keep the whole range (F). See details for more information.
+#' @param rm.clumps (logical) whether to remove clumps of cells of size clump.size. See details for more information.
 #' @param clump.size (numeric) number of cells in clumps to keep
 #'
 #' @returns A list containing ranges, the full region, sp.grid, and the boundary
 #' @export
+#' 
+#' @details
+#' The `continuous` and `rm.clups` arguments allow the user to specify whether they want a fully continuous region or a region without small groups of isolated cells. A continuous region, or at least a region without small clumps, can improve the performance of the spatial ICAR model. However, for species with a disjoint range, these arguments should be considered carefully as they may accidentally remove important parts of the species range.
+#' 
 #'
 #' @importFrom sf sf_use_s2 st_buffer st_centroid st_bbox st_as_sfc st_crop st_area st_intersection st_transform st_cast st_union st_as_sf st_touches st_geometry_type
 #' @importFrom dplyr bind_rows summarize filter mutate select pull ungroup reframe
@@ -46,7 +50,7 @@ make_region <- function(rangelist,
   if (tmp$input != "EPSG:3857") {stop("grid must have crs = 3857")}
 
   # check grid cell sizes
-  cellsize <- grid %>% mutate(area = round(as.numeric(st_area(.data$geometry))), 0) %>%
+  cellsize <- grid %>% mutate(area = round(as.numeric(st_area(.data$geometry)), 0)) %>%
               pull(.data$area) %>%
               unique()
 
@@ -115,7 +119,7 @@ make_region <- function(rangelist,
 
     # find cells that are too small and remove (these are along the edges of the boundary and buffer)
     gridb <- grida %>%
-      mutate(area = round(as.numeric(st_area(.data$geometry))), 0) %>%
+      mutate(area = round(as.numeric(st_area(.data$geometry)), 0)) %>%
       filter(.data$area >= cellsize)
 
     cat("Removing small cells\n")
