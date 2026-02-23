@@ -8,7 +8,7 @@
 #' @param pathToProj (character) path to R script where projections are set up
 #' @param sp.auto (logical) whether or not spatial autocorrelation was used
 #'
-#' @returns A dataframe of the original MCMC samples with estimated psi and lambda, psi, and XB for each projection (if projections are specified)
+#' @returns A dataframe of the original MCMC samples with estimated lambda, psi, and XB for each projection (if projections are specified)
 #' @export
 #'
 #' @importFrom VGAM clogloglink
