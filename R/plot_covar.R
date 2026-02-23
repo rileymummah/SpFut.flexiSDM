@@ -1,6 +1,6 @@
 #' Plot covariates
 #'
-#' @description Makes maps of scaled covariate values.
+#' @description Makes maps of covariate values.
 #'
 #' @param covar (data.frame) dataframe holding covariate values and conus.grid.id
 #' @param region (list) region output from make_region()
@@ -23,9 +23,7 @@
 plot_covar <- function(covar,
                        region,
                        cov.labs,
-                       scaled){ #,F
-                       # out.path = "",
-                       # out.name = "covariate-map") {
+                       scaled){
 
   if ("covariate" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'covariate' column that matches covariates used in the model")
   if ("Label" %in% colnames(cov.labs) == F) stop ("cov.labs must have 'Label' column with desired covariate labels")
