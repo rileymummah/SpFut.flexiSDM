@@ -18,6 +18,8 @@
 
 select_covar <- function(covs,
                          threshold = 0.4) {
+  
+  covs <- covs %>% select(!any_of("conus.grid.id"))
 
   # selectively remove covariates until all high correlations are gone
   # cors <- cor(as.data.frame(.data$covar[,c(covs)])) %>%
