@@ -11,7 +11,7 @@
 #' @param block.out (character or numeric) which block is excluded
 #' @param zero_mean (logical) whether spatial parameter should include zero_mean restriction (T) or not (F); defaults to T
 #' @param tau (character) the value of tau (precision) for the ICAR model
-#' @param rm.state (logical) whether to remove state-specific effort (T) or not (F); defaults to F
+#' @param rm.state (logical) whether to remove the indicator variable for state-specific effort (T) or not (F); defaults to F
 #'
 #' @returns nimble code object
 #' @export
