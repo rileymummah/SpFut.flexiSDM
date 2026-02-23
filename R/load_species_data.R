@@ -4,7 +4,7 @@
 #'
 #' @param sp.code (character) 4-letter species code
 #' @param sp.code.all (character) string of all species codes to pull for use in analysis, separated by |
-#' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species
+#' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', 'covar.sum', 'data.type', and 'PO.extent" describing the datasets to be read in for this species. See details for more information.
 #' @param file.path (character) path where data files are located
 #' @param region (sf list) region (output from make_region())
 #' @param filter.region (logical) Only keep data within region (T) or not (F)
@@ -18,6 +18,16 @@
 #'
 #' @returns A list with two objects. The first object (locs) is a dataframe containing the coordinate locations of all observations. The second object (obs) is a list containing a dataframe for each dataset and the conus.grid.id location of each observation.
 #' @export
+#' 
+#' @details
+#' The columns in `file.info` must contain:
+#'   - `file.name`: the name of the csv file to be read in
+#'   - `file.label`: the label that should be used for the dataset. If multiple files have the same label, they will be appended together. Only files with the label "iNaturalist" will be treated as iNaturalist data.
+#'   - `covar.mean`: detection covariates that should be averaged across passes; must match column name in data file
+#'   - `covar.sum`: detection covariate(s) that should be summed across passes; must match column name in data file
+#'   - `data.type`: data type of dataset; must be "PO", "DND", "or "Count"
+#'   - `PO.extent`: describes the spatial extent of PO datasets; must be "CONUS" or a two-letter state abbreviation; NA for non-PO datasets
+#' 
 #'
 #' @importFrom magrittr "%>%"
 #' @importFrom rlang .data
@@ -28,7 +38,7 @@
 
 
 load_species_data <- function(sp.code,
-                              sp.code.all,
+                              sp.code.all = sp.code,
                               file.info,
                               file.path,
                               region,
