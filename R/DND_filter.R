@@ -27,7 +27,6 @@ DND_filter <- function(data,
 
 
 
-  cat("\nLoading DND")
 
   dndstart <- filter(data, .data$age %in% age.use)
 

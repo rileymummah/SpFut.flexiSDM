@@ -2,9 +2,9 @@
 #'
 #' @param species.data (list) output from load_species_data()
 #' @param region (list) output from make_region()
-#' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species
+#' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', 'covar.sum', 'data.type', and 'PO.extent" describing the datasets to be read in for this species. See details for more information.
 #' @param covar (data.frame) dataframe containing covariates for PO data
-#' @param stategrid (data.frame) output from make_state_grid()
+#' @param stategrid (data.frame) output from get_state_grid()
 #' @param statelines.rm (logical) should state-specific PO data in cells that cross state lines be removed (T) or not (F)
 #' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data
 #' @param covs.PO (character vector) vector of column names (from covar) to use for effort covariates for non-iNat PO data
@@ -14,6 +14,21 @@
 #'
 #' @returns (list) list of species data partially formatted for nimble, needs to be input into data_for_nimble before use in nimble
 #' @export
+#' 
+#' #' @details
+#' The columns in `file.info` must contain:
+#'   - `file.name`: the name of the csv file to be read in
+#'   - `file.label`: the label that should be used for the dataset. If multiple files have the same label, they will be appended together. Only files with the label "iNaturalist" will be treated as iNaturalist data.
+#'   - `covar.mean`: detection covariates that should be averaged across passes; must match column name in data file
+#'   - `covar.sum`: detection covariate(s) that should be summed across passes; must match column name in data file
+#'   - `data.type`: data type of dataset; must be "PO", "DND", "or "Count"
+#'   - `PO.extent`: describes the spatial extent of PO datasets; must be "CONUS" or a two-letter state abbreviation; NA for non-PO datasets
+#'
+#' Note that survey detection covariates are scaled within this function; PO effort covariates must be scaled prior to this function.
+#'
+#'
+#' 
+#'  
 #'
 #' @importFrom tidyselect any_of all_of
 #' @importFrom tibble add_column
@@ -106,7 +121,7 @@ sppdata_for_nimble <- function(species.data,
       name <- file.names[inat.ind]
 
       inat.start <- data
-      cat("\nLoading PO")
+      cat("\nLoading iNaturalist, dataset", counter)
 
       # Aggregate iNat to grid cells
       POdata <- inat.start %>%
@@ -188,7 +203,7 @@ sppdata_for_nimble <- function(species.data,
           name <- file.names[con.ind[o]]
 
           other.start <- data
-          cat("\nLoading PO")
+          cat("\nLoading PO, dataset", counter)
 
           # Aggregate records to grid.ids
           POdata <- other.start %>%
@@ -251,7 +266,7 @@ sppdata_for_nimble <- function(species.data,
         name <- paste0(file.names[sta.ind], collapse = ", ")
 
         other.start <- sta.dat
-        cat("\nLoading PO")
+        cat("\nLoading PO, dataset", counter)
 
         # Aggregate to grid.ids
         POdata <- other.start %>%
@@ -377,6 +392,9 @@ sppdata_for_nimble <- function(species.data,
   DNDlabs <- file.info$file.label[DNDind]
   if (length(DNDind) > 0) {
     for (d in 1:length(DNDind)) {
+      
+      cat("\nLoading DND, dataset", counter)
+      
 
       # pull out covariates for this dataset
       dnd.covs.mean <- unlist(strsplit(covs.mean[DNDind[d]], split = ", "))
@@ -486,6 +504,9 @@ sppdata_for_nimble <- function(species.data,
   if (length(countind) > 0) {
 
     for (d in 1:length(countind)) {
+      
+      cat("\nLoading count, dataset", counter)
+      
 
       # pull out covariates for this dataset
       count.covs.mean <- unlist(strsplit(covs.mean[countind[d]], split = ", "))

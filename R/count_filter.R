@@ -23,7 +23,6 @@ count_filter <- function(data,
                          offset.area,
                          age.use = c("adult", "metamorph", "juvenile", "larva", "egg mass", "NR", NA)) {
 
-  cat("\nLoading count")
 
   countstart <- filter(data, .data$age %in% age.use)
 
