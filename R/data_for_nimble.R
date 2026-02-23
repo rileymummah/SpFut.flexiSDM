@@ -1,12 +1,12 @@
 #' Format species data and covariate data for nimble
 #'
 #' @param sp.data (list) output from sppdata_for_nimble()
-#' @param covar (data.frame) dataframe containing process covariates
-#' @param covs.z (character vector) vector of column names from covar to use as process covariates
+#' @param covar (data.frame) dataframe containing ecological process covariates
+#' @param covs.z (character vector) vector of column names from covar to use as covariates in the ecological process model; should contain names of both linear and quadratic covariates.
 #' @param sp.auto (logical) whether to use spatial autocorrelation in the model (T) or not (F); defaults to T
 #' @param coarse.grid (logical) whether to use a coarse grid (T) or not (F); defaults to T
 #' @param region (list) output from make_region()
-#' @param process.intercept (logical) whether to include an intercept in the process model or not; defaults to T
+#' @param process.intercept (logical) whether to include an intercept in the process model or not; defaults to F. An intercept in the process model is unidentifiable if dataset intercepts are used.
 #' @param gridkey (data.frame) contains conus.grid.ids and associated grid.ids to use for indexing in nimble
 #' @param spatRegion (list) output from make_spatKey(); only required if coarse.grid == T
 #'
