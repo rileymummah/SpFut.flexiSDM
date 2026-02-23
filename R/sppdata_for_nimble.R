@@ -3,7 +3,7 @@
 #' @param species.data (list) output from load_species_data()
 #' @param region (list) output from make_region()
 #' @param file.info (data.frame) columns 'file.name', 'file.label', 'covar.mean', 'covar.sum', 'data.type', and 'PO.extent" describing the datasets to be read in for this species. See details for more information.
-#' @param covar (data.frame) dataframe containing covariates for PO data
+#' @param covar (data.frame) dataframe containing effort covariates for PO data for each conus.grid.id; conus.grid.id must match values from region$sp.grid
 #' @param stategrid (data.frame) output from get_state_grid()
 #' @param statelines.rm (logical) should state-specific PO data in cells that cross state lines be removed (T) or not (F)
 #' @param covs.inat (character vector) vector of column names (from covar) to use for effort covariates for iNat data

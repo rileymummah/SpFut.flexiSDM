@@ -1,8 +1,8 @@
 #' Format species data and covariate data for nimble
 #'
 #' @param sp.data (list) output from sppdata_for_nimble()
-#' @param covar (data.frame) dataframe containing ecological process covariates; must be scaled and contain columns for squared covariates with the column name "covariatename2"
-#' @param covs.z (character vector) vector of column names from covar to use as covariates in the ecological process model; should contain names of both linear and quadratic covariates.
+#' @param covar (data.frame) dataframe containing ecological process covariates; must be scaled and contain columns for squared covariates with the column name "covariatename2"; conus.grid.id must match values from region$sp.grid.
+#' @param covs.z (character vector) vector of column names from covar to use as covariates in the ecological process model; should contain names of both linear and quadratic covariates
 #' @param sp.auto (logical) whether to use spatial autocorrelation in the model (T) or not (F); defaults to T
 #' @param coarse.grid (logical) whether to use a coarse grid (T) or not (F); defaults to T
 #' @param region (list) output from make_region()

@@ -2,7 +2,7 @@
 #'
 #' @description Makes maps of covariate values.
 #'
-#' @param covar (data.frame) dataframe holding covariate values and conus.grid.id
+#' @param covar (data.frame) dataframe containing covariate values for each conus.grid.id; conus.grid.id must match values from region$sp.grid.
 #' @param region (list) region output from make_region()
 #' @param cov.labs (data.frame) Labels for each covariate
 #' @param scaled (logical) Are the covariate values scaled?

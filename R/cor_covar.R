@@ -2,7 +2,7 @@
 #'
 #' @description Calculates and plots correlations between covariates.
 #'
-#' @param covar (data.frame) data.frame holding covariate values and conus.grid.id
+#' @param covar (data.frame) data.frame containing covariate values and conus.grid.id; conus.grid.id must match values from region$sp.grid.
 #' @param cov.labs (data.frame) Labels for each covariate
 #' @param cov.levels (character vector) column names in order they should appear on plot
 #' @param color.threshold (numeric) threshold above which to add color to plot; default is 0.25
