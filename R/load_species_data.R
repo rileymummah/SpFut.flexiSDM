@@ -63,6 +63,9 @@ load_species_data <- function(sp.code,
   file.name <- file.info$file.name
   file.label <- file.info$file.label
   PO.extent <- file.info$PO.extent
+  
+  if (length(setdiff(PO.extent, c(state.abb, "CONUS", NA))) > 0) stop ("PO.extent must be a 2-letter state abbreviations, 'CONUS', or NA")
+
 
   covariates <- list()
   for (i in 1:nrow(file.info)) {

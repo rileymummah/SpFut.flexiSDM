@@ -69,6 +69,9 @@ sppdata_for_nimble <- function(species.data,
   covs.sum[is.na(covs.sum)] <- ""
   offset.area <- file.info$area
   PO.extent <- file.info$PO.extent
+  
+  if (length(setdiff(PO.extent, c(state.abb, "CONUS", NA))) > 0) stop ("PO.extent must be a 2-letter state abbreviations, 'CONUS', or NA")
+  
 
   # these are indices of datasets that don't have any data (i.e., wrong years, species, etc.)
   # they will be removed at the end
