@@ -1,6 +1,6 @@
 #' Write code for nimble
 #'
-#' @description Write code for nimble based on contents of data and constants
+#' @description Write code for nimble based on contents of data and constants. Note that Rtools must be installed in order to use NIMBLE.
 #'
 #' @param data (list) data formatted for nimble
 #' @param constants (list) constants formatted for nimble
