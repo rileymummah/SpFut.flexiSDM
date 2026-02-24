@@ -162,18 +162,39 @@ make_spatkey <- function(grid) {
   cellNA$neighbors <- NBinfo$num
   adj <- NBinfo$adj
 
+  # Initialize groupings
   cellNA$cell[1] <- 1
 
   # Use adjacency to group nearby cells
   for (i in 1:nrow(cellNA)) {
     if (cellNA$neighbors[i] == 0 & is.na(cellNA$cell[i])) {
       cellNA$cell[i] = max(cellNA$cell, na.rm=T) + 1
-    } else if (cellNA$neighbors[i] > 0) {
-      if (is.na(cellNA$cell[i])) {
+    } else if (cellNA$neighbors[i] > 0) { # does the cell have neighbors?
+      if (i == 1) {
         index <- adj[1:cellNA$neighbors[i]]
-        cellNA$cell[i] <- max(cellNA$cell, na.rm=T) + 1
         # Give neighboring cells the same cell number
         cellNA$cell[index] <- cellNA$cell[i]
+
+        # Remove the indices from adj that you just used
+        adj <- adj[-(1:cellNA$neighbors[i])]
+      } else if (is.na(cellNA$cell[i])) {
+        index <- adj[1:cellNA$neighbors[i]]
+        # If the cell only has 1 neighbor
+        # AND the cell index is not missing, fill in with same cell index
+        if (length(index) == 1) {
+          # The grouping is NOT missing from adjacent cells
+          if (!is.na(cellNA$cell[index])) {
+            cellNA$cell[i] <- cellNA$cell[index]
+          } else { # The grouping IS missing from adjacent cells
+            cellNA$cell[i] <- max(cellNA$cell, na.rm=T) + 1
+            # Give neighboring cells the same cell number
+            cellNA$cell[index] <- cellNA$cell[i]
+          }
+        } else { # Otherwise, the cell has >1 neighbor
+          cellNA$cell[i] <- max(cellNA$cell, na.rm=T) + 1
+          # Give neighboring cells the same cell number
+          cellNA$cell[index] <- cellNA$cell[i]
+        }
 
         # Remove the indices from adj that you just used
         adj <- adj[-(1:cellNA$neighbors[i])]
@@ -190,6 +211,9 @@ make_spatkey <- function(grid) {
     left_join(grid, centXY, by = 'conus.grid.id') %>%
     select("conus.grid.id", "cell", "geometry") -> spatkey1
 
+  # Ensure that edge cells have unique groupings. Otherwise, they get grouped
+  # with interior cells
+  cellNA$cell <- max(spatkey1$cell, na.rm=T) + cellNA$cell
   spatkey1$cell[NAind] <- cellNA$cell
 
   spatkey1 %>%
