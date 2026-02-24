@@ -6,7 +6,6 @@
 #' @param sp.auto (logical) whether to use spatial autocorrelation in the model (T) or not (F); defaults to T
 #' @param coarse.grid (logical) whether to use a coarse grid (T) or not (F); defaults to T
 #' @param region (list) output from make_region()
-#' @param process.intercept (logical) whether to include an intercept in the process model or not; defaults to F. An intercept in the process model is unidentifiable if dataset intercepts are used.
 #' @param gridkey (data.frame) contains conus.grid.ids and associated grid.ids to use for indexing in nimble
 #' @param spatRegion (list) output from make_spatKey(); only required if coarse.grid == T
 #'
@@ -23,10 +22,14 @@ data_for_nimble <- function(sp.data,
                             sp.auto = T,
                             coarse.grid = T,
                             region,
-                            process.intercept = T,
+                            # process.intercept = T,
                             gridkey,
                             spatRegion) {
 
+  
+  # never include a process intercept
+  process.intercept = F
+  
   # get number of datasets
   nD <- length(sp.data)
 
