@@ -15,6 +15,10 @@
 #'
 #' @returns nimble code object
 #' @export
+#' 
+#' @details
+#' For more information about nimble code and parameters, see the nimble documentation: https://r-nimble.org/documentation.html
+#' 
 #'
 #' @importFrom nimble nimbleCode
 
