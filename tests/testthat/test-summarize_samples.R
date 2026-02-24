@@ -12,6 +12,7 @@ test_that("summarize_samples() works", {
                     gridkey = mod1$gridkey,
                     spatkey = NULL,
                     effort = F,
+                    cores = 5,
                     SLURM = F) -> tmp
 
   expect_true(is.list(tmp))
@@ -30,6 +31,7 @@ test_that("summarize_samples() works", {
                     gridkey = mod4$gridkey,
                     spatkey = mod4$spatRegion$spatkey,
                     effort = F,
+                    cores = 5,
                     SLURM = F) -> tmp
 
   expect_true(is.list(tmp))
@@ -60,6 +62,7 @@ test_that("summarize_samples() works", {
                     gridkey = mod4$gridkey,
                     spatkey = mod4$spatRegion$spatkey,
                     effort = F,
+                    cores = 5,
                     SLURM = F) -> tmp
 
   expect_true(is.list(tmp))
