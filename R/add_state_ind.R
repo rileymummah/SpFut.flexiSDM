@@ -31,7 +31,7 @@ add_state_ind <- function(species.data,
   if ("iNaturalist" %in% names(species.data$obs)) {
     if (length(obsc.state) > 0) {
 
-      if (length(setdiff(obsc.state, datasets::state.abb)) > 0) stop ("obsc.state must contain 2-letter state abbreviations")
+      if (length(setdiff(obsc.state, c(datasets::state.abb, NA))) > 0) stop ("obsc.state must contain 2-letter state abbreviations")
 
       grid.states <- stategrid %>%
         filter(.data$name %in% obsc.state == F,

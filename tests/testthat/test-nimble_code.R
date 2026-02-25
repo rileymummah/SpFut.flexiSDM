@@ -88,7 +88,7 @@ test_that("nimble_code() works with full data", {
                              gridkey,
                              constants,
                              stategrid = stategrid,
-                             obsc.state = "",
+                             obsc.state = NA,
                              keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   code <- nimble_code(data,
@@ -208,7 +208,7 @@ test_that("nimble_code() works with full data", {
                              gridkey,
                              constants,
                              stategrid = stategrid,
-                             obsc.state = "",
+                             obsc.state = NA,
                              keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   code <- nimble_code(data,
@@ -327,7 +327,7 @@ test_that("nimble_code() works with full data", {
                              gridkey,
                              constants,
                              stategrid = stategrid,
-                             obsc.state = "",
+                             obsc.state = NA,
                              keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   code <- nimble_code(data,
@@ -446,7 +446,7 @@ test_that("nimble_code() works with full data", {
                              gridkey,
                              constants,
                              stategrid = stategrid,
-                             obsc.state = "",
+                             obsc.state = NA,
                              keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
 
@@ -568,7 +568,7 @@ test_that("nimble_code() works with full data", {
                              gridkey,
                              constants,
                              stategrid = stategrid,
-                             obsc.state = "",
+                             obsc.state = NA,
                              keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   code <- nimble_code(data,
@@ -1045,7 +1045,7 @@ test_that("nimble_code() works with full data", {
                              gridkey,
                              constants,
                              stategrid = stategrid,
-                             obsc.state = "",
+                             obsc.state = NA,
                              keep.conus.grid.id = region$sp.grid$conus.grid.id)
 
   code <- nimble_code(data,
@@ -1211,7 +1211,7 @@ test_that("nimble_code() works with CV", {
                              gridkey,
                              constants,
                              stategrid = stategrid,
-                             obsc.state = "",
+                             obsc.state = NA,
                              keep.conus.grid.id = train.i)
 
   code <- nimble_code(data,
