@@ -7,7 +7,7 @@
 cor_covar(covar, cov.labs, cov.levels = cov.labels, color.threshold = 0.25)
 }
 \arguments{
-\item{covar}{(data.frame) data.frame holding covariate values and conus.grid.id}
+\item{covar}{(data.frame) data.frame containing covariate values and conus.grid.id; conus.grid.id must match values from region$sp.grid.}
 
 \item{cov.labs}{(data.frame) Labels for each covariate}
 

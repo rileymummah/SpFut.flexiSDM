@@ -36,11 +36,14 @@ nimble_code(
 
 \item{tau}{(character) the value of tau (precision) for the ICAR model}
 
-\item{rm.state}{(logical) whether to remove state-specific effort (T) or not (F); defaults to F}
+\item{rm.state}{(logical) whether to remove the indicator variable for state-specific effort (T) or not (F); defaults to F}
 }
 \value{
 nimble code object
 }
 \description{
-Write code for nimble based on contents of data and constants
+Write code for nimble based on contents of data and constants. Note that Rtools must be installed in order to use NIMBLE.
+}
+\details{
+For more information about nimble code and parameters, see the nimble documentation: https://r-nimble.org/documentation.html
 }

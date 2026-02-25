@@ -19,7 +19,7 @@ get_derived(
 
 \item{data}{(NIMBLE data) data created and formatted for NIMBLE}
 
-\item{project}{(numeric) the number of projections}
+\item{project}{(numeric) the number of projections. NA is not accepted.}
 
 \item{coarse.grid}{(logical) whether or not a coarse grid was used to fit the spatial model}
 
@@ -30,7 +30,7 @@ get_derived(
 \item{sp.auto}{(logical) whether or not spatial autocorrelation was used}
 }
 \value{
-A dataframe of the original MCMC samples with estimated psi and lambda, psi, and XB for each projection (if projections are specified)
+A dataframe of the original MCMC samples with estimated lambda, psi, and XB for each projection (if projections are specified)
 }
 \description{
 Extract and calculate derived quantities

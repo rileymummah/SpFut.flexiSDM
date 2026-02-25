@@ -11,7 +11,6 @@ data_for_nimble(
   sp.auto = T,
   coarse.grid = T,
   region,
-  process.intercept = T,
   gridkey,
   spatRegion
 )
@@ -19,17 +18,15 @@ data_for_nimble(
 \arguments{
 \item{sp.data}{(list) output from sppdata_for_nimble()}
 
-\item{covar}{(data.frame) dataframe containing process covariates}
+\item{covar}{(data.frame) dataframe containing ecological process covariates; must be scaled and contain columns for squared covariates with the column name "covariatename2"; conus.grid.id must match values from region$sp.grid.}
 
-\item{covs.z}{(character vector) vector of column names from covar to use as process covariates}
+\item{covs.z}{(character vector) vector of column names from covar to use as covariates in the ecological process model; should contain names of both linear and quadratic covariates}
 
 \item{sp.auto}{(logical) whether to use spatial autocorrelation in the model (T) or not (F); defaults to T}
 
 \item{coarse.grid}{(logical) whether to use a coarse grid (T) or not (F); defaults to T}
 
 \item{region}{(list) output from make_region()}
-
-\item{process.intercept}{(logical) whether to include an intercept in the process model or not; defaults to T}
 
 \item{gridkey}{(data.frame) contains conus.grid.ids and associated grid.ids to use for indexing in nimble}
 

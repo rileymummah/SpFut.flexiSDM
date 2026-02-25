@@ -7,7 +7,7 @@
 plot_covar(covar, region, cov.labs, scaled)
 }
 \arguments{
-\item{covar}{(data.frame) dataframe holding covariate values and conus.grid.id}
+\item{covar}{(data.frame) dataframe containing covariate values for each conus.grid.id; conus.grid.id must match values from region$sp.grid.}
 
 \item{region}{(list) region output from make_region()}
 
@@ -19,5 +19,5 @@ plot_covar(covar, region, cov.labs, scaled)
 Saves a map of scaled covariate values to the desired path.
 }
 \description{
-Makes maps of scaled covariate values.
+Makes maps of covariate values.
 }

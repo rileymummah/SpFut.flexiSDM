@@ -23,11 +23,11 @@ sppdata_for_nimble(
 
 \item{region}{(list) output from make_region()}
 
-\item{file.info}{(data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species}
+\item{file.info}{(data.frame) columns 'file.name', 'file.label', 'covar.mean', 'covar.sum', 'data.type', and 'PO.extent" describing the datasets to be read in for this species. See details for more information.}
 
-\item{covar}{(data.frame) dataframe containing covariates for PO data}
+\item{covar}{(data.frame) dataframe containing effort covariates for PO data for each conus.grid.id; conus.grid.id must match values from region$sp.grid}
 
-\item{stategrid}{(data.frame) output from make_state_grid()}
+\item{stategrid}{(data.frame) output from get_state_grid()}
 
 \item{statelines.rm}{(logical) should state-specific PO data in cells that cross state lines be removed (T) or not (F)}
 
@@ -46,4 +46,17 @@ sppdata_for_nimble(
 }
 \description{
 Format species data for nimble
+}
+\details{
+The columns in \code{file.info} must contain:
+\itemize{
+\item \code{file.name}: the name of the csv file to be read in
+\item \code{file.label}: the label that should be used for the dataset. If multiple files have the same label, they will be appended together. Only files with the label "iNaturalist" will be treated as iNaturalist data.
+\item \code{covar.mean}: detection covariates that should be averaged across passes; must match column name in data file
+\item \code{covar.sum}: detection covariate(s) that should be summed across passes; must match column name in data file
+\item \code{data.type}: data type of dataset; must be "PO", "DND", "or "Count"
+\item \code{PO.extent}: describes the spatial extent of PO datasets; must be "CONUS" or a two-letter state abbreviation; NA for non-PO datasets
+}
+
+Note that survey detection covariates are scaled within this function; PO effort covariates must be scaled prior to this function.
 }

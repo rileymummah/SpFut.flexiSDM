@@ -6,7 +6,7 @@
 \usage{
 load_species_data(
   sp.code,
-  sp.code.all,
+  sp.code.all = sp.code,
   file.info,
   file.path,
   region,
@@ -25,7 +25,7 @@ load_species_data(
 
 \item{sp.code.all}{(character) string of all species codes to pull for use in analysis, separated by |}
 
-\item{file.info}{(data.frame) columns 'file.name', 'file.label', 'covar.mean', and 'covar.sum' describing the datasets to be read in for this species}
+\item{file.info}{(data.frame) columns 'file.name', 'file.label', 'covar.mean', 'covar.sum', 'data.type', and 'PO.extent" describing the datasets to be read in for this species. See details for more information.}
 
 \item{file.path}{(character) path where data files are located}
 
@@ -52,4 +52,15 @@ A list with two objects. The first object (locs) is a dataframe containing the c
 }
 \description{
 Loads species data and does initial cleaning necessary for iSDM
+}
+\details{
+The columns in \code{file.info} must contain:
+\itemize{
+\item \code{file.name}: the name of the csv file to be read in
+\item \code{file.label}: the label that should be used for the dataset. If multiple files have the same label, they will be appended together. Only files with the label "iNaturalist" will be treated as iNaturalist data.
+\item \code{covar.mean}: detection covariates that should be averaged across passes; must match column name in data file
+\item \code{covar.sum}: detection covariate(s) that should be summed across passes; must match column name in data file
+\item \code{data.type}: data type of dataset; must be "PO", "DND", "or "Count"
+\item \code{PO.extent}: describes the spatial extent of PO datasets; must be "CONUS" or a two-letter state abbreviation; NA for non-PO datasets
+}
 }

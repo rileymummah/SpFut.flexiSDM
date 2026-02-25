@@ -70,7 +70,6 @@ test_that("data_for_nimble() works", {
                          sp.auto = F,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -159,7 +158,6 @@ test_that("data_for_nimble() works", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -194,7 +192,6 @@ test_that("data_for_nimble() works", {
                          sp.auto = T,
                          coarse.grid = T,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 

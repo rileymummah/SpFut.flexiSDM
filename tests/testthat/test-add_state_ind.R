@@ -76,7 +76,6 @@ test_that("add_state_ind() works", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion = spatRegion)
 
@@ -94,7 +93,7 @@ test_that("add_state_ind() works", {
 
   expect_equal(length(constants$S2), constants$nCell)
 
-  
+
   # works for statelines.rm = T ----
   allfiles <- data.frame(file.name = c("iNat_test_PO", "iNat_test1_PO", "Dodd_test_DND", "NEARMI_test_count"),
                          file.label = c("iNat_test", "iNat_test1", "Dodd_test", "NEARMI_test"),
@@ -102,7 +101,7 @@ test_that("add_state_ind() works", {
                          covar.sum = c(NA, NA, NA, NA),
                          data.type = c("PO", "PO", "DND", "count"),
                          PO.extent = c("CONUS", "PA", NA, NA))
-  
+
   species.data <- load_species_data(sp.code = "GPOR",
                                     sp.code.all = "GPOR",
                                     file.info = allfiles,
@@ -118,8 +117,8 @@ test_that("add_state_ind() works", {
                                     statelines.rm = T,
                                     keep.conus.grid.id = region$sp.grid$conus.grid.id)
   expect_equal(length(species.data$obs), 3)
-  
-  
+
+
   # works for iNat ----
   allfiles <- data.frame(file.name = c("iNat_test_PO", "iNat_test1_PO", "Dodd_test_DND", "NEARMI_test_count"),
                          file.label = c("iNaturalist", "iNat_test1", "Dodd_test", "NEARMI_test"),
@@ -160,7 +159,6 @@ test_that("add_state_ind() works", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -187,7 +185,6 @@ test_that("add_state_ind() works", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -299,7 +296,6 @@ test_that("add_state_ind() works with CV", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 

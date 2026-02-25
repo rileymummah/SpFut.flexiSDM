@@ -24,15 +24,15 @@ add_state_ind <- function(species.data,
                           obsc.state = NA,
                           keep.conus.grid.id = gridkey$conus.grid.id[which(gridkey$group == "train")]) {
 
-  
+
   gridkey1 <- filter(gridkey, .data$conus.grid.id %in% keep.conus.grid.id)
 
   # Add state indicator variable for iNat data to indicate which states have taxon geoprivacy
   if ("iNaturalist" %in% names(species.data$obs)) {
     if (length(obsc.state) > 0) {
-      
-      if (length(setdiff(obsc.state, state.abb)) > 0) stop ("obsc.state must contain 2-letter state abbreviations")
-      
+
+      if (length(setdiff(obsc.state, datasets::state.abb)) > 0) stop ("obsc.state must contain 2-letter state abbreviations")
+
       grid.states <- stategrid %>%
         filter(.data$name %in% obsc.state == F,
                .data$conus.grid.id %in% keep.conus.grid.id)
@@ -46,7 +46,7 @@ add_state_ind <- function(species.data,
     } else {
       S1 <- rep(1, length(keep.conus.grid.id))
     }
-    
+
     # find index for iNat and store S1 there
     nms <- unlist(constants[grep("name", names(constants))])
     inat <- names(nms[grep("iNaturalist", nms)])

@@ -18,7 +18,7 @@
 #'
 #' @returns A list with two objects. The first object (locs) is a dataframe containing the coordinate locations of all observations. The second object (obs) is a list containing a dataframe for each dataset and the conus.grid.id location of each observation.
 #' @export
-#' 
+#'
 #' @details
 #' The columns in `file.info` must contain:
 #'   - `file.name`: the name of the csv file to be read in
@@ -27,7 +27,7 @@
 #'   - `covar.sum`: detection covariate(s) that should be summed across passes; must match column name in data file
 #'   - `data.type`: data type of dataset; must be "PO", "DND", "or "Count"
 #'   - `PO.extent`: describes the spatial extent of PO datasets; must be "CONUS" or a two-letter state abbreviation; NA for non-PO datasets
-#' 
+#'
 #'
 #' @importFrom magrittr "%>%"
 #' @importFrom rlang .data
@@ -58,13 +58,13 @@ load_species_data <- function(sp.code,
   tmp <- colnames(file.info)
   diff <- setdiff(c("file.name", "file.label", "covar.mean", "covar.sum", "data.type", "PO.extent"), tmp)
   if (length(diff) > 0) stop("file.info must contain the following columns: 'file.name', 'file.label', 'covar.mean', 'covar.sum', 'data.type', 'PO.extent'")
-  
+
   # Pull info from file.info
   file.name <- file.info$file.name
   file.label <- file.info$file.label
   PO.extent <- file.info$PO.extent
-  
-  if (length(setdiff(PO.extent, c(state.abb, "CONUS", NA))) > 0) stop ("PO.extent must be a 2-letter state abbreviations, 'CONUS', or NA")
+
+  if (length(setdiff(PO.extent, c(datasets::state.abb, "CONUS", NA))) > 0) stop ("PO.extent must be a 2-letter state abbreviations, 'CONUS', or NA")
 
 
   covariates <- list()
@@ -137,8 +137,8 @@ load_species_data <- function(sp.code,
       cat("No data for this analysis\n")
       next
     }
-    
-    
+
+
 
     # filter out records by year
     rm <- filter(file, .data$year < year.start | .data$year > year.end)
@@ -263,25 +263,25 @@ load_species_data <- function(sp.code,
       next
     }
     #}
-    
+
     if (statelines.rm == T) {
       # if state-specific PO, remove data in cells that cross state lines
       if (file.info$data.type[f] == "PO" &
           file.info$PO.extent[f] != "CONUS") {
-        
+
         singlestate <- region$sp.grid$conus.grid.id[which(region$sp.grid$nstate == "single")]
         rm <- filter(locs.d, .data$conus.grid.id %in% singlestate == F)
-        
+
         if (nrow(rm) > 0) {
           cat("Removing", nrow(rm), "observations in cells that fall across state lines\n")
-          
+
           locs.d <- filter(locs.d, .data$conus.grid.id %in% singlestate)
           locs.c <- filter(locs.c, .data$unique.id %in% locs.d$unique.id)
         }
       }
     }
-    
-    
+
+
     if(nrow(locs.d) == 0) {
       cat("No data for this analysis\n")
       next

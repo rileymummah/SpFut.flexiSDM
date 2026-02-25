@@ -68,7 +68,6 @@ test_that("nimble_inits() works", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -145,7 +144,6 @@ test_that("nimble_inits() works", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -173,5 +171,5 @@ test_that("nimble_inits() works", {
   expect_equal(length(inits$spat), constants$nCell)
 
   file.remove("modelfull.R")
-  
+
 })

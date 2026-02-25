@@ -77,7 +77,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -198,7 +197,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -318,7 +316,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -439,7 +436,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -562,7 +558,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -681,7 +676,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -802,7 +796,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -923,7 +916,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -1044,7 +1036,6 @@ test_that("nimble_code() works with full data", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 
@@ -1212,7 +1203,6 @@ test_that("nimble_code() works with CV", {
                          sp.auto = T,
                          coarse.grid = F,
                          region = region,
-                         process.intercept = F,
                          gridkey = gridkey,
                          spatRegion= spatRegion)
 

@@ -14,8 +14,8 @@
 #'
 #' @returns (list) list of species data partially formatted for nimble, needs to be input into data_for_nimble before use in nimble
 #' @export
-#' 
-#' #' @details
+#'
+#' @details
 #' The columns in `file.info` must contain:
 #'   - `file.name`: the name of the csv file to be read in
 #'   - `file.label`: the label that should be used for the dataset. If multiple files have the same label, they will be appended together. Only files with the label "iNaturalist" will be treated as iNaturalist data.
@@ -25,10 +25,6 @@
 #'   - `PO.extent`: describes the spatial extent of PO datasets; must be "CONUS" or a two-letter state abbreviation; NA for non-PO datasets
 #'
 #' Note that survey detection covariates are scaled within this function; PO effort covariates must be scaled prior to this function.
-#'
-#'
-#' 
-#'  
 #'
 #' @importFrom tidyselect any_of all_of
 #' @importFrom tibble add_column
@@ -69,9 +65,9 @@ sppdata_for_nimble <- function(species.data,
   covs.sum[is.na(covs.sum)] <- ""
   offset.area <- file.info$area
   PO.extent <- file.info$PO.extent
-  
-  if (length(setdiff(PO.extent, c(state.abb, "CONUS", NA))) > 0) stop ("PO.extent must be a 2-letter state abbreviations, 'CONUS', or NA")
-  
+
+  if (length(setdiff(PO.extent, c(datasets::state.abb, "CONUS", NA))) > 0) stop ("PO.extent must be a 2-letter state abbreviations, 'CONUS', or NA")
+
 
   # these are indices of datasets that don't have any data (i.e., wrong years, species, etc.)
   # they will be removed at the end
@@ -395,9 +391,9 @@ sppdata_for_nimble <- function(species.data,
   DNDlabs <- file.info$file.label[DNDind]
   if (length(DNDind) > 0) {
     for (d in 1:length(DNDind)) {
-      
+
       cat("\nLoading DND, dataset", counter)
-      
+
 
       # pull out covariates for this dataset
       dnd.covs.mean <- unlist(strsplit(covs.mean[DNDind[d]], split = ", "))
@@ -507,9 +503,9 @@ sppdata_for_nimble <- function(species.data,
   if (length(countind) > 0) {
 
     for (d in 1:length(countind)) {
-      
+
       cat("\nLoading count, dataset", counter)
-      
+
 
       # pull out covariates for this dataset
       count.covs.mean <- unlist(strsplit(covs.mean[countind[d]], split = ", "))
