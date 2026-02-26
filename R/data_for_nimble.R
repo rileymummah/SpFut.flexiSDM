@@ -27,6 +27,11 @@ data_for_nimble <- function(sp.data,
                             spatRegion) {
 
   
+  # make sure spatRegion$spatkey is in correct order
+  tmp <- full_join(gridkey, spatRegion$spatkey, by = "conus.grid.id") %>%
+    select("spat.grid.id", "conus.grid.id")
+  spatRegion$spatkey <- tmp
+  
   # never include a process intercept
   process.intercept = F
   
