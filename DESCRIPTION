@@ -1,5 +1,5 @@
 Package: SpFut.flexiSDM
-Title: What the Package Does (One Line, Title Case)
+Title: Builds Flexible Species Distribution Model
 Version: 1.0.0
 Authors@R: 
     c(person(given = "C. Lane", 
@@ -18,7 +18,7 @@ Authors@R:
               role = c("aut"),
               comment = c(ORCID = "0000-0002-3011-3677"))
       )
-Description: What the package does (one paragraph).
+Description: This R software package builds and fits an integrated species distribution model. Specifically, this package loads species and covariate data, builds a species region, sets up code, parameters, and specification for a NIMBLE model, and processes and plots NIMBLE output. This framework allows the inclusion of any number of count, detection/non-detection, and presence-only species datasets. Dataset-specific observation models account for any sampling biases the data introduce.
 License: CC0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

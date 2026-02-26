@@ -1,4 +1,10 @@
-^SpFut\.flexiSDM\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
+^cran-comments\.md$
+^\.git$
+^\.gitlab$
+^DISCLAIMER\.md$
 ^LICENSE\.md$
-^README\.Rmd$
+^CONTRIBUTING\.md$
+^CODE_OF_CONDUCT\.md$
+^code\.json$

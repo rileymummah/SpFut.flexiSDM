@@ -4,90 +4,99 @@
 
 <!-- badges: end -->
 
-The goal of SpFut.flexiSDM is to ...
+# Abstract
 
-## Functions
+The purpose of this R software package is to build and fit an integrated species distribution model. Specifically, this package loads species and covariate data, builds a species region, sets up code, parameters, and specification for a NIMBLE model, and processes and plots NIMBLE output. This framework allows the inclusion of any number of count, detection/non-detection, and presence-only species datasets. Dataset-specific observation models account for any sampling biases the data introduce.
+
+# Overview
 
 SpFut.flexiSDM contains the following functions:
 
-### Helpers
+### To setup the species region and spatial grid
 
--   scale_this - DONE (ROM)
--   get_cpus_per_task - DONE (ROM)
--   id_dup_records - (CLS) cleaned, commented, and documented
+- `get_range`
+- `get_state_grid`
+- `make_region`
+- `make_spatkey`
 
-### Setup range and spatial grid
+### To select and plot covariate data
 
--   get_range - COMPLETE (ROM)
--   make_region - COMPLETE (ROM)
--   make_spatkey - NEEDS DOCUMENTATION (ROM)
-
-### Prep covariate data
-
--   load_covar - (CLS) can delete
--   plot_covar - DONE 
--   cor_covar - DONE
--   select_covar - DONE
--   add_int_cols - EXCLUDED FOR NOW
+- `select_covar`
+- `cor_covar`
+- `plot_covar`
 
 ### Prep species data
 
--   load_species_data - DONE
--   PO_filter - REMOVED
--   count_filter - DONE
--   DND_filter - DONE
--   PO_for_nimble - DONE
--   survey_for_nimble - DONE
--   sppdata_for_nimble - (CLS) cleaned, commented, and documented
--   map_species_data - (CLS) cleaned, commented, and documented
+- `make_CV_blocks`
+- `load_species_data`
+- `count_filter`
+- `DND_filter`
+- `map_species_data`
 
-### Combine all data
+### To combine all data for NIMBLE
 
--   z_for_nimble - DONE
--   data_for_nimble - (CLS) cleaned, commented, and documented
+- `add_state_ind`
+- `data_for_nimble`
+- `PO_for_nimble`
+- `sppdata_for_nimble`
+- `survey_for_nimble`
+- `z_for_nimble`
 
-### Set up NIMBLE
+### To set up NIMBLE code, initial values, and parameters
 
--   nimble_code - DONE
--   nimble_inits - DONE
--   nimble_params - DONE
+- `nimble_code`
+- `nimble_inits`
+- `nimble_params`
 
-### Run NIMBLE
+### To process NIMBLE MCMC output
 
--   run_nimbleMCMC - (ROM) outline added
--   nimbleParallel - (ROM) outline added
--   check_progress_MCMC - (CLS) can delete
+- `get_AUC`
+- `get_projections`
+- `get_derived`
+- `chain_summary`
+- `summarize_samples`
 
-### Process NIMBLE output
+### To plot NIMBLE output
 
--   get_projections
--   get_derived
--   chain_summary
--   summarize_samples
+- `plot_auc`
+- `plot_chains`
+- `plot_convergence`
+- `plot_effects`
+- `plot_pars`
+- `plot_posteriors`
 
-### Plot NIMBLE output
+### Other helper functions
 
--   plot_chains - (CLS) cleaned, commented, and documented
--   plot_posteriors - (CLS) cleaned, commented, and documented
--   plot_convergence - (CLS) cleaned, commented, and documented
--   plot_pars - (CLS) cleaned, commented, and documented
--   plot_effects - (CLS) cleaned, commented, and documented
--   plot_auc - (CLS) cleaned, commented, and documented
+- `get_cpus_per_task`
+- `scale_this`
+- `id_dup_records`
+
+
 
 ## Installation
 
-You can install the development version of SpFut.flexiSDM from [GitHub](https://github.com/) with:
+You can install the development version of SpFut.flexiSDM from [GitLab](https://code.usgs.gov/) with:
 
 ``` r
-# install.packages("pak")
-remotes::install_github("rileymummah/SpFut.flexiSDM")
+# install.packages("SpFut.flexiSDM")
+remotes::install_git("code.usgs.gov/SpFut-flexiSDM")
 ```
+# Usage
 
-## Example
+See the vignette for a demonstration on how to use the functions in the `SpFut.flexiSDM` package.
 
-This is a basic example which shows you how to solve a common problem:
+# Authors
 
-``` r
-library(SpFut.flexiSDM)
-## basic example code
-```
+- C. Lane Scher, Department of Ecosystem Science and Management, Pennsylvania State University; USGS Eastern Ecological Science Center Visiting Scientist - cls7052@psu.edu
+- Riley O. Mummah, USGS Eastern Ecological Science Center - rmummah@usgs.gov
+- David A.W. Miller,  Department of Ecosystem Science and Management, Pennsylvania State University - dxm84@psu.edu
+
+
+# Citation
+
+Please use the following citation when using this software:
+
+
+# Acknowledgments
+
+Funding was provided by the USGS Amphibian Research Monitoring Initiative (ARMI). Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
