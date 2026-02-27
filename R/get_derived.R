@@ -3,6 +3,7 @@
 #' @param samples (list of mcmc objects) output from fitting a NIMBLE model
 #' @param data (NIMBLE data) data created and formatted for NIMBLE
 #' @param project (numeric) the number of projections. NA is not accepted.
+#' @param gridkey (dataframe) a dataframe containing conus.grid.ids and the associated grid.id
 #' @param coarse.grid (logical) whether or not a coarse grid was used to fit the spatial model
 #' @param spatRegion (list) object created from make_spatkey() and used to fit the spatial model
 #' @param pathToProj (character) path to R script where projections are set up
