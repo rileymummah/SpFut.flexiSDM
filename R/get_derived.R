@@ -27,10 +27,7 @@ get_derived <- function(samples,
                         pathToProj = NULL,
                         sp.auto = T) {
 
-  # make sure spatRegion$spatkey is in correct order
-  tmp <- full_join(gridkey, spatRegion$spatkey, by = "conus.grid.id") %>%
-    select("spat.grid.id", "conus.grid.id")
-  spatRegion$spatkey <- tmp
+  
   
   # Pull out lambda
   keep <- grep("lambda0", colnames(samples))
@@ -70,6 +67,11 @@ get_derived <- function(samples,
       # Realign the spatial grid to the species grid if coarse.grid
       # This loop could probably be sped up if it was vectorized.
       if (coarse.grid == T) {
+        # make sure spatRegion$spatkey is in correct order
+        tmp <- full_join(gridkey, spatRegion$spatkey, by = "conus.grid.id") %>%
+          select("spat.grid.id", "conus.grid.id")
+        spatRegion$spatkey <- tmp
+        
         cells <- spatRegion$spatkey$spat.grid.id
 
         tmp <- c()
