@@ -5,6 +5,7 @@ test_that("get_derived() works", {
   samples <- mod1$samples[[1]]
   data <- mod1$data
   region <- mod1$region
+  gridkey <- mod1$gridkey
 
   # remove psi from samples
   samples <- samples[,-grep("psi", colnames(samples))]
@@ -13,6 +14,7 @@ test_that("get_derived() works", {
   test1 <- get_derived(samples = samples,
                        data = data,
                        project = 0,
+                       gridkey = gridkey,
                        coarse.grid = F,
                        sp.auto = F)
 
@@ -23,6 +25,7 @@ test_that("get_derived() works", {
   test1.1 <- get_derived(samples = samples,
                          data = data,
                          project = 2,
+                         gridkey = gridkey,
                          pathToProj = '~/GitHub/species-futures/pkg-tests/test-setup-projections.R',
                          coarse.grid = F,
                          sp.auto = F)
@@ -36,6 +39,7 @@ test_that("get_derived() works", {
   samples <- mod2$samples[[1]]
   data <- mod2$data
   region <- mod2$region
+  gridkey <- mod2$gridkey
 
   # remove psi from samples
   samples <- samples[,-grep("psi", colnames(samples))]
@@ -43,6 +47,7 @@ test_that("get_derived() works", {
   test2 <- get_derived(samples = samples,
                        data = data,
                        project = 0,
+                       gridkey = gridkey,
                        coarse.grid = F,
                        sp.auto = F)
 
@@ -53,6 +58,7 @@ test_that("get_derived() works", {
   test2.1 <- get_derived(samples = samples,
                          data = data,
                          project = 2,
+                         gridkey = gridkey,
                          pathToProj = '~/GitHub/species-futures/pkg-tests/test-setup-projections.R',
                          coarse.grid = F,
                          sp.auto = F)
@@ -66,6 +72,7 @@ test_that("get_derived() works", {
   samples <- mod3$samples[[1]]
   data <- mod3$data
   region <- mod3$region
+  gridkey <- mod3$gridkey
 
   # remove psi from samples
   samples <- samples[,-grep("psi", colnames(samples))]
@@ -73,6 +80,7 @@ test_that("get_derived() works", {
   test3 <- get_derived(samples = samples,
                        data = data,
                        project = 0,
+                       gridkey = gridkey,
                        coarse.grid = F,
                        sp.auto = T)
 
@@ -83,6 +91,7 @@ test_that("get_derived() works", {
   test3.1 <- get_derived(samples = samples,
                          data = data,
                          project = 2,
+                         gridkey = gridkey,
                          pathToProj = '~/GitHub/species-futures/pkg-tests/test-setup-projections.R',
                          coarse.grid = F,
                          sp.auto = T)
@@ -97,6 +106,7 @@ test_that("get_derived() works", {
   samples <- mod4$samples[[1]]
   data <- mod4$data
   region <- mod4$region
+  gridkey <- mod4$gridkey
 
   # remove psi from samples
   samples <- samples[,-grep("psi", colnames(samples))]
@@ -104,6 +114,7 @@ test_that("get_derived() works", {
   test4 <- get_derived(samples = samples,
                        data = data,
                        project = 0,
+                       gridkey = gridkey,
                        coarse.grid = T,
                        sp.auto = T)
 
@@ -114,6 +125,7 @@ test_that("get_derived() works", {
   test4.1 <- get_derived(samples = samples,
                          data = data,
                          project = 2,
+                         gridkey = gridkey,
                          pathToProj = '~/GitHub/species-futures/pkg-tests/test-setup-projections.R',
                          coarse.grid = T,
                          sp.auto = T,

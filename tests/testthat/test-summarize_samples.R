@@ -48,6 +48,7 @@ test_that("summarize_samples() works", {
                          get_derived,
                          data = mod4$data,
                          project = 2,
+                         gridkey = mod4$gridkey,
                          coarse.grid = T,
                          spatRegion = mod4$spatRegion,
                          pathToProj = '~/GitHub/species-futures/pkg-tests/test-setup-projections.R')
