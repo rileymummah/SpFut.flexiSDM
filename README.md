@@ -12,14 +12,14 @@ The purpose of this R software package is to build and fit an integrated species
 
 SpFut.flexiSDM contains the following functions:
 
-### To setup the species region and spatial grid
+### Set up the species region and spatial grid
 
 - `get_range`
 - `get_state_grid`
 - `make_region`
 - `make_spatkey`
 
-### To select and plot covariate data
+### Select and plot covariate data
 
 - `select_covar`
 - `cor_covar`
@@ -29,34 +29,35 @@ SpFut.flexiSDM contains the following functions:
 
 - `make_CV_blocks`
 - `load_species_data`
-- `count_filter`
-- `DND_filter`
+
 - `map_species_data`
 
-### To combine all data for NIMBLE
+### Combine all data for NIMBLE
 
-- `add_state_ind`
-- `data_for_nimble`
+- `count_filter`
+- `DND_filter`
 - `PO_for_nimble`
-- `sppdata_for_nimble`
 - `survey_for_nimble`
+- `sppdata_for_nimble`
 - `z_for_nimble`
+- `data_for_nimble`
+- `add_state_ind`
 
-### To set up NIMBLE code, initial values, and parameters
+### Set up NIMBLE code, initial values, and parameters
 
 - `nimble_code`
 - `nimble_inits`
 - `nimble_params`
 
-### To process NIMBLE MCMC output
+### Process NIMBLE MCMC output
 
-- `get_AUC`
 - `get_projections`
 - `get_derived`
 - `chain_summary`
 - `summarize_samples`
+- `get_AUC`
 
-### To plot NIMBLE output
+### Plot NIMBLE output
 
 - `plot_auc`
 - `plot_chains`
