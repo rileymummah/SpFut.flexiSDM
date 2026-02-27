@@ -21,6 +21,7 @@
 get_derived <- function(samples,
                         data,
                         project,
+                        gridkey,
                         coarse.grid,
                         spatRegion,
                         pathToProj = NULL,
