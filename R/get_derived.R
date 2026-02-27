@@ -26,6 +26,11 @@ get_derived <- function(samples,
                         pathToProj = NULL,
                         sp.auto = T) {
 
+  # make sure spatRegion$spatkey is in correct order
+  tmp <- full_join(gridkey, spatRegion$spatkey, by = "conus.grid.id") %>%
+    select("spat.grid.id", "conus.grid.id")
+  spatRegion$spatkey <- tmp
+  
   # Pull out lambda
   keep <- grep("lambda0", colnames(samples))
 
