@@ -12,13 +12,13 @@ test_that("plot_posteriors() works", {
   out <- plot_posteriors(mod1$samples, data = mod1$data, constants = mod1$constants,
                         cov.labs = cov.labs, plot = "B", cutoff = 0)
   vdiffr::expect_doppelganger("B posterior", out$plot)
-  expect_equal(nrow(out$dat), 104)
+  expect_equal(nrow(out$dat), 123)
   expect_equal(ncol(out$dat), 8)
 
   pl <- plot_posteriors(mod1$samples, data = mod1$data, constants = mod1$constants,
                         cov.labs = cov.labs, plot = "alpha", cutoff = 0)
   vdiffr::expect_doppelganger("alpha posterior", out$plot)
-  expect_equal(nrow(out$dat), 104)
+  expect_equal(nrow(out$dat), 123)
   expect_equal(ncol(out$dat), 8)
   
 

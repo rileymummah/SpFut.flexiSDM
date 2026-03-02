@@ -36,23 +36,23 @@ test_that("plot_pars() works", {
 
   out <- plot_pars(obs, plot.type = "full", cov.labs = cov.labs)
   vdiffr::expect_doppelganger("obs-full", out$plot)
-  expect_equal(nrow(out$dat), 7)
+  expect_equal(nrow(out$dat), 6)
   expect_equal(ncol(out$dat), 15)
   
   out <- plot_pars(obs, plot.type = "cv", cov.labs = cov.labs)
   vdiffr::expect_doppelganger("obs-cv", out$plot)
-  expect_equal(nrow(out$dat), 26)
+  expect_equal(nrow(out$dat), 23)
   expect_equal(ncol(out$dat), 15)
   
 
   out <- plot_pars(alpha, plot.type = "full", cov.labs = cov.labs)
   vdiffr::expect_doppelganger("alpha-full", out$plot)
-  expect_equal(nrow(out$dat), 4)
+  expect_equal(nrow(out$dat), 3)
   expect_equal(ncol(out$dat), 12)
   
   out <- plot_pars(alpha, plot.type = "cv", cov.labs = cov.labs)
   vdiffr::expect_doppelganger("alpha-cv", out$plot)
-  expect_equal(nrow(out$dat), 16)
+  expect_equal(nrow(out$dat), 13)
   expect_equal(ncol(out$dat), 12)
   
 

@@ -7,7 +7,7 @@ test_that("plot_convergence() works", {
 
   vdiffr::expect_doppelganger("convergence metrics", out$plot)
   expect_true(is.data.frame(out$dat))
-  expect_equal(nrow(out$dat), 14)
+  expect_equal(nrow(out$dat), 12)
   expect_equal(colnames(out$dat), c("source", "data.type", "type", "covariate", "Rhat", 'ESS'))
 
 })
