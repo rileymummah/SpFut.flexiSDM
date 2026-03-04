@@ -31,27 +31,35 @@ add_state_ind <- function(species.data,
   if ("iNaturalist" %in% names(species.data$obs)) {
     if (length(obsc.state) > 0) {
 
-      if (length(setdiff(obsc.state, c(datasets::state.abb, NA))) > 0) stop ("obsc.state must contain 2-letter state abbreviations")
-
-      grid.states <- stategrid %>%
-        filter(.data$name %in% obsc.state == F,
-               .data$conus.grid.id %in% keep.conus.grid.id)
-
-      # iNat is always dataset1 if it exists
-      S1 <- data.frame(grid.id = constants$Wcells1) %>%
-        left_join(gridkey1, by = "grid.id") %>%
-        mutate(S1 = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
-                              T ~ 0)) %>%
-        pull(S1)
+      if (is.na(obsc.state) == F) {
+        if (length(setdiff(obsc.state, c(datasets::state.abb, NA))) > 0) stop ("obsc.state must contain 2-letter state abbreviations")
+        
+        grid.states <- stategrid %>%
+          filter(.data$name %in% obsc.state == F,
+                 .data$conus.grid.id %in% keep.conus.grid.id)
+        
+        # iNat is always dataset1 if it exists
+        S1 <- data.frame(grid.id = constants$Wcells1) %>%
+          left_join(gridkey1, by = "grid.id") %>%
+          mutate(S1 = case_when(conus.grid.id %in% grid.states$conus.grid.id ~ 1,
+                                T ~ 0)) %>%
+          pull(S1)
+        
+        # find index for iNat and store S1 there
+        nms <- unlist(constants[grep("name", names(constants))])
+        inat <- names(nms[grep("iNaturalist", nms)])
+        d <- gsub("name", "", inat)
+        constants[[paste0("S", d)]] <- S1
+        
+      } else {
+        S1 <- rep(1, length(keep.conus.grid.id))
+      }
+      
     } else {
       S1 <- rep(1, length(keep.conus.grid.id))
     }
 
-    # find index for iNat and store S1 there
-    nms <- unlist(constants[grep("name", names(constants))])
-    inat <- names(nms[grep("iNaturalist", nms)])
-    d <- gsub("name", "", inat)
-    constants[[paste0("S", d)]] <- S1
+    
   }
 
   # Add state indicator for multi-state PO to indicate which states have data
