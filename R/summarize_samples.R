@@ -128,7 +128,8 @@ summarize_samples <- function(samples,
       
       
       datasetnames <- gsub("nW", "", names(constants)[datasetnames])
-      datasetnames <- grep(paste0("name", datasetnames, collapse = "|"), names(constants))
+      datasetnames1 <- paste0("^name", datasetnames, "$")
+      datasetnames <- grep(paste0(datasetnames1, collapse = "|"), names(constants))
       
       dnames <- c()
       cellsall <- c()
