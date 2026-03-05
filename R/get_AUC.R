@@ -36,32 +36,39 @@ get_AUC <- function(species.data,
     val.in <- filter(out$psi0, .data$group == "train") %>%
       inner_join(val.dat, by = "conus.grid.id")
 
-    # overall
-    if (length(unique(val.in$pa)) < 2) {
+    if (nrow(val.in) == 0) { # no survey data in training cells
       AUCin <- NA
     } else {
-      AUCin <- auc(val.in$pa, val.in$mean)
-    }
-
-    # each dataset
-    dats <- unique(val.in$source)
-    aucsin <- c()
-    for (s in 1:length(dats)) {
-      val.in1 <- filter(val.in, source == dats[s])
-
-      if (length(unique(val.in1$pa)) < 2) {
-        AUCin1 <- NA
+      
+      # overall
+      if (length(unique(val.in$pa)) < 2) {
+        AUCin <- NA
       } else {
-        AUCin1 <- auc(val.in1$pa, val.in1$mean)
+        AUCin <- auc(val.in$pa, val.in$mean)
       }
-
-      tmpin <- data.frame(source = dats[s],
-                          AUCin = as.numeric(AUCin1),
-                          in.n = nrow(val.in1),
-                          in.cell = length(unique(val.in1$conus.grid.id)))
-
-      aucsin <- bind_rows(aucsin, tmpin)
+      
+      # each dataset
+      dats <- unique(val.in$source)
+      aucsin <- c()
+      for (s in 1:length(dats)) {
+        val.in1 <- filter(val.in, source == dats[s])
+        
+        if (length(unique(val.in1$pa)) < 2) {
+          AUCin1 <- NA
+        } else {
+          AUCin1 <- auc(val.in1$pa, val.in1$mean)
+        }
+        
+        tmpin <- data.frame(source = dats[s],
+                            AUCin = as.numeric(AUCin1),
+                            in.n = nrow(val.in1),
+                            in.cell = length(unique(val.in1$conus.grid.id)))
+        
+        aucsin <- bind_rows(aucsin, tmpin)
+      }
+      
     }
+    
 
 
 
@@ -112,9 +119,10 @@ get_AUC <- function(species.data,
 
 
 
-    if (nrow(val.out) != 0) {aucs <- full_join(aucsin, aucsout, by = "source")}
+    if (nrow(val.out) != 0 & nrow(val.in) != 0) {aucs <- full_join(aucsin, aucsout, by = "source")}
     if (nrow(val.out) == 0) {aucs <- aucsin}
-
+    if (nrow(val.in) == 0) {aucs <- aucsout}
+    
     all.auc <- data.frame(block = as.character(block.out),
                           AUCin.full = as.numeric(AUCin),
                           in.full.n = nrow(val.in),
